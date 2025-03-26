@@ -2,7 +2,6 @@ from typing import final
 
 import requests
 from functional_monads.either import Either, right
-
 from models.language_tool_models import LanguageToolResponse
 from models.text_corretion_models import (
     CorrectionBlock,
