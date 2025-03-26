@@ -10,8 +10,14 @@ from services.advisor import AdvisorOutput, AdvisorService
 from services.rewrite_text import TextRewriteService
 from services.text_correction_language_tool import TextCorrectionService
 from utils.configuration import config
+from utils.logger import get_logger, init_logger
+
+init_logger()
 
 app = FastAPI()
+logger = get_logger()
+
+logger.info(f"Running with configuration: {config}")
 
 # Configure CORS
 app.add_middleware(

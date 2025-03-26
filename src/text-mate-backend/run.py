@@ -9,7 +9,7 @@ parser.add_argument("--production", action="store_true", help="Run in production
 args = parser.parse_args()
 
 # Get the root directory (where .env file is located)
-root_dir = Path(__file__).parent.parent
+root_dir = Path(__file__).parent.parent.parent
 env_path = root_dir / ".env"
 
 # Load environment variables from .env file if not in production mode
@@ -28,4 +28,4 @@ if __name__ == "__main__":
     from utils.configuration import config
 
     print(f"Running with configuration: {config}")
-    uvicorn.run("main:app", host="0.0.0.0", port=config.api_port, reload=config.isDev)
+    uvicorn.run("app:app", host="0.0.0.0", port=config.api_port, reload=config.isDev)
