@@ -2,16 +2,20 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from functional_monads.either import Either
 from models.text_corretion_models import CorrectionResult, TextCorrectionOptions
 from models.text_rewrite_models import RewriteResult, TextRewriteOptions
 from pydantic import BaseModel
+from services.actions.quick_action_service import Actions, QuickActionService
 from services.advisor import AdvisorOutput, AdvisorService
 from services.rewrite_text import TextRewriteService
 from services.text_correction_language_tool import TextCorrectionService
 from utils.configuration import config
+from utils.load_env import load_env
 from utils.logger import get_logger, init_logger
 
+load_env()
 init_logger()
 
 app = FastAPI()
@@ -31,6 +35,7 @@ app.add_middleware(
 text_correction_service = TextCorrectionService()
 text_rewrite_service = TextRewriteService()
 advisor_service = AdvisorService()
+quick_action_service = QuickActionService()
 
 
 def handle_result[T](result: Either[str, T]) -> T:
@@ -80,3 +85,17 @@ def advisor(data: AdvisorInput) -> AdvisorOutput:
 
     result = advisor_service.advise_changes(data.text, options)
     return handle_result(result)
+
+
+class QuickActionRequest(BaseModel):
+    action: Actions
+    text: str
+
+
+@app.post("/quick-action")
+def quick_action(request: QuickActionRequest) -> StreamingResponse:
+    try:
+        result = quick_action_service.run(request.action, request.text)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))

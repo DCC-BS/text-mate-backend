@@ -45,6 +45,7 @@ class TextRewriteService:
         """
 
         module = dspy.Predict(RewirteInfo)
+
         response = module(text=text, context=context, domain=options.domain, formality=options.formality)
 
         out_options: List[str] = response.options

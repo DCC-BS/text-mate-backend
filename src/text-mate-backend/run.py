@@ -24,8 +24,8 @@ else:
 
 # Import and run the FastAPI application
 if __name__ == "__main__":
-    import uvicorn
     from utils.configuration import config
 
     print(f"Running with configuration: {config}")
-    uvicorn.run("app:app", host="0.0.0.0", port=config.api_port, reload=config.isDev)
+
+    app.run(host="0.0.0.0", port=config.api_port, debug=config.isDev)
