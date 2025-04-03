@@ -1,4 +1,4 @@
-name: Build
+name: Build LanguageTool
 
 on:
   pull_request:

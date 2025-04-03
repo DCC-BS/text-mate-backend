@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  packages: write
+
+jobs:
+  build-api:
+    uses: FD-ITBS/reusable-workflows/.github/workflows/docker-build.yml@main
+    with:
+      working-directory: ./
+      ghcr-enabled: true
+      quay-enabled: false
+      image-name: "textmate-api"
+      vulnerability-scan: false
+      push: ${{ contains(github.ref, 'tags/v') }}
+
+  build-languagetool:
+    uses: FD-ITBS/reusable-workflows/.github/workflows/docker-build.yml@main
+    with:
+      working-directory: ./docker/languagetool
+      ghcr-enabled: true
+      quay-enabled: false
+      image-name: "textmate-languagetool"
+      vulnerability-scan: false
+      push: ${{ contains(github.ref, 'tags/v') }}
