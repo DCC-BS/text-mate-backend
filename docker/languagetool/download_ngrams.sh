@@ -7,7 +7,7 @@ download_ngrams() {
 
     if [ ! -d "/ngrams/$lang" ] || [ -z "$(ls -A /ngrams/$lang)" ]; then
         # create the directory if it doesn't exist
-        mkdir -p "/ngrams"
+        # mkdir -p "/ngrams"
 
         echo "Searching for the latest n-grams for $lang..."
 
