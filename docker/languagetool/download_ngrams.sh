@@ -26,7 +26,7 @@ download_ngrams() {
         wget -e dotbytes=100M "$base_url/$latest_file" -O "/tmp/$latest_file"
 
         echo "Extracting n-grams..."
-        7z x "/tmp/$latest_file" -o"/ngrams/"
+        7z x "/tmp/$latest_file" -o "/ngrams/"
         rm "/tmp/$latest_file"
 
         echo "N-grams for $lang downloaded and extracted."

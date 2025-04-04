@@ -60,14 +60,16 @@ def chat_completions(text: CorrectionInput) -> CorrectionResult:
 
 class RewriteInput(BaseModel):
     text: str
-    context: str
-    domain: str = "general"
-    formality: str = "neutral"
+    writing_style: str = "general"
+    target_audience: str = "general"
+    intend: str = "general"
 
 
 @app.post("/text-rewrite")
 def rewrite_text(data: RewriteInput) -> RewriteResult:
-    options = TextRewriteOptions(domain=data.domain, formality=data.formality)
+    options = TextRewriteOptions(
+        writing_style=data.writing_style, target_audience=data.target_audience, intend=data.intend
+    )
 
     result: Either[str, RewriteResult] = text_rewrite_service.rewrite_text(data.text, data.context, options)
     return handle_result(result)

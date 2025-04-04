@@ -1,13 +1,12 @@
-from typing import List, final
+from typing import List
 
 from pydantic import BaseModel
 
 
-@final
-class TextRewriteOptions:
-    def __init__(self, domain: str = "general", formality: str = "formal"):
-        self.domain = domain
-        self.formality = formality
+class TextRewriteOptions(BaseModel):
+    writing_style: str = "general"
+    target_audience: str = "general"
+    intend: str = "general"
 
 
 class RewriteResult(BaseModel):
