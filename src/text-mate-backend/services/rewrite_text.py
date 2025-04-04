@@ -13,14 +13,30 @@ class RewirteInfo(dspy.Signature):
 
     text: str = dspy.InputField(desc="The text to be rewritten")
     context: str = dspy.InputField(desc="The full text of the document, text to be rewritten is marked with <rewrite>")
-    formality: str = dspy.InputField(desc="The formality to use for the rewritten text")
-    domain: str = dspy.InputField(
-        desc="""The domain to use for the rewritten text.
+    writing_style: str = dspy.InputField(
+        desc="""The writing style to use for the rewritten text.
                 - general: General text
-                - report: Text for a report or document
-                - email: Text for an email
-                - socialMedia: Text for social media post (e.g., Twitter, Facebook, etc.)
+                - simple: Simple text
+                - professional: Professional text
+                - casual: Casual text
+                - academic: Academic text
                 - technical: Technical text""",
+    )
+    target_audience: str = dspy.InputField(
+        desc="""The target audience to use for the rewritten text.
+                - general: General audience
+                - young: Young audience
+                - adult: Adult audience
+                - children: Children audience""",
+    )
+    intend: str = dspy.InputField(
+        desc="""The intend to use for the rewritten text.
+                - general: General text
+                - persuasive: Persuasive text
+                - informative: Informative text
+                - descriptive: Descriptive text
+                - narrative: Narrative text
+                - entertaining: Entertaining text""",
     )
     options: List[str] = dspy.OutputField(desc="A list of alternative texts")
 
@@ -46,7 +62,13 @@ class TextRewriteService:
 
         module = dspy.Predict(RewirteInfo)
 
-        response = module(text=text, context=context, domain=options.domain, formality=options.formality)
+        response = module(
+            text=text,
+            context=context,
+            writing_style=options.writing_style,
+            target_audience=options.target_audience,
+            intend=options.intend,
+        )
 
         out_options: List[str] = response.options
         out_options = list(map(lambda option: option.replace("<rewrite>", text).replace("ß", "ss"), out_options))
