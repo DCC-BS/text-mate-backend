@@ -1,4 +1,4 @@
-# Install uv
+§# Install uv
 FROM python:3.13-slim
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
@@ -27,4 +27,4 @@ RUN uv sync --frozen
 
 ENV ENVIRONMENT=production
 
-CMD [ "uv", "run", "fastapi", "run", "./src/text-mate-backend/app.py",  "--port", "${PORT:-8090}" ]
+ENTRYPOINT "uv run fastapi:app --host 0.0.0.0 --port ${PORT:-8090}"
