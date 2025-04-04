@@ -27,4 +27,4 @@ RUN uv sync --frozen
 
 ENV ENVIRONMENT=production
 
-CMD [ "uv", "run", "fastapi", "run", "./src/text-mate-backend/app.py"  "--port", "${PORT:-8090}" ]
+CMD [ "uv", "run", "fastapi", "run", "./src/text-mate-backend/app.py",  "--port", "${PORT:-8090}" ]
