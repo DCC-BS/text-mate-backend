@@ -27,4 +27,4 @@ RUN uv sync --frozen
 
 ENV ENVIRONMENT=production
 
-ENTRYPOINT "uv run fastapi:app --host 0.0.0.0 --port ${PORT:-8090}"
+ENTRYPOINT sh -c "uv run fastapi:app --host 0.0.0.0 --port ${PORT:-8090}"
