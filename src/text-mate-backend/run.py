@@ -28,4 +28,4 @@ if __name__ == "__main__":
 
     print(f"Running with configuration: {config}")
 
-    app.run(host="0.0.0.0", port=config.api_port, debug=config.isDev)
+    app.run(host="0.0.0.0", port=config.port, debug=config.isDev)
