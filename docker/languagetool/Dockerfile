@@ -10,9 +10,6 @@ RUN apk add --no-cache \
     wget \
     pv
 
-# Create a directory for n-grams
-RUN mkdir -p /ngrams
-
 # Copy the download_ngrams script
 COPY download_ngrams.sh /usr/local/bin/download_ngrams.sh
 RUN chmod +x /usr/local/bin/download_ngrams.sh
