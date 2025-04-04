@@ -17,9 +17,8 @@ RUN chmod +x /usr/local/bin/download_ngrams.sh
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
-
-# Switch back to the languagetool user
 USER languagetool
 
-CMD [ "/LanguageTool/start.sh" ]
+RUN mkdir -p /languagetool/.cache/ngrams
+
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
