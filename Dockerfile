@@ -26,8 +26,5 @@ COPY . /app
 RUN uv sync --frozen
 
 ENV ENVIRONMENT=production
-ENV PORT=8000
-
-EXPOSE $PORT
 
 CMD [ "uv", "run", "fastapi", "run", "./src/text-mate-backend/app.py" ]
