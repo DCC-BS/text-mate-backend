@@ -8,9 +8,7 @@ download_ngrams() {
     if [ ! -d "/ngrams/$lang" ] || [ -z "$(ls -A /ngrams/$lang)" ]; then
         # create the directory if it doesn't exist
         # mkdir -p "/ngrams"
-
-        sleep 3000
-
+        
         echo "Searching for the latest n-grams for $lang..."
 
         # Get the list of available files and sort by date (newest first)
