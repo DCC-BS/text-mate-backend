@@ -17,10 +17,15 @@ RUN chmod +x /usr/local/bin/download_ngrams.sh
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+# Set the languageModel configuration to use the n-grams
+ENV langtool_languageModel=/ngrams
+
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
+
 # Switch back to the languagetool user
 USER languagetool
 
 # Set the languageModel configuration to use the n-grams
 ENV langtool_languageModel=/ngrams
 
-ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
+CMD [ "/LanguageTool/start.sh" ]
