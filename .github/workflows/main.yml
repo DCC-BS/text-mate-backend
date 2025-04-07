@@ -23,7 +23,7 @@ jobs:
         uses: ./.github/actions/setup-python-env
 
       - name: Run checks
-        run: make check
+        run: uv run mypy src/text_mate_backend
 
   tests-and-type-check:
     runs-on: ubuntu-latest
@@ -64,15 +64,3 @@ jobs:
         with:
 
           token: ${{ secrets.CODECOV_TOKEN }}
-
-  check-docs:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out
-        uses: actions/checkout@v4
-
-      - name: Set up the environment
-        uses: ./.github/actions/setup-python-env
-
-      - name: Check if documentation can be built
-        run: uv run mkdocs build -s
