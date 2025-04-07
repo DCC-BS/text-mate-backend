@@ -1,9 +1,13 @@
-from typing import List, final
+from typing import Callable, List, final
 
 import dspy  # type: ignore
-from functional_monads.either import Either, right
-from models.text_rewrite_models import RewriteResult, TextRewriteOptions
-from utils.configuration import config
+from returns.result import safe
+
+from text_mate_backend.models.text_rewrite_models import RewriteResult, TextRewriteOptions
+from text_mate_backend.services.dspy_facade import DspyFacade, DspyInitOptions
+from text_mate_backend.utils.logger import get_logger
+
+logger = get_logger()
 
 
 class RewirteInfo(dspy.Signature):
@@ -43,26 +47,31 @@ class RewirteInfo(dspy.Signature):
 
 @final
 class TextRewriteService:
-    def __init__(self) -> None:
-        lm = dspy.LM(
-            model="hosted_vllm/Qwen/Qwen2.5-32B-Instruct-GPTQ-Int4",
-            api_base=config.openai_api_base_url,
-            api_key=config.openai_api_key,
-            max_tokens=1000,
-            temperature=0.6,
+    def __init__(self, dspy_facade_factory: Callable[..., DspyFacade]) -> None:
+        self.dspy_facade: DspyFacade = dspy_facade_factory(
+            options=DspyInitOptions(
+                temperature=0.6,
+                max_tokens=1000,
+            )
         )
-        dspy.configure(lm=lm)
 
-    def rewrite_text(self, text: str, context: str, options: TextRewriteOptions) -> Either[str, RewriteResult]:
+    @safe
+    def rewrite_text(self, text: str, context: str, options: TextRewriteOptions) -> RewriteResult:
         """Corrects the input text based on given options.
-        Returns Either[str, str] where:
-        - Left(str) contains error message
-        - Right(str) contains corrected text
+
+        Args:
+            text: The text to be rewritten
+            context: The surrounding context for the text
+            options: Options to guide the rewriting process
+
+        Returns:
+            ResultE containing either:
+            - Success with RewriteResult containing alternative text options
+            - Failure with an error message
         """
 
-        module = dspy.Predict(RewirteInfo)
-
-        response = module(
+        response: RewirteInfo = self.dspy_facade.predict(
+            RewirteInfo,
             text=text,
             context=context,
             writing_style=options.writing_style,
@@ -73,4 +82,4 @@ class TextRewriteService:
         out_options: List[str] = response.options
         out_options = list(map(lambda option: option.replace("<rewrite>", text).replace("ß", "ss"), out_options))
 
-        return right(RewriteResult(options=out_options))
+        return RewriteResult(options=out_options)

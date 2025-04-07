@@ -1,11 +1,11 @@
-from typing import final
+from typing import Any, final
 
 import dspy  # type: ignore
-from functional_monads.either import Either, right
 from pydantic import BaseModel
+from returns.result import safe
 
-from models.text_rewrite_models import TextRewriteOptions
-from utils.configuration import config
+from text_mate_backend.models.text_rewrite_models import TextRewriteOptions
+from text_mate_backend.utils.configuration import Configuration
 
 
 class ProposeChanges(dspy.Signature):
@@ -54,8 +54,8 @@ class AdvisorOutput(BaseModel):
 
 @final
 class AdvisorService:
-    def __init__(self) -> None:
-        lm = dspy.LM(
+    def __init__(self, config: Configuration) -> None:
+        lm: Any = dspy.LM(
             model="hosted_vllm/Qwen/Qwen2.5-32B-Instruct-GPTQ-Int4",
             api_base=config.openai_api_base_url,
             api_key=config.openai_api_key,
@@ -64,17 +64,18 @@ class AdvisorService:
         )
         dspy.configure(lm=lm)
 
-    def advise_changes(self, text: str, options: TextRewriteOptions) -> Either[str, AdvisorOutput]:
+    @safe
+    def advise_changes(self, text: str, options: TextRewriteOptions) -> AdvisorOutput:
         """Corrects the input text based on given options."""
 
-        module = dspy.Predict(AdvisorInfo)
-        response = module(text=text, domain=options.domain, formality=options.formality)
+        module: Any = dspy.Predict(AdvisorInfo)
 
-        return right(
-            AdvisorOutput(
-                formalityScore=response.formalityScore,
-                domainScore=response.domainScore,
-                coherenceAndStructure=response.coherenceAndStructure,
-                proposedChanges=response.proposedChanges,
-            )
+        # todo fix
+        response: AdvisorInfo = module(text=text, domain="", formality="")
+
+        return AdvisorOutput(
+            formalityScore=response.formalityScore,
+            domainScore=response.domainScore,
+            coherenceAndStructure=response.coherenceAndStructure,
+            proposedChanges=response.proposedChanges,
         )

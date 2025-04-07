@@ -1,13 +1,17 @@
 from enum import Enum
+from typing import Any, Callable
 
+from fastapi.responses import StreamingResponse
 from openai import OpenAI
-from utils.configuration import config
+from returns.result import ResultE, safe
+from text_mate_backend.utils.configuration import Configuration
 
-from services.actions.bullet_points_action import bullet_points
-from services.actions.shorten_action import shorten
-from services.actions.simplify_action import simplify
-from services.actions.social_media_action import social_mediafy
-from services.actions.summarize_action import summarize
+
+from text_mate_backend.services.actions.bullet_points_action import bullet_points
+from text_mate_backend.services.actions.shorten_action import shorten
+from text_mate_backend.services.actions.simplify_action import simplify
+from text_mate_backend.services.actions.social_media_action import social_mediafy
+from text_mate_backend.services.actions.summarize_action import summarize
 
 
 class Actions(str, Enum):
@@ -19,13 +23,14 @@ class Actions(str, Enum):
 
 
 class QuickActionService:
-    def __init__(self):
-        self.client = OpenAI(
+    def __init__(self, config: Configuration) -> None:
+        self.client: OpenAI = OpenAI(
             api_key=config.openai_api_key,
             base_url=config.openai_api_base_url,
         )
 
-    def run(self, action: Actions, text: str):
+    @safe
+    def run(self, action: Actions, text: str) -> StreamingResponse:
         match action:
             case Actions.Simplify:
                 return simplify(text, self.client)
