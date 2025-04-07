@@ -38,7 +38,7 @@ class ExtractInfo(dspy.Signature):
 class TextCorrectionService:
     def __init__(self) -> None:
         lm = dspy.LM(
-            model="hosted_vllm/Qwen/Qwen2.5-32B-Instruct-GPTQ-Int4",
+            model=f"hosted_vllm/{config.llm_model}",
             api_base=config.openai_api_base_url,
             api_key="",
             max_tokens=1000,

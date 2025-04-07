@@ -5,9 +5,18 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     git \
     ffmpeg \
+    libssl-dev \
+    libcurl4-gnutls-dev \
+    curl \
+    ca-certificates
     && apt-get clean
 
 WORKDIR /app
+
+# install certificate
+COPY ./ZID_BS_RootCA.crt /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+
 
 COPY uv.lock /app/uv.lock
 COPY pyproject.toml /app/pyproject.toml
