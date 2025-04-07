@@ -8,7 +8,7 @@ RUN apt-get update && \
     libssl-dev \
     libcurl4-gnutls-dev \
     curl \
-    ca-certificates
+    ca-certificates \
     && apt-get clean
 
 WORKDIR /app
