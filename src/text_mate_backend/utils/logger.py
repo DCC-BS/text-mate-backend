@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 import structlog
 from structlog.stdlib import BoundLogger
@@ -22,4 +21,5 @@ def get_logger() -> BoundLogger:
     Returns:
         A bound logger instance for structured logging
     """
+
     return structlog.get_logger()  # type: ignore
