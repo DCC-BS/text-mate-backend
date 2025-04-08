@@ -1,4 +1,4 @@
-from typing import Any, TypeVar, Type, Dict
+from typing import Any, Type, TypeVar
 
 import dspy  # type: ignore
 from pydantic import BaseModel

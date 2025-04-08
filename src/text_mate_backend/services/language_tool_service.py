@@ -1,6 +1,7 @@
 import requests
-from text_mate_backend.models.language_tool_models import LanguageToolResponse
 from returns.result import safe
+
+from text_mate_backend.models.language_tool_models import LanguageToolResponse
 from text_mate_backend.utils.configuration import Configuration
 
 
