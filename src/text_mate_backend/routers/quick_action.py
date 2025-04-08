@@ -4,7 +4,7 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from returns.result import Success, Failure
+from returns.result import Failure, Success
 
 from text_mate_backend.container import Container
 from text_mate_backend.services.actions.quick_action_service import Actions, QuickActionService

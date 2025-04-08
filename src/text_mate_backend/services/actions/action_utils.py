@@ -1,7 +1,9 @@
+from typing import Generator, Iterator
+
 from fastapi.responses import StreamingResponse
 from openai import BaseModel, OpenAI
 from openai.types.chat import ChatCompletionChunk
-from typing import Generator, Iterator
+
 from text_mate_backend.utils.configuration import Configuration
 
 config = Configuration()

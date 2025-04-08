@@ -15,7 +15,10 @@ from text_mate_backend.utils.configuration import Configuration
 
 
 class SegmentInfo(dspy.Signature):
-    """A segment is a singel word or a phrase that is corrected. It should as short as possible and only contain one error per segment."""
+    """
+    A segment is a singel word or a phrase that is corrected.
+    It should as short as possible and only contain one error per segment.
+    """
 
     original: str = dspy.OutputField(desc="The original segment")
     corrected: str = dspy.OutputField(desc="The corrected segment")

@@ -1,17 +1,15 @@
 from enum import Enum
-from typing import Any, Callable
 
 from fastapi.responses import StreamingResponse
 from openai import OpenAI
-from returns.result import ResultE, safe
-from text_mate_backend.utils.configuration import Configuration
-
+from returns.result import safe
 
 from text_mate_backend.services.actions.bullet_points_action import bullet_points
 from text_mate_backend.services.actions.shorten_action import shorten
 from text_mate_backend.services.actions.simplify_action import simplify
 from text_mate_backend.services.actions.social_media_action import social_mediafy
 from text_mate_backend.services.actions.summarize_action import summarize
+from text_mate_backend.utils.configuration import Configuration
 
 
 class Actions(str, Enum):
