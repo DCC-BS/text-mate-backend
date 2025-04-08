@@ -8,6 +8,7 @@ from text_mate_backend.services.actions.bullet_points_action import bullet_point
 from text_mate_backend.services.actions.shorten_action import shorten
 from text_mate_backend.services.actions.simplify_action import simplify
 from text_mate_backend.services.actions.social_media_action import social_mediafy
+from text_mate_backend.services.actions.structure_action import structure_text
 from text_mate_backend.services.actions.summarize_action import summarize
 from text_mate_backend.utils.configuration import Configuration
 
@@ -18,6 +19,7 @@ class Actions(str, Enum):
     BulletPoints = "bullet_points"
     Summarize = "summarize"
     SocialMediafy = "social_mediafy"
+    Structure = "structure"
 
 
 class QuickActionService:
@@ -40,5 +42,7 @@ class QuickActionService:
                 return summarize(text, self.client)
             case Actions.SocialMediafy:
                 return social_mediafy(text, self.client)
+            case Actions.Structure:
+                return structure_text(text, self.client)
             case _:
                 raise ValueError(f"Unknown action: {action}")
