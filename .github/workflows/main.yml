@@ -49,7 +49,7 @@ jobs:
             uv run coverage xml -o coverage.xml
 
       - name: Check typing
-        run: uv run basedpyright
+        run: uv run mypy src/text_mate_backend
 
       - name: Upload coverage reports to Codecov with GitHub Action on Python 3.12
         uses: codecov/codecov-action@v5
