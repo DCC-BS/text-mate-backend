@@ -1,3 +1,4 @@
+import time
 from typing import Any, final
 
 import dspy  # type: ignore
@@ -6,6 +7,9 @@ from returns.result import safe
 
 from text_mate_backend.models.text_rewrite_models import TextRewriteOptions
 from text_mate_backend.utils.configuration import Configuration
+from text_mate_backend.utils.logger import get_logger
+
+logger = get_logger("advisor_service")
 
 
 class ProposeChanges(dspy.Signature):
@@ -55,27 +59,74 @@ class AdvisorOutput(BaseModel):
 @final
 class AdvisorService:
     def __init__(self, config: Configuration) -> None:
+        logger.info("Initializing AdvisorService")
+        model_name = "hosted_vllm/Qwen/Qwen2.5-32B-Instruct-GPTQ-Int4"
+        logger.info(f"Using LLM model: {model_name}")
+
         lm: Any = dspy.LM(
-            model="hosted_vllm/Qwen/Qwen2.5-32B-Instruct-GPTQ-Int4",
+            model=model_name,
             api_base=config.openai_api_base_url,
             api_key=config.openai_api_key,
             max_tokens=1000,
             temperature=0.2,
         )
         dspy.configure(lm=lm)
+        logger.info("AdvisorService initialized successfully")
 
     @safe
     def advise_changes(self, text: str, options: TextRewriteOptions) -> AdvisorOutput:
-        """Corrects the input text based on given options."""
+        """
+        Analyzes the text and provides advice for improvements.
 
-        module: Any = dspy.Predict(AdvisorInfo)
+        Args:
+            text: The input text to analyze
+            options: Configuration options for text analysis
 
-        # todo fix
-        response: AdvisorInfo = module(text=text, domain="", formality="")
+        Returns:
+            AdvisorOutput containing scores and proposed changes
+        """
+        text_length = len(text)
+        text_preview = text[:50] + ("..." if text_length > 50 else "")
 
-        return AdvisorOutput(
-            formalityScore=response.formalityScore,
-            domainScore=response.domainScore,
-            coherenceAndStructure=response.coherenceAndStructure,
-            proposedChanges=response.proposedChanges,
-        )
+        logger.info(f"Processing advisor request", text_length=text_length)
+        logger.debug("Text preview", preview=text_preview)
+
+        start_time = time.time()
+        try:
+            module: Any = dspy.Predict(AdvisorInfo)
+
+            # Make API call to analyze text
+            logger.debug("Calling LLM for text analysis")
+            response: AdvisorInfo = module(text=text, domain="", formality="")
+
+            processing_time = time.time() - start_time
+
+            result = AdvisorOutput(
+                formalityScore=response.formalityScore,
+                domainScore=response.domainScore,
+                coherenceAndStructure=response.coherenceAndStructure,
+                proposedChanges=response.proposedChanges,
+            )
+
+            logger.info(
+                "Advisor analysis completed successfully",
+                processing_time_ms=round(processing_time * 1000),
+                formality_score=result.formalityScore,
+                domain_score=result.domainScore,
+                coherence_score=result.coherenceAndStructure,
+            )
+
+            changes_preview = result.proposedChanges[:50] + ("..." if len(result.proposedChanges) > 50 else "")
+            logger.debug("Proposed changes preview", preview=changes_preview)
+
+            return result
+
+        except Exception as e:
+            processing_time = time.time() - start_time
+            logger.error(
+                "Advisor analysis failed",
+                error=str(e),
+                error_type=type(e).__name__,
+                processing_time_ms=round(processing_time * 1000),
+            )
+            raise
