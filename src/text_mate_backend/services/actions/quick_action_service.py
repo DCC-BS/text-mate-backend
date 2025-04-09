@@ -1,3 +1,4 @@
+import time
 from enum import Enum
 
 from fastapi.responses import StreamingResponse
@@ -11,6 +12,9 @@ from text_mate_backend.services.actions.social_media_action import social_mediaf
 from text_mate_backend.services.actions.structure_action import structure_text
 from text_mate_backend.services.actions.summarize_action import summarize
 from text_mate_backend.utils.configuration import Configuration
+from text_mate_backend.utils.logger import get_logger
+
+logger = get_logger("quick_action_service")
 
 
 class Actions(str, Enum):
@@ -28,21 +32,66 @@ class QuickActionService:
             api_key=config.openai_api_key,
             base_url=config.openai_api_base_url,
         )
+        logger.info("QuickActionService initialized", api_base_url=config.openai_api_base_url, model=config.llm_model)
 
     @safe
     def run(self, action: Actions, text: str) -> StreamingResponse:
-        match action:
-            case Actions.Simplify:
-                return simplify(text, self.client)
-            case Actions.Shorten:
-                return shorten(text, self.client)
-            case Actions.BulletPoints:
-                return bullet_points(text, self.client)
-            case Actions.Summarize:
-                return summarize(text, self.client)
-            case Actions.SocialMediafy:
-                return social_mediafy(text, self.client)
-            case Actions.Structure:
-                return structure_text(text, self.client)
-            case _:
-                raise ValueError(f"Unknown action: {action}")
+        """
+        Execute the requested quick action on the provided text.
+
+        Args:
+            action: The type of quick action to perform
+            text: The text to apply the action to
+
+        Returns:
+            A StreamingResponse containing the processed text
+
+        Raises:
+            ValueError: If the action type is unknown
+        """
+        text_length = len(text)
+        text_preview = text[:50] + ("..." if text_length > 50 else "")
+
+        logger.info(f"Running quick action: {action}", text_length=text_length)
+        logger.debug("Text preview", preview=text_preview)
+
+        start_time = time.time()
+        try:
+            response = None
+            match action:
+                case Actions.Simplify:
+                    response = simplify(text, self.client)
+                    logger.info("Applied simplify action")
+                case Actions.Shorten:
+                    response = shorten(text, self.client)
+                    logger.info("Applied shorten action")
+                case Actions.BulletPoints:
+                    response = bullet_points(text, self.client)
+                    logger.info("Applied bullet points action")
+                case Actions.Summarize:
+                    response = summarize(text, self.client)
+                    logger.info("Applied summarize action")
+                case Actions.SocialMediafy:
+                    response = social_mediafy(text, self.client)
+                    logger.info("Applied social media action")
+                case Actions.Structure:
+                    response = structure_text(text, self.client)
+                    logger.info("Applied structure action")
+                case _:
+                    error_msg = f"Unknown action: {action}"
+                    logger.error(error_msg)
+                    raise ValueError(error_msg)
+
+            process_time = time.time() - start_time
+            logger.info(f"Quick action {action} completed", processing_time_ms=round(process_time * 1000))
+
+            return response
+        except Exception as e:
+            process_time = time.time() - start_time
+            logger.error(
+                f"Quick action {action} failed",
+                error=str(e),
+                error_type=type(e).__name__,
+                processing_time_ms=round(process_time * 1000),
+            )
+            raise

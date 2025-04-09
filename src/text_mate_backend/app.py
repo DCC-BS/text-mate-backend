@@ -8,6 +8,7 @@ from text_mate_backend.routers import advisor, quick_action, text_correction, te
 from text_mate_backend.utils.configuration import config
 from text_mate_backend.utils.load_env import load_env
 from text_mate_backend.utils.logger import get_logger, init_logger
+from text_mate_backend.utils.middleware import add_logging_middleware
 
 
 def create_app() -> FastAPI:
@@ -18,16 +19,25 @@ def create_app() -> FastAPI:
     load_env()
     init_logger()
 
-    app = FastAPI()
-    logger = get_logger()
+    app = FastAPI(
+        title="Text Mate API",
+        description="API for text correction, rewriting, and other text-related services",
+        version="0.1.0",
+    )
 
+    logger = get_logger("app")
+    logger.info("Starting Text Mate API application")
     logger.info(f"Running with configuration: {config}")
 
+    # Set up dependency injection container
+    logger.debug("Configuring dependency injection container")
     container = Container()
     container.wire(modules=[text_correction, text_rewrite, advisor, quick_action])
     container.check_dependencies()
+    logger.info("Dependency injection configured")
 
     # Configure CORS
+    logger.debug("Setting up CORS middleware")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[config.client_url],
@@ -35,13 +45,20 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    logger.info(f"CORS configured with origin: {config.client_url}")
+
+    # Add logging middleware
+    add_logging_middleware(app)
 
     # Include routers
+    logger.debug("Registering API routers")
     app.include_router(text_correction.create_router())
     app.include_router(text_rewrite.create_router())
     app.include_router(advisor.create_router())
     app.include_router(quick_action.create_router())
+    logger.info("All routers registered")
 
+    logger.info("API setup complete")
     return app
 
 
