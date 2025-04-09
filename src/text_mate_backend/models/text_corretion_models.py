@@ -3,6 +3,10 @@ from typing import Annotated, List, final
 from pydantic import BaseModel, Field
 
 
+class CorrectionInput(BaseModel):
+    text: Annotated[str, "The text to be corrected"]
+
+
 @final
 class TextCorrectionOptions:
     def __init__(

@@ -1,21 +1,14 @@
-from typing import Annotated
-
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
 from returns.result import Failure, Success
 
 from text_mate_backend.container import Container
-from text_mate_backend.services.actions.quick_action_service import Actions, QuickActionService
+from text_mate_backend.models.quick_actions_models import QuickActionRequest
+from text_mate_backend.services.actions.quick_action_service import QuickActionService
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("quick_action_router")
-
-
-class QuickActionRequest(BaseModel):
-    action: Annotated[Actions, "The quick action to perform"]
-    text: Annotated[str, "The text to apply the action to"]
 
 
 @inject

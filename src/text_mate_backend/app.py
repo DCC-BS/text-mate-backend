@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from text_mate_backend.container import Container
 
 # Import routers
-from text_mate_backend.routers import advisor, quick_action, text_correction, text_rewrite
+from text_mate_backend.routers import advisor, quick_action, text_correction, text_rewrite, word_synonym
 from text_mate_backend.utils.configuration import config
 from text_mate_backend.utils.load_env import load_env
 from text_mate_backend.utils.logger import get_logger, init_logger
@@ -32,7 +32,7 @@ def create_app() -> FastAPI:
     # Set up dependency injection container
     logger.debug("Configuring dependency injection container")
     container = Container()
-    container.wire(modules=[text_correction, text_rewrite, advisor, quick_action])
+    container.wire(modules=[text_correction, text_rewrite, advisor, quick_action, word_synonym])
     container.check_dependencies()
     logger.info("Dependency injection configured")
 
@@ -56,6 +56,7 @@ def create_app() -> FastAPI:
     app.include_router(text_rewrite.create_router())
     app.include_router(advisor.create_router())
     app.include_router(quick_action.create_router())
+    app.include_router(word_synonym.create_router())
     logger.info("All routers registered")
 
     logger.info("API setup complete")
