@@ -70,7 +70,7 @@ class DspyFacade:
 
             processing_time_ms = round((time.time() - start_time) * 1000)
             logger.info(
-                f"DSPy prediction completed successfully",
+                "DSPy prediction completed successfully",
                 signature=signature_name,
                 processing_time_ms=processing_time_ms,
             )
@@ -80,7 +80,7 @@ class DspyFacade:
         except Exception as e:
             processing_time_ms = round((time.time() - start_time) * 1000)
             logger.error(
-                f"DSPy prediction failed",
+                "DSPy prediction failed",
                 signature=signature_name,
                 error=str(e),
                 error_type=type(e).__name__,
