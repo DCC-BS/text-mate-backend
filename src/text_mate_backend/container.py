@@ -5,6 +5,7 @@ from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.dspy_facade import DspyFacade
 from text_mate_backend.services.language_tool_service import LanguageToolService
 from text_mate_backend.services.rewrite_text import TextRewriteService
+from text_mate_backend.services.sentence_rewrite_service import SentenceRewriteService
 from text_mate_backend.services.text_correction_language_tool import TextCorrectionService
 from text_mate_backend.services.word_synonym_service import WordSynonymService
 from text_mate_backend.utils.configuration import Configuration
@@ -35,5 +36,10 @@ class Container(containers.DeclarativeContainer):
 
     word_synonym_service: providers.Singleton[WordSynonymService] = providers.Singleton(
         WordSynonymService,
+        dspy_facade_factory=dspy_facade_factory.provider,
+    )
+
+    sentence_rewrite_service: providers.Singleton[SentenceRewriteService] = providers.Singleton(
+        SentenceRewriteService,
         dspy_facade_factory=dspy_facade_factory.provider,
     )
