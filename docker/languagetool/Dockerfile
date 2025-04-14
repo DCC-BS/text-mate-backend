@@ -20,8 +20,4 @@ RUN chmod +x /usr/local/bin/download_ngrams.sh
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# RUN mkdir -p $langtool_languageModel && \
-#     chown languagetool:languagetool $langtool_languageModel && \
-#     chmod 755 $langtool_languageModel
-
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]

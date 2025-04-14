@@ -13,14 +13,14 @@ logger = get_logger("sentence_rewrite_service")
 
 class SentenceRewriteSignature(dspy.Signature):
     """
-    Generate alternative ways to express a sentence in the given context.
+    Generate alternative ways to express a sentence or a section in the given context.
     """
 
-    sentence: str = dspy.InputField(desc="The sentence to rewrite")
-    context: str = dspy.InputField(desc="The surrounding context for the sentence")
+    sentence: str = dspy.InputField(desc="The sentence or section to rewrite")
+    context: str = dspy.InputField(desc="The surrounding context for the sentence or section")
     min_options: int = dspy.InputField(desc="The minimum number of alternatives to generate")
     max_options: int = dspy.InputField(desc="The maximum number of alternatives to generate")
-    options: list[str] = dspy.OutputField(desc="A list of alternative sentence rewrites")
+    options: list[str] = dspy.OutputField(desc="A list of alternative sentence or section rewrites")
 
 
 class SentenceRewriteService:
