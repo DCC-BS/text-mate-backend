@@ -20,7 +20,7 @@ class LanguageToolService:
         logger.info("LanguageToolService initialized", api_host=host)
 
     @safe
-    def check_text(self, text: str) -> LanguageToolResponse:
+    def check_text(self, language: str, text: str) -> LanguageToolResponse:
         """
         Check the text for spelling and grammar errors using LanguageTool API.
 
@@ -36,15 +36,16 @@ class LanguageToolService:
         text_length = len(text)
         text_preview = text[:50] + ("..." if text_length > 50 else "")
 
-        logger.info("Checking text with LanguageTool", text_length=text_length)
+        logger.info("Checking text with LanguageTool", text_length=text_length, language=language)
         logger.debug("Text preview", preview=text_preview)
 
         start_time = time.time()
         try:
+            preferedVariants = ge_preferred_variants(language)
             # call language tool api
             response = requests.post(
                 f"{self.config.language_tool_api_url}/check",
-                data={"text": text, "language": "auto", "preferredVariants": "de-CH", "level": "picky"},
+                data={"text": text, "language": language, "preferredVariants": preferedVariants, "level": "picky"},
             )
 
             elapsed_time = time.time() - start_time
@@ -67,7 +68,16 @@ class LanguageToolService:
             logger.error(
                 "LanguageTool API request failed",
                 error=str(e),
+                text=e.response.text if hasattr(e, "response") and e.response is not None else None,
                 error_type=type(e).__name__,
                 response_time_ms=round((time.time() - start_time) * 1000),
             )
             raise Exception(f"LanguageTool API error: {str(e)}")
+
+
+def ge_preferred_variants(language: str) -> str | None:
+    match language:
+        case "auto":
+            return "de-CH"
+        case _:
+            return None

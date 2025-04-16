@@ -9,7 +9,7 @@ T = TypeVar("T")
 logger = get_logger("router_utils")
 
 
-def handle_result(result: Result[T, Exception], request_id: str = None) -> T:
+def handle_result(result: Result[T, Exception], request_id: str | None = None) -> T:
     """
     Handles an Result monad by returning the value or raising an HTTPException with the error message.
     Also logs appropriate information for both success and failure cases.

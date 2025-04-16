@@ -26,7 +26,7 @@ class SentenceRewriteSignature(dspy.Signature):
 class SentenceRewriteService:
     """Service for rewriting sentences with alternative options."""
 
-    def __init__(self, dspy_facade_factory: Callable[[], DspyFacade]) -> None:
+    def __init__(self, dspy_facade_factory: Callable[..., DspyFacade]) -> None:
         """
         Initialize the sentence rewrite service.
 

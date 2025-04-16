@@ -1,6 +1,7 @@
 import time
 from typing import final
 
+from returns.curry import partial
 from returns.pipeline import flow
 from returns.pointfree import map_
 from returns.result import Failure, ResultE, Success
@@ -56,7 +57,7 @@ class TextCorrectionService:
         start_time = time.time()
         blocks: ResultE[list[CorrectionBlock]] = flow(
             text,
-            self.language_tool.check_text,
+            partial(self.language_tool.check_text, options.language),
             map_(_create_blocks),
         )
         processing_time = time.time() - start_time

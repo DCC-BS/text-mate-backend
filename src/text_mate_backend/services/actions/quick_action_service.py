@@ -77,10 +77,6 @@ class QuickActionService:
                 case Actions.Structure:
                     response = structure_text(text, self.client)
                     logger.info("Applied structure action")
-                case _:
-                    error_msg = f"Unknown action: {action}"
-                    logger.error(error_msg)
-                    raise ValueError(error_msg)
 
             process_time = time.time() - start_time
             logger.info(f"Quick action {action} completed", processing_time_ms=round(process_time * 1000))

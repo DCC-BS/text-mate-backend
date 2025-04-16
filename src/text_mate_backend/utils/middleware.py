@@ -1,8 +1,10 @@
 import time
-from typing import Callable
+from typing import Awaitable, Callable
 
-from fastapi import FastAPI, Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi import FastAPI
+from starlette.middleware.base import BaseHTTPMiddleware, _StreamingResponse
+from starlette.requests import Request
+from starlette.responses import JSONResponse, PlainTextResponse, Response, StreamingResponse
 
 from text_mate_backend.utils.logger import get_logger
 
@@ -25,7 +27,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
     - Response body (if available)
     """
 
-    async def dispatch(self, request: Request, call_next: Callable) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
         """Process the request and log information about it."""
         request_id = f"req-{time.time()}"
         start_time = time.time()
@@ -55,9 +57,20 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                     process_time=f"{process_time:.3f}s",
                 )
             else:
+                match response:
+                    case JSONResponse() as json_response:
+                        response_body = repr(json_response.body)
+                    case StreamingResponse() | _StreamingResponse():
+                        response_body = "Streaming response"
+                    case PlainTextResponse() as text_response if isinstance(text_response.body, bytes):
+                        response_body = text_response.body.decode("utf-8")
+                    case _:
+                        response_body = f"Unknown response type {type(response)}"
+
                 # Log error responses
                 logger.warning(
                     "Request resulted in error",
+                    response_body=response_body,
                     request_id=request_id,
                     method=method,
                     url=url,

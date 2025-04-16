@@ -2,12 +2,13 @@ import logging
 import os
 import time
 import uuid
-from typing import Any, Dict, Optional
+from typing import Any, Mapping, Optional
 
 import structlog
 import structlog.processors
 from structlog.processors import CallsiteParameter
 from structlog.stdlib import BoundLogger
+from structlog.types import EventDict, Processor
 
 
 # Standard library logging setup
@@ -30,7 +31,7 @@ def setup_stdlib_logging() -> None:
         lib_logger.propagate = False
 
 
-def add_request_id(logger: BoundLogger, method_name: str, event_dict: Dict[str, Any]) -> Dict[str, Any]:
+def add_request_id(logger: BoundLogger, method_name: str, event_dict: EventDict) -> Mapping[str, Any]:
     """
     Add a request ID to the log context if it doesn't exist.
 
@@ -47,7 +48,7 @@ def add_request_id(logger: BoundLogger, method_name: str, event_dict: Dict[str, 
     return event_dict
 
 
-def add_timestamp(logger: BoundLogger, method_name: str, event_dict: Dict[str, Any]) -> Dict[str, Any]:
+def add_timestamp(logger: BoundLogger, method_name: str, event_dict: EventDict) -> Mapping[str, Any]:
     """
     Add an ISO-8601 timestamp to the log entry.
 
@@ -73,7 +74,7 @@ def init_logger() -> None:
     setup_stdlib_logging()
 
     # Define processors list for structlog
-    processors = [
+    processors: list[Processor] = [
         structlog.stdlib.filter_by_level,  # Filter logs by configured level
         structlog.processors.add_log_level,
         structlog.processors.StackInfoRenderer(),
@@ -119,5 +120,5 @@ def get_logger(name: Optional[str] = None) -> BoundLogger:
         A bound logger instance for structured logging
     """
     if name:
-        return structlog.get_logger(name)
+        return structlog.get_logger(name)  # type: ignore
     return structlog.get_logger()  # type: ignore

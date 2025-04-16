@@ -5,12 +5,13 @@ from pydantic import BaseModel, Field
 
 class CorrectionInput(BaseModel):
     text: Annotated[str, "The text to be corrected"]
+    language: Annotated[str, "The language of the text"] = "auto"
 
 
 @final
 class TextCorrectionOptions:
     def __init__(
-        self, language: str = "de", writing_style: str = "simple", tone: str = "neutral", formality: str = "formal"
+        self, language: str = "auto", writing_style: str = "simple", tone: str = "neutral", formality: str = "formal"
     ) -> None:
         """
         language: str
@@ -29,9 +30,7 @@ class CorrectionBlock(BaseModel):
     corrected: Annotated[List[str], "The corrected text"]
     offset: int
     length: int
-    explanation: Annotated[
-        str, Field(description="A short explanation of the correction use the language of the original text")
-    ]
+    explanation: Annotated[str, "A short explanation of the correction use the language of the original text"]
 
 
 class CorrectionBlocks(BaseModel):

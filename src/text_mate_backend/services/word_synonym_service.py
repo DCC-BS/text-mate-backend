@@ -1,6 +1,6 @@
 from typing import Callable, final
 
-import dspy
+import dspy  # type: ignore
 from returns.result import safe
 
 from text_mate_backend.services.dspy_facade import DspyFacade, DspyInitOptions
