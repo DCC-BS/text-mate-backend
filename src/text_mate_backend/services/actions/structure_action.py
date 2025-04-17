@@ -1,7 +1,7 @@
 from fastapi.responses import StreamingResponse
 from openai import OpenAI
 
-from text_mate_backend.services.actions.action_utils import PrompOptions, run_prompt
+from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
 
 
 def structure_text(text: str, llm: OpenAI) -> StreamingResponse:
@@ -16,7 +16,7 @@ def structure_text(text: str, llm: OpenAI) -> StreamingResponse:
         A StreamingResponse containing the social media version of the text
     """
 
-    options: PrompOptions = PrompOptions(
+    options: PromptOptions = PromptOptions(
         system_prompt="You are an assistant that structures text.",
         user_prompt=f'Structure the follwing text: "{text}"',
         temperature=0.7,

@@ -1,7 +1,7 @@
 from fastapi.responses import StreamingResponse
 from openai import OpenAI
 
-from text_mate_backend.services.actions.action_utils import PrompOptions, run_prompt
+from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
 
 
 def social_mediafy(text: str, llm: OpenAI) -> StreamingResponse:
@@ -16,7 +16,7 @@ def social_mediafy(text: str, llm: OpenAI) -> StreamingResponse:
         A StreamingResponse containing the social media version of the text
     """
 
-    options: PrompOptions = PrompOptions(
+    options: PromptOptions = PromptOptions(
         system_prompt="You are an assistant that turns text into social media text. Use emojis and hashtags.",
         user_prompt=f'Turn the the following text into a text for social media: "{text}"',
         temperature=0.7,

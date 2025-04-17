@@ -1,7 +1,7 @@
 from fastapi.responses import StreamingResponse
 from openai import OpenAI
 
-from text_mate_backend.services.actions.action_utils import PrompOptions, run_prompt
+from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("summarize_action")
@@ -24,7 +24,7 @@ def summarize(text: str, llm: OpenAI) -> StreamingResponse:
     if text_length < 50:
         logger.warning("Text may be too short for effective summarization", text_length=text_length)
 
-    options: PrompOptions = PrompOptions(
+    options: PromptOptions = PromptOptions(
         system_prompt="You are an assistant that summarizes text by extracting the key points and central message.",
         user_prompt=f'Provide a summary of the following text, capturing the main ideas and essential information: "{text}"',
         temperature=0.7,

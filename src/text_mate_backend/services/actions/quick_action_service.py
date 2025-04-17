@@ -11,6 +11,7 @@ from text_mate_backend.services.actions.simplify_action import simplify
 from text_mate_backend.services.actions.social_media_action import social_mediafy
 from text_mate_backend.services.actions.structure_action import structure_text
 from text_mate_backend.services.actions.summarize_action import summarize
+from text_mate_backend.services.actions.translate_action import translate
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
 
@@ -24,6 +25,11 @@ class Actions(str, Enum):
     Summarize = "summarize"
     SocialMediafy = "social_mediafy"
     Structure = "structure"
+    # Translate = "translate"
+    TranslateDeCH = "translate_de-CH"
+    TranslateEnUS = "translate_en-US"
+    TranslateFr = "translate_fr"
+    TranslateIt = "translate_it"
 
 
 class QuickActionService:
@@ -77,6 +83,18 @@ class QuickActionService:
                 case Actions.Structure:
                     response = structure_text(text, self.client)
                     logger.info("Applied structure action")
+                case Actions.TranslateDeCH:
+                    response = translate(text, "German (CH)", self.client)
+                    logger.info("Applied translate action")
+                case Actions.TranslateEnUS:
+                    response = translate(text, "English (US)", self.client)
+                    logger.info("Applied translate action")
+                case Actions.TranslateFr:
+                    response = translate(text, "French", self.client)
+                    logger.info("Applied translate action")
+                case Actions.TranslateIt:
+                    response = translate(text, "Italian", self.client)
+                    logger.info("Applied translate action")
 
             process_time = time.time() - start_time
             logger.info(f"Quick action {action} completed", processing_time_ms=round(process_time * 1000))

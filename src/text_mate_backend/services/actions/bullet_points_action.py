@@ -1,7 +1,7 @@
 from fastapi.responses import StreamingResponse
 from openai import OpenAI
 
-from text_mate_backend.services.actions.action_utils import PrompOptions, run_prompt
+from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
 
 
 def bullet_points(text: str, llm: OpenAI) -> StreamingResponse:
@@ -16,7 +16,7 @@ def bullet_points(text: str, llm: OpenAI) -> StreamingResponse:
         A StreamingResponse containing the bullet points version of the text
     """
 
-    options: PrompOptions = PrompOptions(
+    options: PromptOptions = PromptOptions(
         system_prompt="You are an assistant that converts text into a well-structured bullet point format. Extract and highlight the key points from the text.",
         user_prompt=f'Convert the following text into a structured bullet point format. Identify and organize the main ideas and supporting points: "{text}"',
         temperature=0.7,

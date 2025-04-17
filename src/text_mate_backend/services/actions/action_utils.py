@@ -27,7 +27,7 @@ SYSTEM_PROMPT_POSTFIX: str = (
 # )
 
 
-class PrompOptions(BaseModel):
+class PromptOptions(BaseModel):
     """
     A class to represent the options for a prompt.
     """
@@ -37,7 +37,7 @@ class PrompOptions(BaseModel):
     temperature: float = 0.7
 
 
-def run_prompt(options: PrompOptions, llm: OpenAI) -> StreamingResponse:
+def run_prompt(options: PromptOptions, llm: OpenAI) -> StreamingResponse:
     """
     Runs the given prompt using the OpenAI API and returns a streaming response.
 
