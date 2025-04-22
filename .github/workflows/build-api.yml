@@ -1,0 +1,23 @@
+name: Build API
+
+on:
+  pull_request:
+    branches:
+      - deploy
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  packages: write
+
+jobs:
+  docker-build-api:
+    uses: FD-ITBS/reusable-workflows/.github/workflows/docker-build.yml@main
+    with:
+      working-directory: ./
+      ghcr-enabled: true
+      quay-enabled: false
+      image-name: "textmate-api"
+      vulnerability-scan: false
+      push: false

@@ -1,0 +1,25 @@
+name: Build LanguageTool
+
+on:
+  pull_request:
+    branches:
+      - deploy
+    paths:
+      - docker/languagetool/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  packages: write
+
+jobs:
+  docker-build-languagetool:
+    uses: FD-ITBS/reusable-workflows/.github/workflows/docker-build.yml@main
+    with:
+      working-directory: ./docker/languagetool
+      ghcr-enabled: true
+      quay-enabled: false
+      image-name: "textmate-languagetool"
+      vulnerability-scan: false
+      push: false
