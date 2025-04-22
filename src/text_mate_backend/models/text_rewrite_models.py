@@ -20,4 +20,4 @@ class TextRewriteOptions(BaseModel):
 
 @final
 class RewriteResult(BaseModel):
-    options: list[str] = Field(description="List of rewritten text alternatives")
+    rewritten_text: str = Field(description="The rewritten text alternative")

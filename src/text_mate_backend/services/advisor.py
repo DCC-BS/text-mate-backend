@@ -60,7 +60,7 @@ class AdvisorOutput(BaseModel):
 class AdvisorService:
     def __init__(self, config: Configuration) -> None:
         logger.info("Initializing AdvisorService")
-        model_name = "hosted_vllm/Qwen/Qwen2.5-32B-Instruct-GPTQ-Int4"
+        model_name = "hosted_vllm/ISTA-DASLab/gemma-3-27b-it-GPTQ-4b-128g"
         logger.info(f"Using LLM model: {model_name}")
 
         lm: Any = dspy.LM(

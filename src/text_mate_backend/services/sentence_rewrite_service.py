@@ -20,7 +20,9 @@ class SentenceRewriteSignature(dspy.Signature):
     context: str = dspy.InputField(desc="The surrounding context for the sentence or section")
     min_options: int = dspy.InputField(desc="The minimum number of alternatives to generate")
     max_options: int = dspy.InputField(desc="The maximum number of alternatives to generate")
-    options: list[str] = dspy.OutputField(desc="A list of alternative sentence or section rewrites")
+    options: list[str] = dspy.OutputField(
+        desc="A list of alternative sentence or section rewrites, in the same language as the input text"
+    )
 
 
 class SentenceRewriteService:

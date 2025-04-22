@@ -13,7 +13,7 @@ logger = get_logger("text_rewrite_service")
 
 class RewirteInfo(dspy.Signature):
     """
-    Give alternatives to the text in respect of the domain and the formality.
+    Rewrite the given text based on the provided context and options.
     """
 
     text: str = dspy.InputField(desc="The text to be rewritten")
@@ -43,7 +43,7 @@ class RewirteInfo(dspy.Signature):
                 - narrative: Narrative text
                 - entertaining: Entertaining text""",
     )
-    options: List[str] = dspy.OutputField(desc="A list of alternative texts")
+    rewritten_text: str = dspy.OutputField(desc="The rewritten text, in the same language as the input text.")
 
 
 @final
@@ -98,10 +98,9 @@ class TextRewriteService:
             )
 
             processing_time = time.time() - start_time
-            option_count = len(response.options)
+            option_count = len(response.rewritten_text)
 
-            out_options: List[str] = response.options
-            out_options = list(map(lambda option: option.replace("<rewrite>", text).replace("ß", "ss"), out_options))
+            out: str = response.rewritten_text.replace("ß", "ss")
 
             logger.info(
                 "Text rewrite completed successfully",
@@ -109,12 +108,7 @@ class TextRewriteService:
                 option_count=option_count,
             )
 
-            for i, option in enumerate(out_options):
-                logger.debug(
-                    f"Rewrite option {i + 1}", option_preview=option[:50] + ("..." if len(option) > 50 else "")
-                )
-
-            return RewriteResult(options=out_options)
+            return RewriteResult(rewritten_text=out)
 
         except Exception as e:
             processing_time = time.time() - start_time

@@ -16,7 +16,7 @@ class SynonymSignature(dspy.Signature):
 
     word: str = dspy.InputField(desc="The word to find synonyms for")
     context: str = dspy.InputField(desc="The sentence or paragraph containing the word")
-    options: list[str] = dspy.OutputField(desc="A list of alternative words")
+    options: list[str] = dspy.OutputField(desc="A list of alternative words, in the same language as the input word")
 
 
 @final

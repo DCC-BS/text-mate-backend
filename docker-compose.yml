@@ -14,15 +14,13 @@ services:
     volumes:
       - ${LANGUAGE_TOOL_CACHE_DIR}:/languagetool/.cache/ngrams
 
-  vllm_qwen25_32b:
-    hostname: vllm_qwen25_32b
+  vllm_gemma3_27b:
     image: vllm/vllm-openai:v0.8.4
-    container_name: vllm_qwen25_32b
+    container_name: vllm_gemma3_27b
     ports:
       - ${LLM_API_PORT}:8000
     environment:
       - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
-      - VLLM_ATTENTION_BACKEND=FLASHINFER
     runtime: nvidia
     deploy:
       resources:
@@ -35,4 +33,4 @@ services:
     volumes:
       - ${HUGGING_FACE_CACHE_DIR}:/root/.cache/huggingface
     command: >
-      --port 8000 --model Qwen/Qwen2.5-32B-Instruct-GPTQ-Int4 --quantization "gptq_marlin" --kv-cache-dtype "fp8_e5m2" --tool-call-parser "hermes" --max-model-len 16000 --max-num-batched-tokens 4096 --max-num-seqs 16 --enable-prefix-caching --enable-chunked-prefill --gpu-memory-utilization 0.9 --tensor-parallel-size 2
+      --port 8000 --model ISTA-DASLab/gemma-3-27b-it-GPTQ-4b-128g --max-model-len 32000 --gpu-memory-utilization 0.83 --max-num-seqs 1 --tensor-parallel-size 2
