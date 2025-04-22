@@ -73,9 +73,9 @@ class TestTextRewriteService:
         context = "This is a <rewrite>Hello world</rewrite> context"
         options = TextRewriteOptions(writing_style="professional", target_audience="adult", intend="informative")
 
-        # Mock the predict method to return a RewirteInfo with options
+        # Mock the predict method to return a RewirteInfo with rewritten_text
         mock_response = Mock(spec=RewirteInfo)
-        mock_response.options = ["Option 1", "Option 2"]
+        mock_response.rewritten_text = "Option 1"
         mock_dspy_facade.predict.return_value = mock_response
 
         service = TextRewriteService(dspy_facade_factory=mock_dspy_facade_factory)
@@ -87,8 +87,7 @@ class TestTextRewriteService:
         assert isinstance(result, Success)
         rewrite_result = result.unwrap()
         assert isinstance(rewrite_result, RewriteResult)
-        assert len(rewrite_result.options) == 2
-        assert rewrite_result.options == ["Option 1", "Option 2"]
+        assert rewrite_result.rewritten_text == "Option 1"
 
         # Verify that DspyFacade.predict was called with correct parameters
         mock_dspy_facade.predict.assert_called_once_with(
@@ -113,9 +112,9 @@ class TestTextRewriteService:
         context = "This is a <rewrite>Straße</rewrite> context"
         options = TextRewriteOptions()
 
-        # Mock the predict method to return options with special characters
+        # Mock the predict method to return a response with special characters
         mock_response = Mock(spec=RewirteInfo)
-        mock_response.options = ["Die große Straße", "Eine schöne Straße"]
+        mock_response.rewritten_text = "Die große Straße"
         mock_dspy_facade.predict.return_value = mock_response
 
         service = TextRewriteService(dspy_facade_factory=mock_dspy_facade_factory)
@@ -126,11 +125,9 @@ class TestTextRewriteService:
         # Assert
         assert isinstance(result, Success)
         rewrite_result = result.unwrap()
-        assert "ß" not in rewrite_result.options[0]
-        assert "ß" not in rewrite_result.options[1]
-        assert "ss" in rewrite_result.options[0]
-        assert "ss" in rewrite_result.options[1]
-        assert rewrite_result.options == ["Die grosse Strasse", "Eine schöne Strasse"]
+        assert "ß" not in rewrite_result.rewritten_text
+        assert "ss" in rewrite_result.rewritten_text
+        assert rewrite_result.rewritten_text == "Die grosse Strasse"
 
     def test_rewrite_text_with_rewrite_tag_replacement(
         self, mock_dspy_facade_factory: Mock, mock_dspy_facade: Mock
@@ -147,9 +144,9 @@ class TestTextRewriteService:
         context = "This is a <rewrite>Hello world</rewrite> context"
         options = TextRewriteOptions()
 
-        # Mock the predict method to return options with <rewrite> tags
+        # Mock the predict method to return text with <rewrite> tags
         mock_response = Mock(spec=RewirteInfo)
-        mock_response.options = ["<rewrite> is replaced", "Also <rewrite> here"]
+        mock_response.rewritten_text = "<rewrite> is replaced"
         mock_dspy_facade.predict.return_value = mock_response
 
         service = TextRewriteService(dspy_facade_factory=mock_dspy_facade_factory)
@@ -160,7 +157,7 @@ class TestTextRewriteService:
         # Assert
         assert isinstance(result, Success)
         rewrite_result = result.unwrap()
-        assert rewrite_result.options == ["Hello world is replaced", "Also Hello world here"]
+        assert rewrite_result.rewritten_text == "Hello world is replaced"
 
     def test_rewrite_text_exception_handling(self, mock_dspy_facade_factory: Mock, mock_dspy_facade: Mock) -> None:
         """

@@ -100,7 +100,9 @@ class TextRewriteService:
             processing_time = time.time() - start_time
             option_count = len(response.rewritten_text)
 
+            # Replace special characters and <rewrite> tags
             out: str = response.rewritten_text.replace("ß", "ss")
+            out = out.replace("<rewrite>", text)
 
             logger.info(
                 "Text rewrite completed successfully",
