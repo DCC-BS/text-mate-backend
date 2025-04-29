@@ -15,7 +15,7 @@ services:
       - ${LANGUAGE_TOOL_CACHE_DIR}:/languagetool/.cache/ngrams
 
   vllm_gemma3_27b:
-    image: vllm/vllm-openai:v0.8.4
+    image: vllm/vllm-openai:v0.8.5
     container_name: vllm_gemma3_27b
     ports:
       - ${LLM_API_PORT}:8000
