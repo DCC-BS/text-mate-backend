@@ -10,11 +10,12 @@ from llama_index.core.llms.callbacks import llm_completion_callback
 from openai import OpenAI
 from pydantic import Field
 
-from text_mate_backend.utils.configuration import get_config
+from text_mate_backend.utils.configuration import Configuration, get_config
 
 
 class VllmCustom(CustomLLM):
     client: OpenAI = Field(default=OpenAI(), description="OpenAI client instance")
+    config: Configuration | None = Field(default=None, description="Configuration instance")
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
