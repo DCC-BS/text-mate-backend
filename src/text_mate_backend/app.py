@@ -12,7 +12,7 @@ from text_mate_backend.routers import (
     text_rewrite,
     word_synonym,
 )
-from text_mate_backend.utils.configuration import config
+from text_mate_backend.utils.configuration import get_config
 from text_mate_backend.utils.load_env import load_env
 from text_mate_backend.utils.logger import get_logger, init_logger
 from text_mate_backend.utils.middleware import add_logging_middleware
@@ -25,6 +25,7 @@ def create_app() -> FastAPI:
 
     load_env()
     init_logger()
+    config = get_config()
 
     app = FastAPI(
         title="Text Mate API",

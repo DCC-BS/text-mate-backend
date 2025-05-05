@@ -17,8 +17,10 @@ dependencies = [
     "requests>=2.32.3",
     "returns>=0.25.0",
     "structlog>=25.2.0",
+    "tqdm>=4.67.1",
     "types-requests>=2.32.0.20241016",
     "types-setuptools>=75.8.0.20250110",
+    "types-tqdm>=4.67.0.20250417",
 ]
 
 [dependency-groups]

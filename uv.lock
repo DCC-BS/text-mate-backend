@@ -1831,8 +1831,10 @@ dependencies = [
     { name = "requests" },
     { name = "returns" },
     { name = "structlog" },
+    { name = "tqdm" },
     { name = "types-requests" },
     { name = "types-setuptools" },
+    { name = "types-tqdm" },
 ]
 
 [package.dev-dependencies]
@@ -1864,8 +1866,10 @@ requires-dist = [
     { name = "requests", specifier = ">=2.32.3" },
     { name = "returns", specifier = ">=0.25.0" },
     { name = "structlog", specifier = ">=25.2.0" },
+    { name = "tqdm", specifier = ">=4.67.1" },
     { name = "types-requests", specifier = ">=2.32.0.20241016" },
     { name = "types-setuptools", specifier = ">=75.8.0.20250110" },
+    { name = "types-tqdm", specifier = ">=4.67.0.20250417" },
 ]
 
 [package.metadata.requires-dev]
@@ -2030,6 +2034,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/e9/6e/c54e6705e5fe67c3606e4c7c91123ecf10d7e1e6d7a9c11b52970cf2196c/types_setuptools-78.1.0.20250329.tar.gz", hash = "sha256:31e62950c38b8cc1c5114b077504e36426860a064287cac11b9666ab3a483234", size = 43942 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7d/31/85d0264705d8ef47680d28f4dc9bb1e27d8cace785fbe3f8d009fad6cb88/types_setuptools-78.1.0.20250329-py3-none-any.whl", hash = "sha256:ea47eab891afb506f470eee581dcde44d64dc99796665da794da6f83f50f6776", size = 66985 },
+]
+
+[[package]]
+name = "types-tqdm"
+version = "4.67.0.20250417"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "types-requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4a/54/1ce092a682af4b2995a3708a8830dc15502927f3586064d9ea3738a562d1/types_tqdm-4.67.0.20250417.tar.gz", hash = "sha256:bfcc4099d8d48df54e53f3ea64708cbcc1d1c4039ca7619594189da8c03c7be2", size = 17179 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/18/48/320971ed192f4ac207305a75fa8366efb1b6a90a24db0513f492668d87c0/types_tqdm-4.67.0.20250417-py3-none-any.whl", hash = "sha256:d43fc9a295be1f94083c744a09099c033c4dea293ff9a07bab9f34bfbffaaf80", size = 24057 },
 ]
 
 [[package]]

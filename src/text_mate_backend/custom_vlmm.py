@@ -1,7 +1,5 @@
-from typing import Any, List, Mapping, Optional
+from typing import Any
 
-from llama_index.core import Settings, SimpleDirectoryReader, SummaryIndex
-from llama_index.core.callbacks import CallbackManager
 from llama_index.core.llms import (
     CompletionResponse,
     CompletionResponseGen,
@@ -12,38 +10,38 @@ from llama_index.core.llms.callbacks import llm_completion_callback
 from openai import OpenAI
 from pydantic import Field
 
-from text_mate_backend.utils.configuration import config
+from text_mate_backend.utils.configuration import get_config
 
 
 class VllmCustom(CustomLLM):
-    client: OpenAI = Field(default=None, description="OpenAI client instance")
+    client: OpenAI = Field(default=OpenAI(), description="OpenAI client instance")
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
+        self.config = get_config()
         self.client = OpenAI(
-            api_key=config.openai_api_key,
-            base_url=config.openai_api_base_url,
+            api_key=self.config.openai_api_key,
+            base_url=self.config.openai_api_base_url,
         )
+
+        print(f"VLLM client initialized {self.config.openai_api_base_url}")
 
     @property
     def metadata(self) -> LLMMetadata:
         """Get LLM metadata."""
-        return LLMMetadata(model_name=config.llm_model)
+        return LLMMetadata(model_name=self.config.llm_model)
 
     @llm_completion_callback()
     def complete(self, prompt: str, **kwargs: Any) -> CompletionResponse:
         completion = self.client.chat.completions.create(
-            model=config.llm_model,
+            model=self.config.llm_model,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.1,
         )
 
-        print(completion)
+        output: str = completion.choices[0].message.content  # type: ignore
 
-        output: str = completion.choices[0].message.content
-
-        print(f"Output: {output}")
         return CompletionResponse(text=output, raw=completion)
 
     @llm_completion_callback()
@@ -51,7 +49,7 @@ class VllmCustom(CustomLLM):
         response = ""
 
         stream = self.client.completions.create(
-            model=config.llm_model,
+            model=self.config.llm_model,
             prompt=prompt,
             max_tokens=100,
             temperature=0.1,
@@ -59,7 +57,7 @@ class VllmCustom(CustomLLM):
         )
 
         for chunk in stream:
-            if chunk.choices and chunk.choices[0].delta.content is not None:
-                content = chunk.choices[0].delta.content.replace("ß", "ss")
+            if chunk.choices and chunk.choices[0].delta.content is not None:  # type: ignore
+                content = chunk.choices[0].delta.content.replace("ß", "ss")  # type: ignore
                 response += content
                 yield CompletionResponse(text=response, delta=content)

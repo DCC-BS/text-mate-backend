@@ -1,0 +1,508 @@
+{
+  "rules": [
+    {
+      "name": "Anführungszeichen",
+      "description": "Ausschliesslich die «französischen» Anführungsstriche « » verwenden.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 4,
+      "example": "Beispieltext «mit Anführungszeichen»."
+    },
+    {
+      "name": "Abkürzungen",
+      "description": "Bestimmte Abkürzungen sind bevorzugt (BFS statt BfS, evtl. statt ev.).",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 4,
+      "example": "Verwenden Sie BFS anstelle von BfS."
+    },
+    {
+      "name": "Anglizismen",
+      "description": "Anglizismen sind zurückhaltend zu verwenden, wenn sie nicht im allgemeinen Sprachgebrauch sind.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 4,
+      "example": "Verwenden Sie 'Internetseite' statt 'Homepage'."
+    },
+    {
+      "name": "N und n",
+      "description": "N für die Anzahl der Elemente der Grundgesamtheit, n für die Anzahl der Merkmalsausprägungen.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 4,
+      "example": "N=1000 Personen, n=600 Männer."
+    },
+    {
+      "name": "Basel-Stadt/Basel-Landschaft",
+      "description": "Mit Bindestrich bei Substantiven, ohne Bindestrich bei Adjektiven.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 5,
+      "example": "Basel-Stadt (Substantiv), baselstädtisch (Adjektiv)."
+    },
+    {
+      "name": "Bindestrich",
+      "description": "Langer Bindestrich (–) als Gedankenstrich, kurzer Bindestrich (-) zwischen Jahreszahlen.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 5,
+      "example": "1972-2000 (kurzer Bindestrich), Text – weiterer Text (langer Bindestrich)."
+    },
+    {
+      "name": "Deutsche Ortsnamen",
+      "description": "Deutsche Ortsnamen verwenden, wenn sie geläufig sind.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 5,
+      "example": "Mülhausen statt Mulhouse."
+    },
+    {
+      "name": "Eigennamen",
+      "description": "Bezeichnungen von Messen ohne besondere Hervorhebung.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 5,
+      "example": "Art Basel (Basel)."
+    },
+    {
+      "name": "Empfohlene Begriffe",
+      "description": "Bestimmte Begriffe bevorzugen (Einwohnerinnen und Einwohner statt Baslerinnen und Basler).",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 5,
+      "example": "Verwenden Sie 'Einwohnerinnen und Einwohner' anstelle von 'Baslerinnen und Basler'."
+    },
+    {
+      "name": "Fugen-s",
+      "description": "Pragmatisches Vorgehen bei Fugen-s, einheitliche Verwendung im Bericht.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 5,
+      "example": "Einkommensteuer (mit Fugen-s), Auslandgäste (ohne Fugen-s)."
+    },
+    {
+      "name": "Geschlechtsneutrale Formulierungen",
+      "description": "Keine Genderzeichen (Asterisk, Doppelpunkt, Unterstrich, Mediopunkt).",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 6,
+      "example": "Verwenden Sie 'pro Kopf' statt 'pro Einwohner/-in'."
+    },
+    {
+      "name": "Genitiv",
+      "description": "In Publikationen «des Statistischen Amtes» verwenden.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 6,
+      "example": "Das Ergebnis des Statistischen Amtes."
+    },
+    {
+      "name": "Grossbuchstaben und Umlaute",
+      "description": "Umlaute sind zu verwenden (z.B. Österreich).",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 6,
+      "example": "Österreich, nicht Oesterreich."
+    },
+    {
+      "name": "Leerzeichen",
+      "description": "Geschütztes Leerzeichen korrekt verwenden.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 7,
+      "example": "15% (mit geschütztem Leerzeichen)."
+    },
+    {
+      "name": "Modewörter",
+      "description": "Vermeiden Sie Modewörter.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 7,
+      "example": "Vermeiden Sie 'Das macht Sinn'."
+    },
+    {
+      "name": "Neutralität der Statistik",
+      "description": "Keine bewertenden Wörter verwenden.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 7,
+      "example": "Vermeiden Sie «was mit 12 Sitzen belohnt wurde»."
+    },
+    {
+      "name": "Nomenklatur statistischer Raumeinheiten",
+      "description": "Einheitliche Verwendung von Begriffen.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 8,
+      "example": "Blockseite statt Wohnblockseite."
+    },
+    {
+      "name": "Präpositionen",
+      "description": "Korrekte Verwendung von Präpositionen bei Alterskategorien.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 8,
+      "example": "Anzahl Personen unter 20 Jahren."
+    },
+    {
+      "name": "Religion",
+      "description": "Begriff 'Religion' verwenden, 'Muslim' statt 'islamisch'.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 8,
+      "example": "Muslimische Einwohner."
+    },
+    {
+      "name": "Schreibweisen (Spelling)",
+      "description": "Einheitliche Schreibweise von Wörtern in Publikationen verwenden. Liste vorgegebener Schreibweisen beachten.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 9,
+      "example": "Bitte verwenden: Demografie, Geografie, Grafik, Kartografie etc. / Nicht verwenden: Demographie, Geographie, Graphik, Kartographie etc."
+    },
+    {
+      "name": "Staatsangehörigkeit vs. Nationalität",
+      "description": "Nur 'Staatsangehörigkeit' verwenden; 'Nationalität' oder 'Ethnie' vermeiden, da diese Begriffe in der Schweiz keine Rolle spielen.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 9,
+      "example": "Verwenden Sie 'Staatsangehörigkeit' anstelle von 'Nationalität'."
+    },
+    {
+      "name": "Staatsbezeichnungen - China",
+      "description": "China (Volksrepublik) kann mit oder ohne Klammerbemerkung verwendet werden.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 9,
+      "example": "China oder China (Volksrepublik) sind beide zulässig."
+    },
+    {
+      "name": "Staatsbezeichnungen - Golfstaaten",
+      "description": "Ausschliesslich die Schreibweise ohne Bindestrich verwenden.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 9,
+      "example": "Golfstaaten, nicht Golf-Staaten."
+    },
+    {
+      "name": "Staatsbezeichnungen - Grossbritannien/Vereinigtes Königreich",
+      "description": "Korrekte Bezeichnung ist 'Vereinigtes Königreich'. 'Grossbritannien' ist nur eine geographische Bezeichnung.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 9,
+      "example": "Schreiben Sie 'Vereinigtes Königreich' anstelle von 'Grossbritannien'."
+    },
+    {
+      "name": "Staatsbezeichnungen - USA",
+      "description": "Statt 'USA' im Text 'Vereinigte Staaten' schreiben. 'USA' ist als Kurzform in Tabellen zulässig.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 9,
+      "example": "Schreiben Sie 'Vereinigte Staaten' anstelle von 'USA'."
+    },
+    {
+      "name": "Staatsbezeichnungen - Taiwan",
+      "description": "Verwenden Sie 'Taiwan' und nicht 'Republik China'.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 9,
+      "example": "Schreiben Sie 'Taiwan' anstelle von 'Republik China'."
+    },
+    {
+      "name": "Staatsbezeichnungen - Weissrussland",
+      "description": "Verwenden Sie 'Weissrussland'.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 9,
+      "example": "Schreiben Sie 'Weissrussland'."
+    },
+    {
+      "name": "Uhrzeit Format",
+      "description": "Format mit Doppelpunkt verwenden.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 9,
+      "example": "20:15 (Uhr)"
+    },
+    {
+      "name": "Währungen",
+      "description": "Im Text 'Franken' (Fr.) und 'US-Dollar' verwenden. In Tabellen können offizielle Abkürzungen (CHF, EUR, USD, GBP, JPY) genutzt werden.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 9,
+      "example": "Schreiben Sie 'Franken' oder 'US-Dollar' im Text."
+    },
+    {
+      "name": "Wohnviertel/Quartier Schreibweise",
+      "description": "Grundsätzlich entweder Verbindung mit '(Wohn-)Viertel' oder '(Wohn-)Quartier' wählen oder die Präposition weglassen. Umgangssprachliche Form ist in Abgrenzung zu Ortsbezeichnungen erlaubt.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 10,
+      "example": "im Wohnviertel Gundeldingen oder im Gundeldinger-Viertel / im St. Johann"
+    },
+    {
+      "name": "Zahl und abgekürzte Masseinheit",
+      "description": "Abgekürzte Masseinheiten gehören zur Zahl und dürfen nicht allein auf der nächsten Zeile stehen. Falls nicht anders möglich, Masseinheit ausschreiben.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 10,
+      "example": "14 kg (korrekt) / kg (falsch)"
+    },
+    {
+      "name": "Buchdruckerregel für Zahlen",
+      "description": "Zahlen bis zwölf ausschreiben, Zahlen ab zwölf in Ziffern angeben.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 10,
+      "example": "Am häufigsten war ein Altersunterschied von lediglich einem Jahr. / 14 Frauen sind umgezogen."
+    },
+    {
+      "name": "Zahlen in statistischen Auswertungen",
+      "description": "Zahlen aus statistischen Auswertungen im Lauftext in Ziffern.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 10,
+      "example": "14 Wohnungen hatten zwei Zimmer und 21 Wohnungen drei Zimmer."
+    },
+    {
+      "name": "Buchdruckerregel bei genauerer Beschreibung",
+      "description": "Beim genaueren Beschreiben eines Merkmals die Buchdruckerregel anwenden.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 10,
+      "example": "Die Armeegruppe bestand aus 19 Infanteriedivisionen, sechs Panzerdivisionen und acht selbstständigen Grenadierregimentern."
+    },
+    {
+      "name": "Zahlen mit Vergleichswert",
+      "description": "Zahlen mit Vergleichswert in Ziffern.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 10,
+      "example": "1980er-Jahre oder 80er-Jahre"
+    },
+    {
+      "name": "Zeitliche Begriffe",
+      "description": "Erstes Halbjahr, Zweites Semester, Drittes Trimester in Worten schreiben.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 10,
+      "example": "Erstes Halbjahr / 1. Halbjahr"
+    },
+    {
+      "name": "Statistische Einteilung",
+      "description": "1. Quartal, 2. Sektor in Ziffern schreiben.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 10,
+      "example": "1. Quartal / Zweiter Sektor"
+    },
+    {
+      "name": "Vierstellige Zahlen",
+      "description": "Vierstellige Zahlen mit geschätztem Leerzeichen (z.B. 1 000 Einwohner).",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 10,
+      "example": "(pro) 1000 Einwohner"
+    },
+    {
+      "name": "Leerzeichen bei Zahlen",
+      "description": "Bis 4 Ziffern ohne Leerschlag, ab 5 Ziffern mit Hochkomma, wenn geschätztes Leerzeichen nicht möglich ist.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 10,
+      "example": "10'000"
+    },
+    {
+      "name": "Adjective Combination",
+      "description": "Adjectives should be combined when possible and sensible for better readability (e.g., 'angsteinflößend' instead of 'Angst einflößend').",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 11,
+      "example": "angsteinflößend statt Angst einflößend"
+    },
+    {
+      "name": "Compound Noun Preference - 'Leerstand'",
+      "description": "In publications, 'leerstehend' should be used instead of 'leer stehend'.  Follow the principle of using the more traditional form when variations exist. Specific examples given are 'des Leerstand(e)s', 'des Leerwohnungsbestandes', 'des Geschäftsleerstandes', and 'des Gesamtbestandes'.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 11,
+      "example": "des Leerstand(e)s"
+    },
+    {
+      "name": "Compound Noun Preference - 'Neuerstellt'",
+      "description": "'neuerstellt' should be used instead of 'neu erstellt'.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 11,
+      "example": "neuerstellt"
+    },
+    {
+      "name": "Room Number Formatting",
+      "description": "Use 'Dreizimmerwohnung', '3-Zimmer-Wohnung', or '3,5-Zimmer-Wohnung' instead of '2-Zimmerwohnung'.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 11,
+      "example": "Dreizimmerwohnung"
+    },
+    {
+      "name": "Household Composition",
+      "description": "Use 'Zweipersonen-Haushalt' instead of 'Zweipersonenhaushalt'.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 11,
+      "example": "Zweipersonen-Haushalt"
+    },
+    {
+      "name": "Table Naming Convention",
+      "description": "Tables must follow a specific naming convention. Use 'T' followed by numbers and, if applicable, dots and hyphens to indicate subchapters and graphics. Numbers 1-9 should not have a leading zero.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 12,
+      "example": "T1; T1.1; T1.1-1"
+    },
+    {
+      "name": "Sum Terminology",
+      "description": "Avoid using the term 'Zusammen' (Together) in sum rows of tables, especially in the Statistical Yearbook. Use 'Total' or 'Alle' (All) instead, potentially in combination (e.g., 'Alle Ausbildungskategorien').",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 12,
+      "example": "Instead of 'Zusammen', use 'Total' or 'Alle Ausbildungskategorien'."
+    },
+    {
+      "name": "Einheitliche Formatierung von Grafiken",
+      "description": "Schriftgrössen, Farben, Legendenplatzierung und Skalierungen müssen in Berichten einheitlich sein, um die Vergleichbarkeit zu erleichtern.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "In einem Bericht müssen alle Balkendiagramme die gleiche Schriftgröße für die Achsenbeschriftungen und die gleiche Farbpalette für die einzelnen Balken verwenden."
+    },
+    {
+      "name": "Vermeidung doppelter Darstellungen",
+      "description": "Grafikelemente dürfen keinen Sachverhalt zweimal zeigen, weder in der Grafik selbst noch in der Legende.  Kuchendiagramme, die zusätzlich in einer Balkengrafik ohne Begründung auftauchen, sind zu vermeiden.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "Ein Kuchendiagramm, das den Marktanteil verschiedener Produkte zeigt, sollte nicht zusätzlich in einer Balkengrafik ohne weitere Erklärung dargestellt werden."
+    },
+    {
+      "name": "Achsenbezug",
+      "description": "Grafikelemente müssen immer einen Bezug zu einer Achse haben.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "Ein Punktdiagramm muss sowohl eine x- als auch eine y-Achse haben, um die Beziehung zwischen den Variablen darzustellen."
+    },
+    {
+      "name": "Kennzeichnung von Ausnahmen",
+      "description": "Berechtigte Ausnahmen (z.B. Vergrößerungen) müssen deutlich gekennzeichnet und benannt werden (z.B. mittels 'Lupe').",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "Eine detaillierte Darstellung eines bestimmten Bereichs einer Grafik kann als 'Lupe'-Ansicht gekennzeichnet werden."
+    },
+    {
+      "name": "Infotainment vermeiden",
+      "description": "Das Statistisches Amt darf keine Infografiken im Sinne von Infotainment produzieren, sondern muss stets die professionelle Qualität statistischer Darstellung gewährleisten.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "Eine Infografik sollte sich auf die klare und präzise Darstellung statistischer Daten konzentrieren und nicht auf übertriebene visuelle Effekte."
+    },
+    {
+      "name": "Prozessablauf für neue Grafiken",
+      "description": "Neue Grafiktypen müssen in Absprache mit der Formalen Redaktion (FR) und gegebenenfalls dem Methodenverantwortlichen umgesetzt werden.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "Bevor eine neue Art von Diagramm in einer Publikation verwendet wird, muss diese mit der Formalen Redaktion besprochen und freigegeben werden."
+    },
+    {
+      "name": "Nomenklatur für Abbildungen",
+      "description": "Korrekte Nomenklatur für Abbildungen: Abb. 1; Abb. 1.1; Abb. 1.1-1.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "Eine Grafik, die im Text erwähnt wird, sollte als 'Abb. 1.2' bezeichnet werden."
+    },
+    {
+      "name": "Abstand Legende/Beschriftung",
+      "description": "Zwischen Legendensymbol und Beschriftung muss ein Leerschlag vorhanden sein.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "In einer Legende sollte zwischen dem farbigen Symbol und dem zugehörigen Text ein Leerzeichen eingefügt werden."
+    },
+    {
+      "name": "Reihenfolge Legenden",
+      "description": "Reihenfolge der Legenden: a) 'Basel' vor 'Schweiz', b) 'Schweiz' vor 'Ausland', c) 'Männer' vor 'Frauen'.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "Wenn eine Grafik Daten für Basel, die Schweiz und das Ausland enthält, sollte die Legende in dieser Reihenfolge angeordnet sein."
+    },
+    {
+      "name": "Quellenangaben bei Grafiken",
+      "description": "Grafiken müssen mit einer Quellenangabe versehen sein. Bei Bedarf kann die Datenquelle auch im Text erwähnt werden.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "Unterhalb einer Grafik sollte vermerkt sein: 'Quelle: Statistisches Amt des Kantons Basel-Stadt'."
+    },
+    {
+      "name": "Ziffer Null in Grafiken",
+      "description": "Seit 2016 wird die '0' in Grafiken auf der Achse dargestellt.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "Eine Grafik, die Werte von 0 bis 100 darstellt, muss die '0' auf der y-Achse anzeigen."
+    },
+    {
+      "name": "Skalierung",
+      "description": "Skalen müssen in der Regel beim '0'-Wert beginnen (Ausnahmen bei indexierten Grafiken).",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "Eine Grafik, die absolute Werte darstellt, sollte mit 0 auf der y-Achse beginnen."
+    },
+    {
+      "name": "Zwei verschiedene Skalen",
+      "description": "Bei Grafiken mit zwei Skalen müssen gleiche Unterteilungsschritte eingehalten werden. Beide Skalen müssen bei 0 beginnen.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "Eine Grafik mit einer primären und einer sekundären y-Achse muss sicherstellen, dass beide Achsen die gleiche Skalierung und den Startpunkt bei 0 haben."
+    },
+    {
+      "name": "Hochstellen von Ziffern",
+      "description": "Ziffern (z.B. bei km²) müssen mit dem Sonderzeichencode 00B2 hochgestellt werden, um ein Abschneiden zu vermeiden.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 13,
+      "example": "Die Fläche eines Gebiets sollte als '100 km²' und nicht als '100 km2' dargestellt werden."
+    },
+    {
+      "name": "Jahrbuch Footnote Wording",
+      "description": "In Jahrbuch table footnotes, specifically use \"einschliesslich\" instead of \"eingeschlossen\", \"inbegriffen\", or \"inklusive\", and \"seit\" instead of \"ab\".",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 14,
+      "example": "Im Fussnotenbereich von Jahrbuchtabellen ist zwingend die folgende Variante zu wählen: «einschliesslich» (nicht «eingeschlossen», «inbegriffen», «inklusive») \n«seit» (nicht «ab»)"
+    },
+    {
+      "name": "Dossier - Word to InDesign Space Handling",
+      "description": "When transferring Dossier articles from Word to InDesign, use the \"schmale geschützte Leerzeichen\" (narrow non-breaking space) instead of a regular space.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 14,
+      "example": "Da die Dossier-Artikel vom Word ins InDesign übertragen werden, muss statt des geschützten Leerzeichens das «schmale \ngeschützte Leerzeichen» verwendet werden."
+    },
+    {
+      "name": "KAFKA Principle for Web Text",
+      "description": "When writing for the web, adhere to the KAFKA principle: konkret (concrete), aktiv (active), Füllwörter streichen (remove filler words), kurz (short), Adjektive sparsam verwenden (use adjectives sparingly).",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 15,
+      "example": "Instead of: 'The rather large increase in statistical data was quite remarkable.' Use: 'The increase in statistical data was significant.'"
+    },
+    {
+      "name": "Formulierung 'Weiss nicht / Keine Angabe'",
+      "description": "Die Formulierung «Weiss nicht / Keine Angabe» wird in Befragungsberichten ausnahmsweise als feststehender Begriff interpretiert und mit je einem Leerschlag geschrieben, um die Darstellbarkeit im Indikatorenportal zu verbessern.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 16,
+      "example": "Weiss nicht / Keine Angabe"
+    },
+    {
+      "name": "Reliance on Established Style Guides",
+      "description": "The editorial team relies on several established style guides for linguistic and technical correctness. These guides are not always consistent, prompting the creation of these specific editorial guidelines.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 17,
+      "example": "When determining the correct spelling of a word, consult 'Duden – Die deutsche Rechtschreibung' or 'Vademecum – Der sprachlich-technische Leitfaden [der Neuen Zürcher Zeitung]'."
+    },
+    {
+      "name": "Use of Vademecum",
+      "description": "The 'Vademecum' (linguistic and technical guide of Neue Zürcher Zeitung) is a key reference for style and language.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 17,
+      "example": "Refer to the 'Vademecum' for guidance on complex grammatical structures or preferred phrasing."
+    },
+    {
+      "name": "Use of Duden",
+      "description": "The 'Duden' is a key reference for German orthography.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 17,
+      "example": "Check the 'Duden' to confirm the correct spelling of 'Schreibweisungen'."
+    },
+    {
+      "name": "Use of Brockhaus (Wahrig)",
+      "description": "Brockhaus (Wahrig) is used as a reference for German orthography.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 17,
+      "example": "Consult Brockhaus (Wahrig) for the proper spelling of technical terms."
+    },
+    {
+      "name": "SOK Swiss Orthographic Conference",
+      "description": "The guidelines of the SOK (Schweizer Orthographische Konferenz) are to be considered.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 17,
+      "example": "Follow the SOK's recommendations regarding the use of Swiss German spellings in official documents."
+    },
+    {
+      "name": "Use of Federal Chancellery Guidelines",
+      "description": "Guidelines from the Federal Chancellery regarding spelling and formulation in German official texts are to be followed.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 17,
+      "example": "When drafting official correspondence, adhere to the 'Schreibweisungen' of the Bundeskanzlei."
+    },
+    {
+      "name": "Document Identification",
+      "description": "The document serves as editorial guidelines originating from the 'Statistisches Amt des Kantons Basel-Stadt'.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 18,
+      "example": "All editorial content must adhere to the guidelines set forth by the 'Statistisches Amt des Kantons Basel-Stadt' as documented in 'Redaktionsrichtlinien_V6_2024.pdf'."
+    },
+    {
+      "name": "Document Identification",
+      "description": "The document serves as editorial guidelines originating from the 'Statistisches Amt des Kantons Basel-Stadt'.",
+      "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
+      "page_number": 19,
+      "example": "Referencing this document when creating content for the 'Statistisches Amt des Kantons Basel-Stadt' ensures adherence to their editorial standards."
+    }
+  ]
+}
