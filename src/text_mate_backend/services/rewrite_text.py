@@ -1,5 +1,5 @@
 import time
-from typing import Callable, List, final
+from typing import Callable, final
 
 import dspy  # type: ignore
 from returns.result import safe
