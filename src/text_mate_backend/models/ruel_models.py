@@ -2,8 +2,8 @@ from pydantic import BaseModel, Field
 
 
 class Ruel(BaseModel):
-    name: str = Field(description="A descriptive name for the rule")
-    description: str = Field(description="Description of the rule")
+    name: str = Field(description="A descriptive name for the rule in the original language")
+    description: str = Field(description="Description of the rule in the original language")
     file_name: str = Field(description="Filename of the source document")
     page_number: int = Field(description="Page number of the source document")
     example: str = Field(description="Example of the rule in use")
@@ -15,7 +15,8 @@ class RuelValidation(Ruel):
     This class is used to validate the Ruel model.
     """
 
-    reason: str = Field(description="Description of the rule violation")
+    reason: str = Field(description="Description of the rule violation in the original language")
+    proposal: str = Field(description="Proposed solution to the rule violation in the original language")
     source: str = Field(description="Section in the text where the rule is violated")
 
 
@@ -32,3 +33,11 @@ class RuelsContainer(BaseModel):
 
 class RuelsValidationContainer(BaseModel):
     rules: list[RuelValidation] = Field(description="All violations of the rules")
+
+
+class RuelDocumentDescription(BaseModel):
+    title: str = Field(description="Title of the document")
+    description: str = Field(description="Description of the document")
+    author: str = Field(description="Author of the document")
+    edition: str = Field(description="Edition of the document")
+    file: str = Field(description="Filename of the document")

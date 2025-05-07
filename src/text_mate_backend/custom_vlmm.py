@@ -16,6 +16,7 @@ from text_mate_backend.utils.configuration import Configuration, get_config
 class VllmCustom(CustomLLM):
     client: OpenAI = Field(default=OpenAI(), description="OpenAI client instance")
     config: Configuration | None = Field(default=None, description="Configuration instance")
+    last_log: str = Field(default="", description="Last log message")
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -42,6 +43,8 @@ class VllmCustom(CustomLLM):
         )
 
         output: str = completion.choices[0].message.content  # type: ignore
+
+        self.last_log = completion.choices[0].model_dump_json()
 
         return CompletionResponse(text=output, raw=completion)
 
