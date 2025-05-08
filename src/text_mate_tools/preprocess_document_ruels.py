@@ -19,10 +19,10 @@ Rules documentation:
 
 Your task:
 1. Extract all ruels from the document.
-2. Compress the ruel description so it is easy for you to understand, and fully appliable later.
-3. Identify the file name and page number of the source document.
-4. Provide an example of the ruel in use.
-5. Keep the text in the original language.
+2. Identify the file name and page number of the document json.
+3. Provide an example of the ruel in use.
+4. Keep the text in the original language.
+5. Ignore Indexes, tables of contents, and other non-relevant content.
 
 Return your findings as structured data according to the specified format.
 """,

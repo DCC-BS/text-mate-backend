@@ -5,11 +5,11 @@ from fastapi.responses import StreamingResponse
 from openai import BaseModel, OpenAI
 from openai.types.chat import ChatCompletionChunk
 
-from text_mate_backend.utils.configuration import Configuration
+from text_mate_backend.utils.configuration import get_config
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("action_utils")
-config = Configuration()
+config = get_config()
 
 SYSTEM_PROMPT_POSTFIX: str = (
     "Format the text as plain text, don't use any html tags or markdwon."

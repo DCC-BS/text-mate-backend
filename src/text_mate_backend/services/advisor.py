@@ -17,23 +17,9 @@ logger = get_logger("advisor_service")
 class AdvisorService:
     def __init__(self, config: Configuration) -> None:
         logger.info("Initializing AdvisorService")
-        model_name = "hosted_vllm/ISTA-DASLab/gemma-3-27b-it-GPTQ-4b-128g"
-        logger.info(f"Using LLM model: {model_name}")
 
+        self.llm = VllmCustom()
         self.ruel_container = RuelsContainer.model_validate_json(Path("docs/ruels.json").read_text())
-
-        logger.info(f"Loaded {len(self.ruel_container.rules)} rules from docs/ruels.json")
-
-        lm: Any = dspy.LM(
-            model=model_name,
-            api_base=config.openai_api_base_url,
-            api_key=config.openai_api_key,
-            max_tokens=1000,
-            temperature=0.2,
-        )
-        dspy.configure(lm=lm)
-
-        logger.info("AdvisorService initialized successfully")
 
     def get_docs(self) -> list[RuelDocumentDescription]:
         """
@@ -60,8 +46,7 @@ class AdvisorService:
         rules = self.filter_ruels(docs)
         logger.info(f"Number of rules found: {len(rules)}")
 
-        llm = VllmCustom()
-        sllm = llm.as_structured_llm(RuelsValidationContainer)
+        sllm = self.llm.as_structured_llm(RuelsValidationContainer)
 
         validated: RuelsValidationContainer = sllm.structured_predict(
             RuelsValidationContainer,
