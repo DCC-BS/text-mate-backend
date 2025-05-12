@@ -28,6 +28,7 @@ class Actions(str, Enum):
     # Translate = "translate"
     TranslateDeCH = "translate_de-CH"
     TranslateEnUS = "translate_en-US"
+    TranslateEnGB = "translate_en-GB"
     TranslateFr = "translate_fr"
     TranslateIt = "translate_it"
 
@@ -88,6 +89,9 @@ class QuickActionService:
                     logger.info("Applied translate action")
                 case Actions.TranslateEnUS:
                     response = translate(text, "English (US)", self.client)
+                    logger.info("Applied translate action")
+                case Actions.TranslateEnGB:
+                    response = translate(text, "English (GB)", self.client)
                     logger.info("Applied translate action")
                 case Actions.TranslateFr:
                     response = translate(text, "French", self.client)
