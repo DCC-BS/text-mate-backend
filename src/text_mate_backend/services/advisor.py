@@ -1,13 +1,11 @@
 import json
 from pathlib import Path
-from typing import Any, final
+from typing import final
 
-import dspy  # type: ignore
 from llama_index.core.prompts import PromptTemplate
 
-from text_mate_backend.custom_vlmm import VllmCustom
 from text_mate_backend.models.ruel_models import Ruel, RuelDocumentDescription, RuelsContainer, RuelsValidationContainer
-from text_mate_backend.utils.configuration import Configuration
+from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("advisor_service")
@@ -15,10 +13,10 @@ logger = get_logger("advisor_service")
 
 @final
 class AdvisorService:
-    def __init__(self, config: Configuration) -> None:
+    def __init__(self, llm_facade: LLMFacade) -> None:
         logger.info("Initializing AdvisorService")
 
-        self.llm = VllmCustom()
+        self.llm_facade = llm_facade
         self.ruel_container = RuelsContainer.model_validate_json(Path("docs/ruels.json").read_text())
 
     def get_docs(self) -> list[RuelDocumentDescription]:
@@ -43,12 +41,18 @@ class AdvisorService:
         Checks the text for any violations of the rules.
         """
 
+        try:
+            return self._check_text(text, docs)
+        except Exception as e:
+            logger.error(f"Error checking text: {e}")
+            logger.debug(f"last log: {self.llm.last_log}")
+            raise
+
+    def _check_text(self, text: str, docs: set[str]) -> RuelsValidationContainer:
         rules = self.filter_ruels(docs)
         logger.info(f"Number of rules found: {len(rules)}")
 
-        sllm = self.llm.as_structured_llm(RuelsValidationContainer)
-
-        validated: RuelsValidationContainer = sllm.structured_predict(
+        validated = self.llm_facade.structured_predict(
             RuelsValidationContainer,
             PromptTemplate(
                 """You are an expert in editorial guidelines. Take the given document and extract all relevant rules.
@@ -69,5 +73,29 @@ class AdvisorService:
                 text=text,
             ),
         )
+
+        # sllm = self.llm.as_structured_llm(RuelsValidationContainer)
+
+        # validated: RuelsValidationContainer = sllm.structured_predict(
+        #     RuelsValidationContainer,
+        #     PromptTemplate(
+        #         """You are an expert in editorial guidelines. Take the given document and extract all relevant rules.
+        #         Your task:
+        #         1. Check the text for any violations of the rules.
+        #         2. Provide a list of all violations of the rules.
+        #         3. If no violations are found, return an empty list.
+
+        #         Rules documentation:
+        #         {rules}
+
+        #         input text:
+        #         {text}
+
+        #         Return your findings as structured data according to the specified format. Keep your answer in the original language.
+        #         """,
+        #         rules=json.dumps([rule.model_dump() for rule in rules]),
+        #         text=text,
+        #     ),
+        # )
 
         return validated

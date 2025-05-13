@@ -2,9 +2,10 @@ import time
 from typing import Generator, Iterator
 
 from fastapi.responses import StreamingResponse
-from openai import BaseModel, OpenAI
-from openai.types.chat import ChatCompletionChunk
+from llama_index.core.prompts import PromptTemplate
+from pydantic import BaseModel
 
+from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.configuration import get_config
 from text_mate_backend.utils.logger import get_logger
 
@@ -37,7 +38,7 @@ class PromptOptions(BaseModel):
     temperature: float = 0.7
 
 
-def run_prompt(options: PromptOptions, llm: OpenAI) -> StreamingResponse:
+def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingResponse:
     """
     Runs the given prompt using the OpenAI API and returns a streaming response.
 
@@ -56,14 +57,15 @@ def run_prompt(options: PromptOptions, llm: OpenAI) -> StreamingResponse:
 
     start_time = time.time()
     try:
-        stream: Iterator[ChatCompletionChunk] = llm.chat.completions.create(
-            model=config.llm_model,
-            messages=[
-                {"role": "system", "content": f"{options.system_prompt} {SYSTEM_PROMPT_POSTFIX}"},
-                {"role": "user", "content": options.user_prompt},
-            ],
-            stream=True,
-            temperature=options.temperature,
+        stream: Iterator[str] = llm_facade.stream_complete(
+            PromptTemplate(
+                """
+                {system_prompt}
+                {user_prompt}
+                """,
+                system_prompt=f"{options.system_prompt} {SYSTEM_PROMPT_POSTFIX}",
+                user_prompt=options.user_prompt,
+            ).format()
         )
 
         def generate() -> Generator[str, None, None]:
@@ -71,10 +73,7 @@ def run_prompt(options: PromptOptions, llm: OpenAI) -> StreamingResponse:
             start_streaming_time = time.time()
             try:
                 for chunk in stream:
-                    if chunk.choices and chunk.choices[0].delta.content is not None:
-                        content = chunk.choices[0].delta.content.replace("ß", "ss")
-                        total_tokens += 1
-                        yield content
+                    yield chunk
 
                 # Log streaming completion
                 streaming_duration = time.time() - start_streaming_time

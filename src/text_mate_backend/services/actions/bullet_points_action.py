@@ -1,10 +1,10 @@
 from fastapi.responses import StreamingResponse
-from openai import OpenAI
 
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
+from text_mate_backend.services.llm_facade import LLMFacade
 
 
-def bullet_points(text: str, llm: OpenAI) -> StreamingResponse:
+def bullet_points(text: str, llm_facade: LLMFacade) -> StreamingResponse:
     """
     Converts the given text into a structured bullet point format with key points.
 
@@ -24,5 +24,5 @@ def bullet_points(text: str, llm: OpenAI) -> StreamingResponse:
 
     return run_prompt(
         options,
-        llm,
+        llm_facade,
     )

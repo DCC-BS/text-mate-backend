@@ -2,9 +2,10 @@ from fastapi.responses import StreamingResponse
 from openai import OpenAI
 
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
+from text_mate_backend.services.llm_facade import LLMFacade
 
 
-def social_mediafy(text: str, llm: OpenAI) -> StreamingResponse:
+def social_mediafy(text: str, llm_facade: LLMFacade) -> StreamingResponse:
     """
     Converts the given text into a social media post by adding emojis and hashtags.
 
@@ -24,5 +25,5 @@ def social_mediafy(text: str, llm: OpenAI) -> StreamingResponse:
 
     return run_prompt(
         options,
-        llm,
+        llm_facade,
     )

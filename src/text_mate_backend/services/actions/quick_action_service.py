@@ -2,7 +2,6 @@ import time
 from enum import Enum
 
 from fastapi.responses import StreamingResponse
-from openai import OpenAI
 from returns.result import safe
 
 from text_mate_backend.services.actions.bullet_points_action import bullet_points
@@ -12,7 +11,7 @@ from text_mate_backend.services.actions.social_media_action import social_mediaf
 from text_mate_backend.services.actions.structure_action import structure_text
 from text_mate_backend.services.actions.summarize_action import summarize
 from text_mate_backend.services.actions.translate_action import translate
-from text_mate_backend.utils.configuration import Configuration
+from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("quick_action_service")
@@ -34,12 +33,8 @@ class Actions(str, Enum):
 
 
 class QuickActionService:
-    def __init__(self, config: Configuration) -> None:
-        self.client: OpenAI = OpenAI(
-            api_key=config.openai_api_key,
-            base_url=config.openai_api_base_url,
-        )
-        logger.info("QuickActionService initialized", api_base_url=config.openai_api_base_url, model=config.llm_model)
+    def __init__(self, llm_facade: LLMFacade) -> None:
+        self.llm_facade = llm_facade
 
     @safe
     def run(self, action: Actions, text: str) -> StreamingResponse:
@@ -67,37 +62,37 @@ class QuickActionService:
             response = None
             match action:
                 case Actions.Simplify:
-                    response = simplify(text, self.client)
+                    response = simplify(text, self.llm_facade)
                     logger.info("Applied simplify action")
                 case Actions.Shorten:
-                    response = shorten(text, self.client)
+                    response = shorten(text, self.llm_facade)
                     logger.info("Applied shorten action")
                 case Actions.BulletPoints:
-                    response = bullet_points(text, self.client)
+                    response = bullet_points(text, self.llm_facade)
                     logger.info("Applied bullet points action")
                 case Actions.Summarize:
-                    response = summarize(text, self.client)
+                    response = summarize(text, self.llm_facade)
                     logger.info("Applied summarize action")
                 case Actions.SocialMediafy:
-                    response = social_mediafy(text, self.client)
+                    response = social_mediafy(text, self.llm_facade)
                     logger.info("Applied social media action")
                 case Actions.Structure:
-                    response = structure_text(text, self.client)
+                    response = structure_text(text, self.llm_facade)
                     logger.info("Applied structure action")
                 case Actions.TranslateDeCH:
-                    response = translate(text, "German (CH)", self.client)
+                    response = translate(text, "German (CH)", self.llm_facade)
                     logger.info("Applied translate action")
                 case Actions.TranslateEnUS:
-                    response = translate(text, "English (US)", self.client)
+                    response = translate(text, "English (US)", self.llm_facade)
                     logger.info("Applied translate action")
                 case Actions.TranslateEnGB:
-                    response = translate(text, "English (GB)", self.client)
+                    response = translate(text, "English (GB)", self.llm_facade)
                     logger.info("Applied translate action")
                 case Actions.TranslateFr:
-                    response = translate(text, "French", self.client)
+                    response = translate(text, "French", self.llm_facade)
                     logger.info("Applied translate action")
                 case Actions.TranslateIt:
-                    response = translate(text, "Italian", self.client)
+                    response = translate(text, "Italian", self.llm_facade)
                     logger.info("Applied translate action")
 
             process_time = time.time() - start_time

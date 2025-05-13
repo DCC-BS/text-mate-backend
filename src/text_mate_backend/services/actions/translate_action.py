@@ -2,12 +2,13 @@ from fastapi.responses import StreamingResponse
 from openai import OpenAI
 
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
+from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("translate_action")
 
 
-def translate(text: str, language: str, llm: OpenAI) -> StreamingResponse:
+def translate(text: str, language: str, llm_facade: LLMFacade) -> StreamingResponse:
     """
     Translates the given text into the specified language.
 
@@ -31,5 +32,5 @@ def translate(text: str, language: str, llm: OpenAI) -> StreamingResponse:
     logger.debug("Created translate prompt options")
     return run_prompt(
         options,
-        llm,
+        llm_facade,
     )

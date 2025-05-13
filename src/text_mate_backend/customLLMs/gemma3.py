@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, final
 
 from llama_index.core.llms import (
     CompletionResponse,
@@ -10,18 +10,19 @@ from llama_index.core.llms.callbacks import llm_completion_callback
 from openai import OpenAI
 from pydantic import Field
 
-from text_mate_backend.utils.configuration import Configuration, get_config
+from text_mate_backend.utils.configuration import Configuration
 
 
-class VllmCustom(CustomLLM):
+@final
+class GemaVllm(CustomLLM):
     client: OpenAI = Field(default=OpenAI(), description="OpenAI client instance")
     config: Configuration | None = Field(default=None, description="Configuration instance")
     last_log: str = Field(default="", description="Last log message")
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, config: Configuration, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.config = get_config()
+        self.config = config
         self.client = OpenAI(
             api_key=self.config.openai_api_key,
             base_url=self.config.openai_api_base_url,

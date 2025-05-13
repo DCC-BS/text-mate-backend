@@ -1,9 +1,10 @@
-from typing import Callable, TypeVar
+from typing import TypeVar
 
-import dspy  # type: ignore
+from llama_index.core.prompts import PromptTemplate
+from pydantic import BaseModel, Field
 from returns.result import safe
 
-from text_mate_backend.services.dspy_facade import DspyFacade, DspyInitOptions
+from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.logger import get_logger
 
 T = TypeVar("T")
@@ -11,37 +12,17 @@ T = TypeVar("T")
 logger = get_logger("sentence_rewrite_service")
 
 
-class SentenceRewriteSignature(dspy.Signature):
-    """
-    Generate alternative ways to express a sentence or a section in the given context.
-    """
-
-    sentence: str = dspy.InputField(desc="The sentence or section to rewrite")
-    context: str = dspy.InputField(desc="The surrounding context for the sentence or section")
-    min_options: int = dspy.InputField(desc="The minimum number of alternatives to generate")
-    max_options: int = dspy.InputField(desc="The maximum number of alternatives to generate")
-    options: list[str] = dspy.OutputField(
-        desc="A list of alternative sentence or section rewrites, in the same language as the input text"
+class SentenceRewriteOutput(BaseModel):
+    options: list[str] = Field(
+        description="A list of alternative sentence or section rewrites, in the same language as the input text"
     )
 
 
 class SentenceRewriteService:
     """Service for rewriting sentences with alternative options."""
 
-    def __init__(self, dspy_facade_factory: Callable[..., DspyFacade]) -> None:
-        """
-        Initialize the sentence rewrite service.
-
-        Args:
-            dspy_facade_factory: Factory function to create DSPy facade instances
-        """
-        self.dspy_facade: DspyFacade = dspy_facade_factory(
-            options=DspyInitOptions(
-                temperature=0.6,
-                max_tokens=1000,
-            )
-        )
-        logger.info("Sentence rewrite service initialized")
+    def __init__(self, llm_facade: LLMFacade) -> None:
+        self.llm_facade = llm_facade
 
     @safe
     def rewrite_sentence(self, sentence: str, context: str) -> list[str]:
@@ -57,9 +38,24 @@ class SentenceRewriteService:
         """
         logger.info("Generating sentence rewrites", sentence=sentence)
 
-        # Generate at least 3 but maximum of 5 alternative rewrites
-        result: SentenceRewriteSignature = self.dspy_facade.predict(
-            SentenceRewriteSignature, sentence=sentence, context=context, min_options=3, max_options=5
+        result = self.llm_facade.structured_predict(
+            SentenceRewriteOutput,
+            PromptTemplate(
+                """You are an expert in language and rewriting. Your task is to generate alternative ways to express a sentence or a section in the given context.
+
+                1. Generate at least 1 but maximum of 5 alternative rewrites for the given sentence.
+                2. The rewrites should be in the same language as the input text.
+                3. The rewrites should be different from the original sentence.
+                4. The rewrites should be relevant to the context provided.
+
+                Sentence to rewrite:
+                {sentence}
+                Context:
+                {context}
+                """
+            ),
+            sentence=sentence,
+            context=context,
         )
 
         # Filter out empty options or options identical to the original

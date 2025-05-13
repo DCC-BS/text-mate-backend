@@ -1,35 +1,25 @@
-from typing import Callable, final
+from typing import final
 
-import dspy  # type: ignore
+from llama_index.core.prompts import PromptTemplate
+from pydantic import BaseModel, Field
 from returns.result import safe
 
-from text_mate_backend.services.dspy_facade import DspyFacade, DspyInitOptions
+from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("word_synonym_service")
 
 
-class SynonymSignature(dspy.Signature):
-    """
-    Find synonyms for a word in the context of a document.
-    """
-
-    word: str = dspy.InputField(desc="The word to find synonyms for")
-    context: str = dspy.InputField(desc="The sentence or paragraph containing the word")
-    options: list[str] = dspy.OutputField(desc="A list of alternative words, in the same language as the input word")
+class SynonymOutput(BaseModel):
+    options: list[str] = Field(
+        description="A list of alternative words, in the same language as the input word",
+    )
 
 
 @final
 class WordSynonymService:
-    def __init__(self, dspy_facade_factory: Callable[..., DspyFacade]) -> None:
-        logger.info("Initializing WordSynonymService")
-        self.dspy_facade: DspyFacade = dspy_facade_factory(
-            options=DspyInitOptions(
-                temperature=0.6,
-                max_tokens=1000,
-            )
-        )
-        logger.info("WordSynonymService initialized successfully")
+    def __init__(self, llm_facade: LLMFacade) -> None:
+        self.llm_facade = llm_facade
 
     @safe
     def get_synonyms(self, word: str, context: str) -> list[str]:
@@ -37,6 +27,24 @@ class WordSynonymService:
         Get synonyms for a word in the context of a document.
         """
         logger.info("Getting synonyms for word: %s", word)
-        response: SynonymSignature = self.dspy_facade.predict(SynonymSignature, word=word, context=context)
+
+        response = self.llm_facade.structured_predict(
+            SynonymOutput,
+            PromptTemplate(
+                """You are an expert in language and synonyms. Your task is to find synonyms for the given word in the context of the document.
+
+                1. Find synonyms for the word in the context of the document.
+                2. Provide a list of all synonyms found, minimum 1 word maximus 5 words.
+                3. If no synonyms are found, return an empty list.
+                4. The synonyms should be in the same language as the input word.
+                Word to find synonyms for:
+                {word}
+                Context:
+                {context}
+                """,
+            ),
+            word=word,
+            context=context,
+        )
 
         return response.options

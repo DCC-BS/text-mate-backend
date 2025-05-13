@@ -1,61 +1,27 @@
 import time
-from typing import Callable, final
+from typing import final
 
-import dspy  # type: ignore
+from llama_index.core.prompts import PromptTemplate
+from pydantic import BaseModel, Field
 from returns.result import safe
 
 from text_mate_backend.models.text_rewrite_models import RewriteResult, TextRewriteOptions
-from text_mate_backend.services.dspy_facade import DspyFacade, DspyInitOptions
+from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("text_rewrite_service")
 
 
-class RewirteInfo(dspy.Signature):
-    """
-    Rewrite the given text based on the provided context and options.
-    """
-
-    text: str = dspy.InputField(desc="The text to be rewritten")
-    context: str = dspy.InputField(desc="The full text of the document, text to be rewritten is marked with <rewrite>")
-    writing_style: str = dspy.InputField(
-        desc="""The writing style to use for the rewritten text.
-                - general: General text
-                - simple: Simple text
-                - professional: Professional text
-                - casual: Casual text
-                - academic: Academic text
-                - technical: Technical text""",
-    )
-    target_audience: str = dspy.InputField(
-        desc="""The target audience to use for the rewritten text.
-                - general: General audience
-                - young: Young audience
-                - adult: Adult audience
-                - children: Children audience""",
-    )
-    intend: str = dspy.InputField(
-        desc="""The intend to use for the rewritten text.
-                - general: General text
-                - persuasive: Persuasive text
-                - informative: Informative text
-                - descriptive: Descriptive text
-                - narrative: Narrative text
-                - entertaining: Entertaining text""",
-    )
-    rewritten_text: str = dspy.OutputField(desc="The rewritten text, in the same language as the input text.")
+@final
+class RewriteOutput(BaseModel):
+    rewritten_text: str = Field(description="The rewritten text, in the same language as the input text.")
 
 
 @final
 class TextRewriteService:
-    def __init__(self, dspy_facade_factory: Callable[..., DspyFacade]) -> None:
+    def __init__(self, llm_facade: LLMFacade) -> None:
         logger.info("Initializing TextRewriteService")
-        self.dspy_facade: DspyFacade = dspy_facade_factory(
-            options=DspyInitOptions(
-                temperature=0.6,
-                max_tokens=1000,
-            )
-        )
+        self.llm_facade = llm_facade
         logger.info("TextRewriteService initialized successfully")
 
     @safe
@@ -88,13 +54,34 @@ class TextRewriteService:
 
         start_time = time.time()
         try:
-            response: RewirteInfo = self.dspy_facade.predict(
-                RewirteInfo,
-                text=text,
-                context=context,
-                writing_style=options.writing_style,
-                target_audience=options.target_audience,
-                intend=options.intend,
+            response = self.llm_facade.structured_predict(
+                RewriteOutput,
+                PromptTemplate(
+                    """
+                    You are an expert in rewriting text. Take the given text and rewrite it based on the provided context and options.
+                    Your task:
+                    1. Rewrite the text based on the provided context and options.
+                    2. Provide a list of all rewritten text options.
+                    3. If no options are found, return an empty list.
+                    4. The rewritten text should be in the same language as the input text.
+
+                    Text to be rewritten:
+                    {text}
+
+                    Context:
+                    {context}
+
+                    Options:
+                    - Writing style: {writing_style}
+                    - Target audience: {target_audience}
+                    - Intend: {intend}
+                    """,
+                    text=text,
+                    context=context,
+                    writing_style=options.writing_style,
+                    target_audience=options.target_audience,
+                    intend=options.intend,
+                ),
             )
 
             processing_time = time.time() - start_time

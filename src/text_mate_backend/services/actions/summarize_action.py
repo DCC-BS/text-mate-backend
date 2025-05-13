@@ -2,12 +2,13 @@ from fastapi.responses import StreamingResponse
 from openai import OpenAI
 
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
+from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("summarize_action")
 
 
-def summarize(text: str, llm: OpenAI) -> StreamingResponse:
+def summarize(text: str, llm_facade: LLMFacade) -> StreamingResponse:
     """
     Summarizes the given text by providing a condensed version that capturese main points.
 
@@ -33,5 +34,5 @@ def summarize(text: str, llm: OpenAI) -> StreamingResponse:
     logger.debug("Created summarize prompt options")
     return run_prompt(
         options,
-        llm,
+        llm_facade,
     )
