@@ -1,4 +1,3 @@
-from typing import Any, List
 from unittest.mock import Mock
 
 import pytest
@@ -6,14 +5,14 @@ from pytest_mock import MockerFixture
 from returns.result import Failure, Success
 
 from text_mate_backend.models.text_rewrite_models import RewriteResult, TextRewriteOptions
-from text_mate_backend.services.dspy_facade import DspyFacade, DspyInitOptions
-from text_mate_backend.services.rewrite_text import RewirteInfo, TextRewriteService
+from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.services.rewrite_text import RewriteOutput, TextRewriteService
 
 
 @pytest.fixture
-def mock_dspy_facade(mocker: MockerFixture) -> Mock:
+def mock_llm_facade(mocker: MockerFixture) -> Mock:
     """
-    Provides a mock DspyFacade for testing.
+    Provides a mock LLMFacade for testing.
 
     Args:
         mocker: The pytest-mock fixture
@@ -21,64 +20,44 @@ def mock_dspy_facade(mocker: MockerFixture) -> Mock:
     Returns:
         A mock DspyFacade object
     """
-    mock_facade = mocker.Mock(spec=DspyFacade)
+    mock_facade: LLMFacade = mocker.Mock(spec=LLMFacade)
     return mock_facade
-
-
-@pytest.fixture
-def mock_dspy_facade_factory(mock_dspy_facade: Mock) -> Mock:
-    """
-    Provides a mock factory function that returns a DspyFacade.
-
-    Args:
-        mock_dspy_facade: The mock DspyFacade fixture
-
-    Returns:
-        A mock factory function
-    """
-    return Mock(return_value=mock_dspy_facade)
 
 
 class TestTextRewriteService:
     """Tests for the TextRewriteService class."""
 
-    def test_init(self, mock_dspy_facade_factory: Mock) -> None:
+    def test_init(self, mock_llm_facade: Mock) -> None:
         """
         Test that TextRewriteService is initialized correctly.
 
         Args:
-            mock_dspy_facade_factory: Factory function that produces a mock DspyFacade
+            mock_llm_facade: The mock LLMFacade instance
         """
         # Act
-        service = TextRewriteService(dspy_facade_factory=mock_dspy_facade_factory)
+        service = TextRewriteService(llm_facade=mock_llm_facade)
 
         # Assert
-        mock_dspy_facade_factory.assert_called_once()
         assert isinstance(service, TextRewriteService)
-        options = mock_dspy_facade_factory.call_args[1]["options"]
-        assert isinstance(options, DspyInitOptions)
-        assert options.temperature == 0.6
-        assert options.max_tokens == 1000
 
-    def test_rewrite_text_success(self, mock_dspy_facade_factory: Mock, mock_dspy_facade: Mock) -> None:
+    def test_rewrite_text_success(self, mock_llm_facade: Mock) -> None:
         """
         Test that rewrite_text returns RewriteResult with processed options on success.
 
         Args:
-            mock_dspy_facade_factory: Factory function that produces a mock DspyFacade
-            mock_dspy_facade: The mock DspyFacade instance
+            mock_llm_facade: The mock LLMFacade instance
         """
         # Arrange
         input_text = "Hello world"
         context = "This is a <rewrite>Hello world</rewrite> context"
         options = TextRewriteOptions(writing_style="professional", target_audience="adult", intend="informative")
 
-        # Mock the predict method to return a RewirteInfo with rewritten_text
-        mock_response = Mock(spec=RewirteInfo)
+        # Mock the structured_predict method to return a RewriteOutput with rewritten_text
+        mock_response = Mock(spec=RewriteOutput)
         mock_response.rewritten_text = "Option 1"
-        mock_dspy_facade.predict.return_value = mock_response
+        mock_llm_facade.structured_predict.return_value = mock_response
 
-        service = TextRewriteService(dspy_facade_factory=mock_dspy_facade_factory)
+        service = TextRewriteService(llm_facade=mock_llm_facade)
 
         # Act
         result = service.rewrite_text(input_text, context, options)
@@ -89,35 +68,27 @@ class TestTextRewriteService:
         assert isinstance(rewrite_result, RewriteResult)
         assert rewrite_result.rewritten_text == "Option 1"
 
-        # Verify that DspyFacade.predict was called with correct parameters
-        mock_dspy_facade.predict.assert_called_once_with(
-            RewirteInfo,
-            text=input_text,
-            context=context,
-            writing_style=options.writing_style,
-            target_audience=options.target_audience,
-            intend=options.intend,
-        )
+        # Verify that LLMFacade.structured_predict was called correctly
+        mock_llm_facade.structured_predict.assert_called_once()
 
-    def test_rewrite_text_with_special_characters(self, mock_dspy_facade_factory: Mock, mock_dspy_facade: Mock) -> None:
+    def test_rewrite_text_with_special_characters(self, mock_llm_facade: Mock) -> None:
         """
         Test that rewrite_text handles special characters like 'ß' correctly.
 
         Args:
-            mock_dspy_facade_factory: Factory function that produces a mock DspyFacade
-            mock_dspy_facade: The mock DspyFacade instance
+            mock_llm_facade: The mock LLMFacade instance
         """
         # Arrange
         input_text = "Straße"
         context = "This is a <rewrite>Straße</rewrite> context"
         options = TextRewriteOptions()
 
-        # Mock the predict method to return a response with special characters
-        mock_response = Mock(spec=RewirteInfo)
+        # Mock the structured_predict method to return a response with special characters
+        mock_response = Mock(spec=RewriteOutput)
         mock_response.rewritten_text = "Die große Straße"
-        mock_dspy_facade.predict.return_value = mock_response
+        mock_llm_facade.structured_predict.return_value = mock_response
 
-        service = TextRewriteService(dspy_facade_factory=mock_dspy_facade_factory)
+        service = TextRewriteService(llm_facade=mock_llm_facade)
 
         # Act
         result = service.rewrite_text(input_text, context, options)
@@ -129,27 +100,24 @@ class TestTextRewriteService:
         assert "ss" in rewrite_result.rewritten_text
         assert rewrite_result.rewritten_text == "Die grosse Strasse"
 
-    def test_rewrite_text_with_rewrite_tag_replacement(
-        self, mock_dspy_facade_factory: Mock, mock_dspy_facade: Mock
-    ) -> None:
+    def test_rewrite_text_with_rewrite_tag_replacement(self, mock_llm_facade: Mock) -> None:
         """
         Test that rewrite_text correctly replaces <rewrite> tags with the original text.
 
         Args:
-            mock_dspy_facade_factory: Factory function that produces a mock DspyFacade
-            mock_dspy_facade: The mock DspyFacade instance
+            mock_llm_facade: The mock LLMFacade instance
         """
         # Arrange
         input_text = "Hello world"
         context = "This is a <rewrite>Hello world</rewrite> context"
         options = TextRewriteOptions()
 
-        # Mock the predict method to return text with <rewrite> tags
-        mock_response = Mock(spec=RewirteInfo)
+        # Mock the structured_predict method to return text with <rewrite> tags
+        mock_response = Mock(spec=RewriteOutput)
         mock_response.rewritten_text = "<rewrite> is replaced"
-        mock_dspy_facade.predict.return_value = mock_response
+        mock_llm_facade.structured_predict.return_value = mock_response
 
-        service = TextRewriteService(dspy_facade_factory=mock_dspy_facade_factory)
+        service = TextRewriteService(llm_facade=mock_llm_facade)
 
         # Act
         result = service.rewrite_text(input_text, context, options)
@@ -159,23 +127,22 @@ class TestTextRewriteService:
         rewrite_result = result.unwrap()
         assert rewrite_result.rewritten_text == "Hello world is replaced"
 
-    def test_rewrite_text_exception_handling(self, mock_dspy_facade_factory: Mock, mock_dspy_facade: Mock) -> None:
+    def test_rewrite_text_exception_handling(self, mock_llm_facade: Mock) -> None:
         """
         Test that rewrite_text properly handles exceptions using the @safe decorator.
 
         Args:
-            mock_dspy_facade_factory: Factory function that produces a mock DspyFacade
-            mock_dspy_facade: The mock DspyFacade instance
+            mock_llm_facade: The mock LLMFacade instance
         """
         # Arrange
         input_text = "Hello world"
         context = "This is a context"
         options = TextRewriteOptions()
 
-        # Mock the predict method to raise an exception
-        mock_dspy_facade.predict.side_effect = Exception("API error")
+        # Mock the structured_predict method to raise an exception
+        mock_llm_facade.structured_predict.side_effect = Exception("API error")
 
-        service = TextRewriteService(dspy_facade_factory=mock_dspy_facade_factory)
+        service = TextRewriteService(llm_facade=mock_llm_facade)
 
         # Act
         result = service.rewrite_text(input_text, context, options)
