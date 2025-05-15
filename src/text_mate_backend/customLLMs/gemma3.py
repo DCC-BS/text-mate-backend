@@ -15,18 +15,17 @@ from text_mate_backend.utils.configuration import Configuration
 
 @final
 class GemaVllm(CustomLLM):
-    client: OpenAI = Field(default=OpenAI(), description="OpenAI client instance")
-    config: Configuration | None = Field(default=None, description="Configuration instance")
+    client: OpenAI
+    config: Configuration
     last_log: str = Field(default="", description="Last log message")
 
     def __init__(self, config: Configuration, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-
-        self.config = config
-        self.client = OpenAI(
-            api_key=self.config.openai_api_key,
-            base_url=self.config.openai_api_base_url,
+        client = OpenAI(
+            api_key=config.openai_api_key,
+            base_url=config.openai_api_base_url,
         )
+
+        super().__init__(*args, config=config, client=client, **kwargs)
 
         print(f"VLLM client initialized {self.config.openai_api_base_url}")
 

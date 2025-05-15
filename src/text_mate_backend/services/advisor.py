@@ -28,9 +28,11 @@ class AdvisorService:
 
         doc_names = self.ruel_container.document_names
 
-        return filter(
-            lambda doc: doc.file in doc_names,
-            doc_descriptions,
+        return list(
+            filter(
+                lambda doc: doc.file in doc_names,
+                doc_descriptions,
+            )
         )
 
     def filter_ruels(self, docs: set[str]) -> list[Ruel]:
@@ -45,12 +47,13 @@ class AdvisorService:
             return self._check_text(text, docs)
         except Exception as e:
             logger.error(f"Error checking text: {e}")
-            logger.debug(f"last log: {self.llm.last_log}")
             raise
 
     def _check_text(self, text: str, docs: set[str]) -> RuelsValidationContainer:
         rules = self.filter_ruels(docs)
         logger.info(f"Number of rules found: {len(rules)}")
+
+        formatted_rules = self.format_ruels(rules)
 
         validated = self.llm_facade.structured_predict(
             RuelsValidationContainer,
@@ -62,40 +65,38 @@ class AdvisorService:
                 3. If no violations are found, return an empty list.
 
                 Rules documentation:
+                ---------------
                 {rules}
+                ---------------
 
                 input text:
+                ---------------
                 {text}
+                ---------------
 
                 Return your findings as structured data according to the specified format. Keep your answer in the original language.
                 """,
-                rules=json.dumps([rule.model_dump() for rule in rules]),
+                rules=formatted_rules,
                 text=text,
             ),
         )
 
-        # sllm = self.llm.as_structured_llm(RuelsValidationContainer)
-
-        # validated: RuelsValidationContainer = sllm.structured_predict(
-        #     RuelsValidationContainer,
-        #     PromptTemplate(
-        #         """You are an expert in editorial guidelines. Take the given document and extract all relevant rules.
-        #         Your task:
-        #         1. Check the text for any violations of the rules.
-        #         2. Provide a list of all violations of the rules.
-        #         3. If no violations are found, return an empty list.
-
-        #         Rules documentation:
-        #         {rules}
-
-        #         input text:
-        #         {text}
-
-        #         Return your findings as structured data according to the specified format. Keep your answer in the original language.
-        #         """,
-        #         rules=json.dumps([rule.model_dump() for rule in rules]),
-        #         text=text,
-        #     ),
-        # )
-
         return validated
+
+    def format_ruels(self, ruels: list[Ruel]) -> str:
+        """
+        Formats the rules into a human-readable string.
+        """
+        return "\n".join([self.format_ruel(rule) for rule in ruels])
+
+    def format_ruel(self, ruel: Ruel) -> str:
+        """
+        Formats the rule for better readability.
+        """
+        return f"""
+        Rule Name: {ruel.name}
+        Description: {ruel.description}
+        File Name: {ruel.file_name}
+        Page Number: {ruel.page_number}
+        Example: {ruel.example}
+        """

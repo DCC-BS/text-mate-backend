@@ -2,7 +2,6 @@ from typing import Any, Dict, List, Optional, Union, final
 
 from llama_index.core.llms import CompletionResponse, CompletionResponseGen, CustomLLM, LLMMetadata
 from llama_index.core.llms.callbacks import llm_completion_callback
-from llama_index.core.llms.function_calling import FunctionCallingLLM
 from openai import OpenAI
 from openai.types.chat import ChatCompletionToolParam
 from pydantic import Field
@@ -12,18 +11,17 @@ from text_mate_backend.utils.configuration import Configuration
 
 @final
 class QwenVllm(CustomLLM):
-    client: OpenAI = Field(default=OpenAI(api_key=""), description="OpenAI client instance")
-    config: Configuration | None = Field(default=None, description="Configuration instance")
+    client: OpenAI
+    config: Configuration
     last_log: str = Field(default="", description="Last log message")
 
     def __init__(self, config: Configuration, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-
-        self.config = config
-        self.client = OpenAI(
-            api_key=self.config.openai_api_key,
-            base_url=self.config.openai_api_base_url,
+        client = OpenAI(
+            api_key=config.openai_api_key,
+            base_url=config.openai_api_base_url,
         )
+
+        super().__init__(*args, config=config, client=client, **kwargs)
 
         print(f"""VLLM client initialized:
               url: {self.config.openai_api_base_url}

@@ -36,7 +36,7 @@ services:
     command: >
       --port 8000
       --model Qwen/Qwen3-32B-AWQ
-      --max-model-len 32000
+      --max-model-len 40960
       --gpu-memory-utilization 0.75
       --enable-auto-tool-choice
       --tool-call-parser hermes
