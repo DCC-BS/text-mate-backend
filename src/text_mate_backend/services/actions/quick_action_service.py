@@ -8,7 +8,6 @@ from text_mate_backend.services.actions.bullet_points_action import bullet_point
 from text_mate_backend.services.actions.shorten_action import shorten
 from text_mate_backend.services.actions.simplify_action import simplify
 from text_mate_backend.services.actions.social_media_action import social_mediafy
-from text_mate_backend.services.actions.structure_action import structure_text
 from text_mate_backend.services.actions.summarize_action import summarize
 from text_mate_backend.services.actions.translate_action import translate
 from text_mate_backend.services.llm_facade import LLMFacade
@@ -23,8 +22,6 @@ class Actions(str, Enum):
     BulletPoints = "bullet_points"
     Summarize = "summarize"
     SocialMediafy = "social_mediafy"
-    Structure = "structure"
-    # Translate = "translate"
     TranslateDeCH = "translate_de-CH"
     TranslateEnUS = "translate_en-US"
     TranslateEnGB = "translate_en-GB"
@@ -76,9 +73,6 @@ class QuickActionService:
                 case Actions.SocialMediafy:
                     response = social_mediafy(text, self.llm_facade)
                     logger.info("Applied social media action")
-                case Actions.Structure:
-                    response = structure_text(text, self.llm_facade)
-                    logger.info("Applied structure action")
                 case Actions.TranslateDeCH:
                     response = translate(text, "German (CH)", self.llm_facade)
                     logger.info("Applied translate action")
