@@ -8,8 +8,9 @@ from llama_index.core.schema import Document
 from llama_index.readers.file import PDFReader  # type: ignore
 from tqdm import tqdm
 
-from text_mate_backend.custom_vlmm import VllmCustom
+from text_mate_backend.customLLMs.qwen3 import QwenVllm
 from text_mate_backend.models.ruel_models import Ruel, RuelsContainer
+from text_mate_backend.utils.configuration import get_config
 
 prompt = PromptTemplate(
     """You are an expert in editorial guidelines. Take the given document and extract all relevant ruels.
@@ -31,7 +32,7 @@ Return your findings as structured data according to the specified format.
 token_limit = 32_000
 max_tokens_for_batch = 25_000
 pdf_reader = PDFReader()
-llm = VllmCustom()
+llm = QwenVllm(get_config())
 sllm = llm.as_structured_llm(RuelsContainer)
 
 MAX_RETRIES = 1
@@ -148,10 +149,13 @@ def get_ruels(path: Path) -> RuelsContainer:
             else:
                 print(f"      ✅ Retry successful for batch {i + 1}/{len(batches)}")
 
-        batch_ruels = response.rules
-        ruels.extend(batch_ruels)
-        batch_time = time.time() - batch_start
-        print(f"      ✅ Found {len(batch_ruels)} rules in {batch_time:.2f}s")
+        if response is not None:
+            batch_ruels = response.rules
+            ruels.extend(batch_ruels)
+            batch_time = time.time() - batch_start
+            print(f"      ✅ Found {len(batch_ruels)} rules in {batch_time:.2f}s")
+        else:
+            print(f"      ❌ No rules extracted from batch")
 
     total_time = time.time() - start_time
 

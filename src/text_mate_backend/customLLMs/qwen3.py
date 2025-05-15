@@ -1,9 +1,8 @@
-from typing import Any, Dict, List, Optional, Union, final
+from typing import Any, final
 
 from llama_index.core.llms import CompletionResponse, CompletionResponseGen, CustomLLM, LLMMetadata
 from llama_index.core.llms.callbacks import llm_completion_callback
 from openai import OpenAI
-from openai.types.chat import ChatCompletionToolParam
 from pydantic import Field
 
 from text_mate_backend.utils.configuration import Configuration
@@ -36,8 +35,6 @@ class QwenVllm(CustomLLM):
     def complete(
         self,
         prompt: str,
-        tools: Optional[List[ChatCompletionToolParam]] = None,
-        tool_choice: Optional[Union[str, Dict[str, str]]] = None,
         **kwargs: Any,
     ) -> CompletionResponse:
         """
@@ -52,39 +49,26 @@ class QwenVllm(CustomLLM):
         Returns:
             CompletionResponse with text and raw API response
         """
-        completion_kwargs = {
-            "model": self.config.llm_model,
-            "messages": [{"role": "user", "content": prompt + " /no_think"}],
-            "presence_penalty": 1.5,
-            "top_p": 0.8,
-            "temperature": 0.7,
-            "extra_body": {"top_k": 20},
-        }
-
-        # Add tools if provided
-        if tools:
-            completion_kwargs["tools"] = tools
-
-        # Add tool_choice if provided
-        if tool_choice:
-            completion_kwargs["tool_choice"] = tool_choice
-
-        completion = self.client.chat.completions.create(**completion_kwargs)
+        completion = self.client.chat.completions.create(
+            model=self.config.llm_model,
+            messages=[{"role": "user", "content": prompt + " /no_think"}],
+            presence_penalty=1.5,
+            top_p=0.8,
+            temperature=0.7,
+            extra_body={"top_k": 20},
+        )
 
         message = completion.choices[0].message
         output: str = message.content or ""  # Handle None case explicitly
-        tool_calls = message.tool_calls  # New: Capture tool calls
 
         self.last_log = completion.choices[0].model_dump_json()
 
-        return CompletionResponse(text=output, raw=completion, additional_kwargs={"tool_calls": tool_calls})
+        return CompletionResponse(text=output, raw=completion)
 
     @llm_completion_callback()
     def stream_complete(
         self,
         prompt: str,
-        tools: Optional[List[ChatCompletionToolParam]] = None,
-        tool_choice: Optional[Union[str, Dict[str, str]]] = None,
         **kwargs: Any,
     ) -> CompletionResponseGen:
         """
@@ -101,26 +85,15 @@ class QwenVllm(CustomLLM):
         """
         response = ""
 
-        # Use chat.completions instead of completions for consistency with non-streaming behavior
-        completion_kwargs = {
-            "model": self.config.llm_model,
-            "messages": [{"role": "user", "content": prompt + " /no_think"}],
-            "presence_penalty": 1.5,
-            "top_p": 0.8,
-            "temperature": 0.7,
-            "extra_body": {"top_k": 20},
-            "stream": True,
-        }
-
-        # Add tools if provided
-        if tools:
-            completion_kwargs["tools"] = tools
-
-        # Add tool_choice if provided
-        if tool_choice:
-            completion_kwargs["tool_choice"] = tool_choice
-
-        stream = self.client.chat.completions.create(**completion_kwargs)
+        stream = self.client.chat.completions.create(
+            model=self.config.llm_model,
+            messages=[{"role": "user", "content": prompt + " /no_think"}],
+            presence_penalty=1.5,
+            top_p=0.8,
+            temperature=0.7,
+            extra_body={"top_k": 20},
+            stream=True,
+        )
 
         for chunk in stream:
             if chunk.choices and chunk.choices[0].delta.content is not None:
