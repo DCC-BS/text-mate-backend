@@ -14,9 +14,10 @@ services:
     volumes:
       - ${LANGUAGE_TOOL_CACHE_DIR}:/languagetool/.cache/ngrams
 
-  vllm_gemma3_27b:
+  vllm_qwen3_32B:
+    platform: linux/amd64
     image: vllm/vllm-openai:v0.8.5
-    container_name: vllm_gemma3_27b
+    container_name: vllm_qwen3_32B
     ports:
       - ${LLM_API_PORT}:8000
     environment:
@@ -33,4 +34,42 @@ services:
     volumes:
       - ${HUGGING_FACE_CACHE_DIR}:/root/.cache/huggingface
     command: >
-      --port 8000 --model ISTA-DASLab/gemma-3-27b-it-GPTQ-4b-128g --max-model-len 32000 --gpu-memory-utilization 0.83 --max-num-seqs 1 --tensor-parallel-size 2
+      --port 8000
+      --model Qwen/Qwen3-32B-AWQ
+      --max-model-len 40960
+      --gpu-memory-utilization 0.75
+      --enable-auto-tool-choice
+      --tool-call-parser hermes
+      --tensor-parallel-size 2
+      --enable-reasoning
+      --reasoning-parser deepseek_r1
+# --rope-scaling '{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":32768}'
+
+  # vllm_gemma3_27b:
+  #   platform: linux/amd64
+  #   image: vllm/vllm-openai:v0.8.5
+  #   container_name: vllm_gemma3_27b
+  #   ports:
+  #     - ${LLM_API_PORT}:8000
+  #   environment:
+  #     - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
+  #   runtime: nvidia
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: all
+  #             capabilities: [ gpu ]
+  #   ipc: host
+  #   volumes:
+  #     - ${HUGGING_FACE_CACHE_DIR}:/root/.cache/huggingface
+  #   command: >
+  #     --port 8000
+  #     --model ISTA-DASLab/gemma-3-27b-it-GPTQ-4b-128g
+  #     --max-model-len 32000
+  #     --gpu-memory-utilization 0.83
+  #     --max-num-seqs 1
+  #     --tensor-parallel-size 2
+  #     --dtype bfloat16
+  #     --block-size 32

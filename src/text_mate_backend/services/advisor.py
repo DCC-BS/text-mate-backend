@@ -1,132 +1,102 @@
-import time
-from typing import Any, final
+import json
+from pathlib import Path
+from typing import final
 
-import dspy  # type: ignore
-from pydantic import BaseModel
-from returns.result import safe
+from llama_index.core.prompts import PromptTemplate
 
-from text_mate_backend.models.text_rewrite_models import TextRewriteOptions
-from text_mate_backend.utils.configuration import Configuration
+from text_mate_backend.models.ruel_models import Ruel, RuelDocumentDescription, RuelsContainer, RuelsValidationContainer
+from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("advisor_service")
 
 
-class ProposeChanges(dspy.Signature):
-    """
-    Propose changes to the text.
-    """
-
-    newText: str = dspy.OutputField(desc="The corrected text")
-    description: str = dspy.OutputField(desc="A description of the changes made to the text")
-
-
-class AdvisorInfo(dspy.Signature):
-    """
-    You are an assistant that helps improve the formality, domain, and coherence of text.
-    Give advice on how to improve the text.
-    Focus on the formality, domain, and coherence of the text and not on grammar or spelling mistakes.
-    If the text is in german use ss instead of ß.
-    """
-
-    text: str = dspy.InputField(desc="The text to inspect")
-    formality: str = dspy.InputField(desc="The formality to use for the rewritten text")
-    domain: str = dspy.InputField(desc="The domain the use for the rewritten text")
-
-    formalityScore: float = dspy.OutputField(
-        desc="Assess how well the text matches the desired formality level. The formality score of the text normalized to a scale of 0 to 1"
-    )
-    domainScore: float = dspy.OutputField(
-        desc="Evaluate how well the text fits the specified domain. The domain score of the text normalized to a scale of 0 to 1"
-    )
-
-    coherenceAndStructure: float = dspy.OutputField(
-        desc="Analyze the logical flow and consistency of ideas in the text. The coherence and structure score of the text normalized to a scale of 0 to 1"
-    )
-
-    proposedChanges: str = dspy.OutputField(
-        desc="Report in the language of the original text about the proposed changes to the text formatted pretty in markdwon."
-    )
-
-
-class AdvisorOutput(BaseModel):
-    formalityScore: float
-    domainScore: float
-    coherenceAndStructure: float
-    proposedChanges: str
-
-
 @final
 class AdvisorService:
-    def __init__(self, config: Configuration) -> None:
+    def __init__(self, llm_facade: LLMFacade) -> None:
         logger.info("Initializing AdvisorService")
-        model_name = "hosted_vllm/ISTA-DASLab/gemma-3-27b-it-GPTQ-4b-128g"
-        logger.info(f"Using LLM model: {model_name}")
 
-        lm: Any = dspy.LM(
-            model=model_name,
-            api_base=config.openai_api_base_url,
-            api_key=config.openai_api_key,
-            max_tokens=1000,
-            temperature=0.2,
+        self.llm_facade = llm_facade
+        self.ruel_container = RuelsContainer.model_validate_json(Path("docs/ruels.json").read_text())
+
+    def get_docs(self) -> list[RuelDocumentDescription]:
+        """
+        Returns the documentation file names available for the advisor service.
+        """
+        json_data = json.loads(Path("docs/docs.json").read_text())
+        doc_descriptions = [RuelDocumentDescription.model_validate(doc) for doc in json_data]
+
+        doc_names = self.ruel_container.document_names
+
+        return list(
+            filter(
+                lambda doc: doc.file in doc_names,
+                doc_descriptions,
+            )
         )
-        dspy.configure(lm=lm)
-        logger.info("AdvisorService initialized successfully")
 
-    @safe
-    def advise_changes(self, text: str, options: TextRewriteOptions) -> AdvisorOutput:
+    def filter_ruels(self, docs: set[str]) -> list[Ruel]:
+        return [rule for rule in self.ruel_container.rules if rule.file_name in docs]
+
+    def check_text(self, text: str, docs: set[str]) -> RuelsValidationContainer:
         """
-        Analyzes the text and provides advice for improvements.
-
-        Args:
-            text: The input text to analyze
-            options: Configuration options for text analysis
-
-        Returns:
-            AdvisorOutput containing scores and proposed changes
+        Checks the text for any violations of the rules.
         """
-        text_length = len(text)
-        text_preview = text[:50] + ("..." if text_length > 50 else "")
 
-        logger.info(f"Processing advisor request", text_length=text_length)
-        logger.debug("Text preview", preview=text_preview)
-
-        start_time = time.time()
         try:
-            module: Any = dspy.Predict(AdvisorInfo)
-
-            # Make API call to analyze text
-            logger.debug("Calling LLM for text analysis")
-            response: AdvisorInfo = module(text=text, domain="", formality="")
-
-            processing_time = time.time() - start_time
-
-            result = AdvisorOutput(
-                formalityScore=response.formalityScore,
-                domainScore=response.domainScore,
-                coherenceAndStructure=response.coherenceAndStructure,
-                proposedChanges=response.proposedChanges,
-            )
-
-            logger.info(
-                "Advisor analysis completed successfully",
-                processing_time_ms=round(processing_time * 1000),
-                formality_score=result.formalityScore,
-                domain_score=result.domainScore,
-                coherence_score=result.coherenceAndStructure,
-            )
-
-            changes_preview = result.proposedChanges[:50] + ("..." if len(result.proposedChanges) > 50 else "")
-            logger.debug("Proposed changes preview", preview=changes_preview)
-
-            return result
-
+            return self._check_text(text, docs)
         except Exception as e:
-            processing_time = time.time() - start_time
-            logger.error(
-                "Advisor analysis failed",
-                error=str(e),
-                error_type=type(e).__name__,
-                processing_time_ms=round(processing_time * 1000),
-            )
+            logger.error(f"Error checking text: {e}")
             raise
+
+    def _check_text(self, text: str, docs: set[str]) -> RuelsValidationContainer:
+        rules = self.filter_ruels(docs)
+        logger.info(f"Number of rules found: {len(rules)}")
+
+        formatted_rules = self.format_ruels(rules)
+
+        validated = self.llm_facade.structured_predict(
+            RuelsValidationContainer,
+            PromptTemplate(
+                """You are an expert in editorial guidelines. Take the given document and extract all relevant rules.
+                Your task:
+                1. Check the text for any violations of the rules.
+                2. Provide a list of all violations of the rules.
+                3. If no violations are found, return an empty list.
+
+                Rules documentation:
+                ---------------
+                {rules}
+                ---------------
+
+                input text:
+                ---------------
+                {text}
+                ---------------
+
+                Return your findings as structured data according to the specified format. Keep your answer in the original language.
+                """,
+                rules=formatted_rules,
+                text=text,
+            ),
+        )
+
+        return validated
+
+    def format_ruels(self, ruels: list[Ruel]) -> str:
+        """
+        Formats the rules into a human-readable string.
+        """
+        return "\n".join([self.format_ruel(rule) for rule in ruels])
+
+    def format_ruel(self, ruel: Ruel) -> str:
+        """
+        Formats the rule for better readability.
+        """
+        return f"""
+        Rule Name: {ruel.name}
+        Description: {ruel.description}
+        File Name: {ruel.file_name}
+        Page Number: {ruel.page_number}
+        Example: {ruel.example}
+        """

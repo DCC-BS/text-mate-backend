@@ -2,29 +2,15 @@ import time
 from typing import Generator, Iterator
 
 from fastapi.responses import StreamingResponse
-from openai import BaseModel, OpenAI
-from openai.types.chat import ChatCompletionChunk
+from llama_index.core.prompts import PromptTemplate
+from pydantic import BaseModel
 
-from text_mate_backend.utils.configuration import Configuration
+from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.utils.configuration import get_config
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("action_utils")
-config = Configuration()
-
-SYSTEM_PROMPT_POSTFIX: str = (
-    "Format the text as plain text, don't use any html tags or markdwon."
-    "Answer in the same language as the input text."
-    "Only respond with the answer, do not add any other text."
-)
-
-# SYSTEM_PROMPT_POSTFIX = (
-#     "Format the text as html, using <p> tags for paragraphs and <br> tags for line breaks."
-#     "Use <strong> for bold text."
-#     "Use <ul> and <li> for lists."
-#     "Do not use any other tags."
-#     "Answer in the same language as the input text."
-#     "Only respond with the html code, do not add any other text."
-# )
+config = get_config()
 
 
 class PromptOptions(BaseModel):
@@ -32,12 +18,10 @@ class PromptOptions(BaseModel):
     A class to represent the options for a prompt.
     """
 
-    system_prompt: str
-    user_prompt: str
-    temperature: float = 0.7
+    prompt: str
 
 
-def run_prompt(options: PromptOptions, llm: OpenAI) -> StreamingResponse:
+def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingResponse:
     """
     Runs the given prompt using the OpenAI API and returns a streaming response.
 
@@ -49,32 +33,37 @@ def run_prompt(options: PromptOptions, llm: OpenAI) -> StreamingResponse:
         A StreamingResponse that yields the generated text chunks
     """
     # Get request details for logging
-    user_prompt_preview = options.user_prompt[:100] + ("..." if len(options.user_prompt) > 100 else "")
-
-    logger.info("Starting OpenAI streaming request", model=config.llm_model, temperature=options.temperature)
-    logger.debug("Prompt details", user_prompt=user_prompt_preview, system_prompt=options.system_prompt)
+    logger.info("Starting OpenAI streaming request", model=config.llm_model)
 
     start_time = time.time()
     try:
-        stream: Iterator[ChatCompletionChunk] = llm.chat.completions.create(
-            model=config.llm_model,
-            messages=[
-                {"role": "system", "content": f"{options.system_prompt} {SYSTEM_PROMPT_POSTFIX}"},
-                {"role": "user", "content": options.user_prompt},
-            ],
-            stream=True,
-            temperature=options.temperature,
-        )
+        prompt = PromptTemplate(
+            """
+                {prompt}
+
+                - Format the text as plain text, don't use any html tags or markdown.
+                - Answer in the same language as the input text.
+                - Only respond with the answer, do not add any other text.
+                - Don't add any extra information or context.
+                - Don't add any whitespaces.
+               """,
+            prompt=options.prompt,
+        ).format()
+
+        stream: Iterator[str] = llm_facade.stream_complete(prompt)
 
         def generate() -> Generator[str, None, None]:
             total_tokens = 0
             start_streaming_time = time.time()
             try:
+                isPrefixWhiteSpace = True
+
                 for chunk in stream:
-                    if chunk.choices and chunk.choices[0].delta.content is not None:
-                        content = chunk.choices[0].delta.content.replace("ß", "ss")
-                        total_tokens += 1
-                        yield content
+                    if isPrefixWhiteSpace and chunk == " " or chunk == "\n" or chunk == "\n\n":
+                        continue
+
+                    isPrefixWhiteSpace = False
+                    yield chunk
 
                 # Log streaming completion
                 streaming_duration = time.time() - start_streaming_time

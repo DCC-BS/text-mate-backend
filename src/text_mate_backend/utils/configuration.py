@@ -1,5 +1,7 @@
 import os
 
+from text_mate_backend.utils.load_env import load_env
+
 
 class Configuration:
     def __init__(self) -> None:
@@ -20,4 +22,14 @@ class Configuration:
         """
 
 
-config = Configuration()
+_config: Configuration | None = None
+
+
+def get_config() -> Configuration:
+    """Get the configuration."""
+    load_env()
+
+    global _config
+    if _config is None:
+        _config = Configuration()
+    return _config

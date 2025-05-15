@@ -1,10 +1,11 @@
 from fastapi.responses import StreamingResponse
-from openai import OpenAI
+from llama_index.core.prompts import PromptTemplate
 
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
+from text_mate_backend.services.llm_facade import LLMFacade
 
 
-def bullet_points(text: str, llm: OpenAI) -> StreamingResponse:
+def bullet_points(text: str, llm_facade: LLMFacade) -> StreamingResponse:
     """
     Converts the given text into a structured bullet point format with key points.
 
@@ -16,13 +17,23 @@ def bullet_points(text: str, llm: OpenAI) -> StreamingResponse:
         A StreamingResponse containing the bullet points version of the text
     """
 
-    options: PromptOptions = PromptOptions(
-        system_prompt="You are an assistant that converts text into a well-structured bullet point format. Extract and highlight the key points from the text.",
-        user_prompt=f'Convert the following text into a structured bullet point format. Identify and organize the main ideas and supporting points: "{text}"',
-        temperature=0.7,
-    )
+    prompt = PromptTemplate(
+        """
+        You are an assistant that converts text into a well-structured bullet point format.
+        Extract and highlight the key points from the text.
+
+        Convert the following text into a structured bullet point format.
+        Identify and organize the main ideas and supporting points.
+
+        # START TEXT #
+        {text}
+        # END TEXT #
+        """
+    ).format(text=text)
+
+    options: PromptOptions = PromptOptions(prompt=prompt)
 
     return run_prompt(
         options,
-        llm,
+        llm_facade,
     )
