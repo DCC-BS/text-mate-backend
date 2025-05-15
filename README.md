@@ -148,5 +148,5 @@ uv run mypy .
 
 <a href="https://www.bs.ch/schwerpunkte/daten/databs/schwerpunkte/datenwissenschaften-und-ki"><img src="./_imgs/databs_log.png" alt="DCC Logo" width="200" /></a>
 
-Datenwissenschaften und KI
+Datenwissenschaften und KI <br>
 Developed with ❤️ by Data Alchemy Team
