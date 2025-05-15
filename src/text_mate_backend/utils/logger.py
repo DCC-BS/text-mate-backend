@@ -87,7 +87,7 @@ def init_logger() -> None:
                 CallsiteParameter.LINENO,
             ]  # Using enum values for structlog 25.2.0
         ),
-        structlog.processors.format_exc_info,  # Format exception info if present
+        # structlog.processors.format_exc_info,  # Format exception info if present
         structlog.processors.UnicodeDecoder(),  # Handle non-unicode characters
     ]
 

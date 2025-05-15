@@ -6,6 +6,9 @@ from openai import OpenAI
 from pydantic import Field
 
 from text_mate_backend.utils.configuration import Configuration
+from text_mate_backend.utils.logger import get_logger
+
+logger = get_logger("QwenVllm")
 
 
 @final
@@ -58,10 +61,19 @@ class QwenVllm(CustomLLM):
             extra_body={"top_k": 20},
         )
 
+        choice = completion.choices[0]
+
+        if choice.finish_reason == "length":
+            logger.warning("Completion stopped due to length limit.")
+
         message = completion.choices[0].message
         output: str = message.content or ""  # Handle None case explicitly
 
-        self.last_log = completion.choices[0].model_dump_json()
+        try:
+            self.last_log = completion.choices[0].model_dump_json()
+        except Exception as e:
+            logger.error(f"Error in model_dump_json: {e}")
+            self.last_log = str(completion.choices[0])
 
         return CompletionResponse(text=output, raw=completion)
 
