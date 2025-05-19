@@ -13,6 +13,9 @@ RUN apk add --no-cache \
     su-exec \
     pv
 
+# Copy the log config
+COPY ./logback.xml /LanguageTool/logback.xml
+
 # Copy the download_ngrams script
 COPY download_ngrams.sh /usr/local/bin/download_ngrams.sh
 RUN chmod +x /usr/local/bin/download_ngrams.sh
