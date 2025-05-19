@@ -38,9 +38,14 @@ class WordSynonymService:
                 3. If no synonyms are found, return an empty list.
                 4. The synonyms should be in the same language as the input word.
                 Word to find synonyms for:
+                ---------------
                 {word}
+                ---------------
+
                 Context:
+                ---------------
                 {context}
+                ---------------
                 """,
             ),
             word=word,

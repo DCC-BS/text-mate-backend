@@ -66,10 +66,14 @@ class TextRewriteService:
                     4. The rewritten text should be in the same language as the input text.
 
                     Text to be rewritten:
+                    ---------------
                     {text}
+                    ---------------
 
                     Context:
+                    ---------------
                     {context}
+                    ---------------
 
                     Options:
                     - Writing style: {writing_style}

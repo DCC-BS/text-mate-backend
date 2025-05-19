@@ -47,11 +47,17 @@ class SentenceRewriteService:
                 2. The rewrites should be in the same language as the input text.
                 3. The rewrites should be different from the original sentence.
                 4. The rewrites should be relevant to the context provided.
+                5. Only rewrite the given sentence, not the entire context.
 
                 Sentence to rewrite:
+                ---------------
                 {sentence}
+                ---------------
+
                 Context:
+                ---------------
                 {context}
+                ---------------
                 """
             ),
             sentence=sentence,

@@ -62,6 +62,7 @@ class AdvisorService:
                 Your task:
                 1. Check the text for any violations of the rules.
                 2. Provide a list of all violations of the rules.
+                3. Do not list ruels which are not violated.
                 3. If no violations are found, return an empty list.
 
                 Rules documentation:
@@ -69,7 +70,7 @@ class AdvisorService:
                 {rules}
                 ---------------
 
-                input text:
+                Input text:
                 ---------------
                 {text}
                 ---------------
