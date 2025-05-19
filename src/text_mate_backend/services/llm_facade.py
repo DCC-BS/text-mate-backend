@@ -2,7 +2,7 @@ from typing import Any, Generator, Type, TypeVar, cast
 
 from llama_index.core.llms import LLM
 from llama_index.core.prompts import PromptTemplate
-from openai import BaseModel
+from pydantic import BaseModel
 
 T = TypeVar("T", bound=BaseModel)
 
