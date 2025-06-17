@@ -5606,6 +5606,328 @@
       "file_name": "Redaktionsrichtlinien_V6_2024.pdf",
       "page_number": 17,
       "example": "Verwendung des Duden zur Rechtschreibprüfung."
+    },
+    {
+      "name": "Konkret schreiben",
+      "description": "Konkrete Wörter kreieren bei Leserinnen und Lesern Assoziationen, Bilder und Emotionen. Dadurch werden Inhalte schneller verstanden und bleiben länger im Gedächtnis.",
+      "file_name": "Lesefreundlich_schreiben_Kanton_Basel-Stadt.pdf",
+      "page_number": 1,
+      "example": "Schlechtes Beispiel: Das Wetter zeigt eine Erhöhung der Temperatur und eine verstärkte Sonnenkraft.\nGutes Beispiel: Die Sonne scheint und es ist warm."
+    },
+    {
+      "name": "Aktiv schreiben",
+      "description": "Verben wirken lebendiger, ansprechender und sind in der Regel leichter verständlich. Deshalb entscheiden wir uns, wenn immer möglich, für das Verb.",
+      "file_name": "Lesefreundlich_schreiben_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "Schlechtes Beispiel: Der Schwerpunkt der Angebotserweiterungen liegt auf dem Busnetz.\nGutes Beispiel: In den Angebotserweiterungen priorisiert der Kanton Basel-Stadt das Busnetz."
+    },
+    {
+      "name": "Füllwörter streichen",
+      "description": "Wenn wir miteinander sprechen, nutzen wir häufig Füllwörter, Phrasen und Floskeln. Diese steigern aber die Ungeduld der Leserinnen und Leser in einem Text. Deshalb streichen wir, wenn immer möglich, alle Füllwörter.",
+      "file_name": "Lesefreundlich_schreiben_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "Schlechtes Beispiel: Wir sind uns fast sicher, dass wir das Quartierfest nächste Woche durchführen können, es sei denn, es gibt unvorhergesehene Ereignisse.\nGutes Beispiel: Das Quartierfest findet nächste Woche statt. Bei unvorhergesehenen Ereignissen informieren wir auf dieser Webseite."
+    },
+    {
+      "name": "Kurze Sätze",
+      "description": "Kurze Sätze sind leichter verständlich. Besonders bei komplexen Informationen hilft es, diese in kurze Hälften aufzuteilen.",
+      "file_name": "Lesefreundlich_schreiben_Kanton_Basel-Stadt.pdf",
+      "page_number": 3,
+      "example": "Schlechtes Beispiel: Die rund 1 000 Mitarbeiterinnen und Mitarbeiter der Kantonspolizei Basel-Stadt treffen Sie täglich in Uniform auf den Basler Strassen an, andere arbeiten in verschiedenen Spezialaufgaben mit den unterschiedlichsten Tätigkeiten für unsere Sicherheit.\nGutes Beispiel: Rund 1 000 Mitarbeiterinnen und Mitarbeiter der Kantonspolizei Basel-Stadt treffen Sie täglich in Uniform auf den Basler Strassen an. Andere arbeiten in verschiedenen Spezialaufgaben für unsere Sicherheit."
+    },
+    {
+      "name": "Adjektive sparsam verwenden",
+      "description": "Wir nutzen Adjektive nur, wenn sie helfen, einen Kontext besser zu verstehen.",
+      "file_name": "Lesefreundlich_schreiben_Kanton_Basel-Stadt.pdf",
+      "page_number": 4,
+      "example": "Gutes Beispiel: Basel-Stadt nutzt die digitale Transformation, um den Service Public zu stärken und den gesamten Kanton nachhaltig zu einer Smart City zu entwickeln."
+    },
+    {
+      "name": "Modalverben vermeiden",
+      "description": "Wir empfehlen, auf die Modalverben „müssen“ und „sollen“ zu verzichten, da diese nicht der Tonalität von WebBS entsprechen.",
+      "file_name": "Lesefreundlich_schreiben_Kanton_Basel-Stadt.pdf",
+      "page_number": 5,
+      "example": "Schlechtes Beispiel: Können Sie das Formular online einreichen?\nGutes Beispiel: Reichen Sie das Formular online ein."
+    },
+    {
+      "name": "Abkürzungen vermeiden",
+      "description": "Abkürzungen sollten nicht auf der Website genutzt werden, da sie nicht von allen verstanden werden.",
+      "file_name": "Lesefreundlich_schreiben_Kanton_Basel-Stadt.pdf",
+      "page_number": 6,
+      "example": "Schlechtes Beispiel: bspw.\nGutes Beispiel: Beispielsweise"
+    },
+    {
+      "name": "Persönlich: WeM schreibe ich?",
+      "description": "Ihr Brief wird nicht von einer Akte, einer Nummer oder einem Fall gelesen, sondern von einer realen Person in einer bestimmten Lebenssituation. Versetzen Sie sich in deren Lage: Wo steht sie im Leben? Welche Erfahrungen hat sie gemacht? Was erwartet sie? Was könnte Ihr Brief auslösen?",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 3,
+      "example": "Beim Schreiben eines Briefes an eine ältere Person mit Behinderung sollten Sie ihre spezifischen Bedürfnisse und Lebensumstände berücksichtigen."
+    },
+    {
+      "name": "Sachgerecht: WAS schreibe ich?",
+      "description": "Ihr Brief dient einer Absicht. Sie wollen, dass die Empfängerin, der Empfänger Dinge erfährt und auf bestimmte Weise reagiert, z. B. eine Pflicht erfüllt oder einen Anspruch wahrnehmen kann.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 3,
+      "example": "Wenn Sie einen Brief schreiben, um eine Person über ihre Rechte bei einer Asylbewerbung zu informieren, sollten Sie klare und verständliche Informationen über das Vorgehen enthalten."
+    },
+    {
+      "name": "Verstehen des Anliegens",
+      "description": "Falls Sie den Brief einer Bürgerin oder eines Bürgers beantworten, fragen Sie sich: Was ist das Anliegen, das an mich herangetragen worden ist? Wie gehe ich optimal darauf ein?",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 3,
+      "example": "Wenn eine Person Ihnen schreibt und beantragt, eine Verwaltungsentscheidung zu überprüfen, sollten Sie ihre Argumente sorgfältig prüfen und darauf eingehen."
+    },
+    {
+      "name": "Verstehen der Persönlichkeit",
+      "description": "Es spielt eine Rolle, ob Sie einer erfahrenen Juristin, einem jungen Asylbewerber, einer älteren Person mit einer Behinderung schreiben. Bringen Sie in Erfahrung, was Sie über die Person und ihre Lebensumstände wissen müssen.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 5,
+      "example": "Bei der Kommunikation mit einem jungen Asylbewerber sollten Sie einfühlsam sein und auf seine besondere Situation eingehen."
+    },
+    {
+      "name": "Persönlicher Stil",
+      "description": "Schreiben Sie in persöhnlichem Stil – sagen Sie „ich“ und „Sie“, wo es angebracht ist. Verschanzen Sie sich nicht hinter abstrakten Vorschriften und imaginären Schalterwänden.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 5,
+      "example": "Statt formell wie „Die Behörde teilt mit...“ können Sie schreiben: „Ich möchte Ihnen mitteilen...\", um eine persönlichere Sprache zu verwenden."
+    },
+    {
+      "name": "Klarheit in der Antwort",
+      "description": "Gehen Sie auf die im Bürgerbrief geäusserten Anliegen ein. Nehmen Sie auch Ausdrücke auf, die der Absender oder die Absenderin verwendet.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 7,
+      "example": "Wenn jemand schreibt: „Ich verstehe nicht, warum mein Antrag abgelehnt wurde.“, dann sollten Sie diese Sorge direkt ansprechen und erklären, warum die Ablehnung erfolgte."
+    },
+    {
+      "name": "Vermeiden von Floskeln und Jargon",
+      "description": "Lassen Sie also Floskeln weg oder ersetzen Sie sie durch Ausdrücke, die direkt ansprechen. Lassen Sie sich vom Amtsjargon lösen und haben Sie den Mut, statt „in Kenntnis setzen“ einfach „mitteilen“ zu schreiben.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 9,
+      "example": "Statt „Zur Beantwortung allfälliger Fragen steht Ihnen unser Herr XY gerne zur Verfügung.“ könnten Sie schreiben: „Rufen Sie uns an, wenn Sie Fragen haben.“"
+    },
+    {
+      "name": "Klarer Betreff",
+      "description": "Der Betreff muss kurz und klar sagen, worum es geht.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 10,
+      "example": "Betreff: Antrag auf Auszahlung der Ferienentschädigung"
+    },
+    {
+      "name": "Kurze und lockere Gliederung",
+      "description": "Halten Sie sich kurz und gliedern Sie locker.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 10,
+      "example": "Sehr geehrte Damen und Herren,\n\nmit diesem Schreiben beantrage ich die Auszahlung meiner Ferienentschädigung für das Jahr 2023. Die erforderlichen Unterlagen habe ich im Anhang beigefügt."
+    },
+    {
+      "name": "Zeit für Durchsicht einplanen",
+      "description": "Nehmen Sie sich Zeit für die Durchsicht.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 10,
+      "example": "Bevor ich den Brief absende, lese ich ihn nochmals durch, um Tippfehler oder Ungereimtheiten zu vermeiden."
+    },
+    {
+      "name": "Dateien prüfen",
+      "description": "Prüfen Sie, ob Sie die richtigen Dateien eingefügt haben.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 10,
+      "example": "Ich überprüfe nochmals, ob die Dokumente 'Antrag 2023.pdf' und 'Nachweis Gehalt.pdf' korrekt als Anhänge eingefügt wurden."
+    },
+    {
+      "name": "Adressaten am Schluss einsetzen",
+      "description": "Setzen Sie die Adressatinnen und Adressaten erst am Schluss ein. Damit schützen Sie sich (und andere) vor ungewolltem Senden!",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 10,
+      "example": "Nachdem ich alle Texte überarbeitet und geprüft habe, füge ich die E-Mail-Adresse des Empfängers in das Feld 'An' ein."
+    },
+    {
+      "name": "Zahlen ausschreiben",
+      "description": "Zahlen im Sinne der Lesefreundlichkeit ausschreiben, insbesondere die Zahlen von 1 bis 12.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 1,
+      "example": "12 Mal jährlich"
+    },
+    {
+      "name": "Uhrzeit im Lauftext",
+      "description": "Im Lauftext Uhrzeiten wie folgt schreiben: 'von 0 bis 7 Uhr' oder 'von 22 bis 24 Uhr'.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 1,
+      "example": "von 0 bis 7 Uhr"
+    },
+    {
+      "name": "Uhrzeit in Tabellen",
+      "description": "In Tabellen oder verknapptem Text Uhrzeiten mit Punkt als Dezimaltrennzeichen schreiben.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 1,
+      "example": "9.00 – 18.00 Uhr"
+    },
+    {
+      "name": "Dezimalkomma für Längenangaben",
+      "description": "Bei Längenangaben das Dezimalkomma als Trennzeichen verwenden.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 1,
+      "example": "88,5 Meter"
+    },
+    {
+      "name": "Dezimalpunkt bei Geldbeträgen",
+      "description": "Bei Geldbeträgen anstelle des Dezimalkommas den Dezimalpunkt zwischen Währungseinheit und Untereinheit setzen.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 1,
+      "example": "Fr. 23.50"
+    },
+    {
+      "name": "Ausnahme: Rappenangaben",
+      "description": "Bei Angaben in Rappen kann das Dezimalkomma verwendet werden.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 1,
+      "example": "22,5 Rappen bzw. 22,5 Rp."
+    },
+    {
+      "name": "Währungen im Fliesstext ausgeschrieben",
+      "description": "Im Fliesstext Währungen immer vollständig ausgeschrieben darstellen.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 1,
+      "example": "20 Franken, 15 Rappen, 3 Euro"
+    },
+    {
+      "name": "Abgekürzte Schreibweise für Geldbeträge",
+      "description": "Wenn Geldbeträge auf Kommastellen genau angegeben werden, ist die abgekürzte Schreibweise zu verwenden.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "im Betrag von Fr. 327.65"
+    },
+    {
+      "name": "Telefonnummernformat",
+      "description": "Telefonnummern im Format +41 XX XXX XX XX schreiben.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "Tel.: +41 26 324 11 13"
+    },
+    {
+      "name": "Jahreszahlen mit Präpositionen",
+      "description": "Präpositionen mit Jahreszahlen korrekt verwenden, z.B. 'vor 1999' oder 'nach dem Jahr 2003'.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "vor 1999, nach dem Jahr 2003"
+    },
+    {
+      "name": "Monatsnamen im Fliesstext ausgeschrieben",
+      "description": "Im Fliesstext Monatsnamen immer vollständig ausgeschrieben darstellen.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "am 1. Januar 1999"
+    },
+    {
+      "name": "Abkürzungen für Monatsnamen",
+      "description": "In verknapptem Text können längere Monatsnamen abgekürzt werden (z.B. Jan., Febr.).",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "am 1. Jan. 1999"
+    },
+    {
+      "name": "Wochentage im Fliesstext ausgeschrieben",
+      "description": "Im Fliesstext Wochentage immer vollständig ausgeschrieben darstellen.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "jeweils am ersten Dienstag des Monats"
+    },
+    {
+      "name": "Abkürzungen für Wochentage",
+      "description": "In verknapptem Text können Wochentage notfalls abgekürzt werden (ohne Punkt). Abkürzungen mit drei Buchstaben sind unzulässig.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 3,
+      "example": "Mo, Di, Mi, Do, Fr, Sa, So"
+    },
+    {
+      "name": "Datumsformat im Fliesstext",
+      "description": "Im Fliesstext Datumsangaben im Format 'Tag. Monat Jahr' schreiben.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 3,
+      "example": "2. September 2006"
+    },
+    {
+      "name": "Datumsformat in Tabellen/verknappter Form",
+      "description": "In Tabellen oder verknapptem Text Datumsangaben mit abgekürzten Monatsnamen schreiben.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 3,
+      "example": "2. Sept. 2006"
+    },
+    {
+      "name": "Datum mit Wochentag und Uhrzeit",
+      "description": "Datum mit Wochentag und Uhrzeit im Fliesstext vollständig schreiben.",
+      "file_name": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+      "page_number": 3,
+      "example": "Am Montag, (dem) 30. Mai 2005, um 14.30 Uhr, beginnt die Sommersession."
+    },
+    {
+      "name": "Auf Augenhöhe",
+      "description": "Wir formulieren Inhalte so, dass sie für unser Gegenüber verständlich sind (in Bezug auf Komplexität, Wortwahl und Detailierungsgrad). Wir nehmen unser Gegenüber ernst und bieten Dialog an statt abzublocken. Die Tonalität passt sich dem Inhalt und Kontext an.",
+      "file_name": "Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "„Bitte informieren Sie sich über die Dienstleistungen, bevor Sie Anfragen stellen oder einen Besuch planen.“"
+    },
+    {
+      "name": "Einfach schreiben",
+      "description": "Wir schreiben so einfach wie möglich und so komplex wie nötig. Fachbegriffe werden nur in fachspezifischen Texten verwendet, ansonsten müssen sie erklärt werden.",
+      "file_name": "Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "Fachbegriff: „Digitalisierung im Alltag“ – Erklärung: „Die Nutzung digitaler Technologien im täglichen Leben.“"
+    },
+    {
+      "name": "Inklusiv schreiben",
+      "description": "Wir erklären Fachbegriffe, nutzen natürlichen Sprachgebrauch der Leserinnen und Leser und verzichten auf Verwaltungssprache. Synonyme werden nach Präferenz getestet.",
+      "file_name": "Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "Statt „Broschüre“: „Infoblatt“, um allgemeinverständlicher zu sein."
+    },
+    {
+      "name": "Erwachsen bleiben",
+      "description": "Wir behandeln alle gleich und passen unsere Tonalität nicht an spezifische Altersgruppen an. Die Sprache bleibt sachlich und professionell.",
+      "file_name": "Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "„Der Kanton Basel-Stadt setzt auf Innovation und Qualität im Gesundheitswesen.“"
+    },
+    {
+      "name": "Innovativ in Bild- und Haltungswahl",
+      "description": "Wir wählen Bilder, die Fortschrittlichkeit und Innovationsgeist zeigen. Inhaltlich betonen wir Pioniergeist und Vorreiterrolle.",
+      "file_name": "Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "Ein Bild einer modernen medizinischen Infrastruktur wird gezeigt, nicht ein Stethoskop."
+    },
+    {
+      "name": "Grossstädtisch in Bild- und Haltungswahl",
+      "description": "Wir zeigen den Kanton Basel-Stadt als moderne, weltoffene Grossstadt mit internationaler Ausstrahlung. Traditionelles wird ergänzt, aber nicht überteuert.",
+      "file_name": "Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf",
+      "page_number": 2,
+      "example": "Ein Foto des Dreiländerdrecks wird genutzt, um die internationale Ausstrahlung darzustellen."
+    },
+    {
+      "name": "Sachliche Ansprache des Kantons",
+      "description": "Der Kanton Basel-Stadt wird sachlich beschrieben, aber auf Augenhöhe mit den Leserinnen und Lesern. Der Begriff „Wir“ wird sparsam eingesetzt.",
+      "file_name": "Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf",
+      "page_number": 3,
+      "example": "„Die Steuerverwaltung unterstützt Sie bei Fragen zur Abgabe Ihrer Steuererklärung.“"
+    },
+    {
+      "name": "Verzicht auf blumige Sprache",
+      "description": "Blumige oder übertriebene Adjektive werden vermieden. Die Persönlichkeit wird vor allem über Bilder ausgedrückt.",
+      "file_name": "Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf",
+      "page_number": 3,
+      "example": "Statt „unsere wunderbare Stadt“: „die Stadt Basel-Stadt.“"
+    },
+    {
+      "name": "Verzicht auf Baselismen",
+      "description": "Lokalkolorit und Baselismen werden sparsam verwendet, da sie nicht von allen verstanden werden. Nur dann genutzt, wenn es der Verständlichkeit dient.",
+      "file_name": "Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf",
+      "page_number": 4,
+      "example": "Statt „Clique“: „Gruppe von Menschen.“"
+    },
+    {
+      "name": "Ansprache mit „Sie“ statt „du“",
+      "description": "Privatpersonen und Unternehmen werden höflich angesprochen. Der Höflichkeitsformel „Sie“ wird der Vorrang gegeben.",
+      "file_name": "Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf",
+      "page_number": 4,
+      "example": "„Bitte informieren Sie sich über die Dienstleistungen, bevor Sie Anfragen stellen.“"
     }
   ]
 }

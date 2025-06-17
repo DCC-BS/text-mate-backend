@@ -33,5 +33,33 @@
         "author": "Bundeskanzlei BK",
         "edition": "2., aktualisierte Auflage 2013 (korrigierte Ausgabe 2015)",
         "file": "schreibweisungen.pdf"
+    },
+    {
+        "title": "Lesefreundlich schreiben",
+        "description": "Leitfaden für lesefreundliches Schreiben in deutschsprachigen Texten des Bundes",
+        "author": "Kanton Basel-Stadt",
+        "edition": "2025",
+        "file": "docs/Lesefreundlich_schreiben_Kanton_Basel-Stadt.pdf"
+    },
+    {
+        "title": "behördenbriefe",
+        "description": "Dieses Merkblatt soll Sie dabei unterstützen, diese Briefe so zu verfassen, dass Sie damit zur guten Kommunikation zwischen dem Staat und den Bürgerinnen und Bürgern beitragen.",
+        "author": "Bundeskanzlei BK",
+        "edition": "2025",
+        "file": "merkblatt_behoerdenbriefe.pdf"
+    },
+    {
+        "title": "Schreibkonventionen und Glossar",
+        "description": "Empfehlungen von Konventionen welche für neue Webinhalte zu berücksichtigen sind, um die Website konsistent zu gestalten.",
+        "author": "Kanton Basel-Stadt",
+        "edition": "2025",
+        "file": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf"
+    },
+    {
+        "title": "Tonalität der Inhalte",
+        "description": "Gewünschte Tonalität für die Inhalte der Webseite des Kantons Basel-Stadt",
+        "author": "Kanton Basel-Stadt",
+        "edition": "2025",
+        "file": "Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf"
     }
 ]

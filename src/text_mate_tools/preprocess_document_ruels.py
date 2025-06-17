@@ -1,7 +1,6 @@
 import time
 import traceback
 from pathlib import Path
-from typing import List, Optional
 
 from llama_index.core.prompts import PromptTemplate
 from llama_index.core.schema import Document
@@ -11,6 +10,13 @@ from tqdm import tqdm
 from text_mate_backend.customLLMs.qwen3 import QwenVllm
 from text_mate_backend.models.ruel_models import Ruel, RuelsContainer
 from text_mate_backend.utils.configuration import get_config
+
+documents = [
+    Path("./docs/Lesefreundlich_schreiben_Kanton_Basel-Stadt.pdf"),
+    Path("./docs/merkblatt_behoerdenbriefe.pdf"),
+    Path("./docs/Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf"),
+    Path("./docs/Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf"),
+]
 
 prompt = PromptTemplate(
     """You are an expert in editorial guidelines. Take the given document and extract all relevant ruels.
@@ -39,8 +45,8 @@ MAX_RETRIES = 1
 
 
 def process_batch(
-    batch: List[Document], batch_index: int, total_batches: int
-) -> tuple[Optional[RuelsContainer], Optional[Exception], str]:
+    batch: list[Document], batch_index: int, total_batches: int
+) -> tuple[RuelsContainer | None, Exception | None, str]:
     """
     Process a batch of documents and extract rules with error handling.
 
@@ -90,8 +96,8 @@ def get_ruels(path: Path) -> RuelsContainer:
         return RuelsContainer(rules=[])
 
     # batch the documents to not exceed the max token limit (32000 tokens)
-    batches: List[List[Document]] = []
-    current_batch: List[Document] = []
+    batches: list[list[Document]] = []
+    current_batch: list[Document] = []
     current_batch_size = 0
 
     for document in documents:
@@ -119,7 +125,7 @@ def get_ruels(path: Path) -> RuelsContainer:
 
     print(f"   📦 Created {len(batches)} batches")
 
-    ruels: List[Ruel] = []
+    ruels: list[Ruel] = []
     failed_batches = 0
 
     for i, batch in enumerate(tqdm(batches, desc="   🔍 Processing batches", unit="batch")):
@@ -167,17 +173,9 @@ def get_ruels(path: Path) -> RuelsContainer:
     return RuelsContainer(rules=ruels)
 
 
-documents = [
-    Path("./docs/empfehlungen-anglizismen-maerz-2020.pdf"),
-    Path("./docs/leitfaden_geschlechtergerechte_sprache_3aufl.pdf"),
-    Path("./docs/rechtschreibleitfaden-2017.pdf"),
-    Path("./docs/schreibweisungen.pdf"),
-    Path("./docs/Redaktionsrichtlinien_V6_2024.pdf"),
-]
-
 print(f"🚀 Starting rule extraction from {len(documents)} documents")
 total_start_time = time.time()
-ruels: List[Ruel] = []
+ruels: list[Ruel] = []
 failed_documents = []
 
 for i, document in enumerate(documents):
@@ -194,12 +192,26 @@ for i, document in enumerate(documents):
 
 total_time = time.time() - total_start_time
 
-# save the ruels to a file
+# Load existing rules if the file exists, then append new rules
 ruels_path = Path("./docs/ruels.json")
-ruels_path.write_text(RuelsContainer(rules=ruels).model_dump_json(indent=2))
+existing_rules: list[Ruel] = []
+
+if ruels_path.exists():
+    try:
+        existing_data = RuelsContainer.model_validate_json(ruels_path.read_text())
+        existing_rules = existing_data.rules
+        print(f"📁 Loaded {len(existing_rules)} existing rules from {ruels_path.name}")
+    except Exception as e:
+        print(f"⚠️ Warning: Could not load existing rules file: {str(e)}")
+        print("📝 Creating new rules file...")
+
+# Combine existing and new rules
+all_rules = existing_rules + ruels
+ruels_path.write_text(data=RuelsContainer(rules=all_rules).model_dump_json(indent=2))
 
 print(f"\n✨ Process complete!")
-print(f"📊 Total rules extracted: {len(ruels)}")
+print(f"📊 New rules extracted: {len(ruels)}")
+print(f"📊 Total rules in file: {len(all_rules)}")
 print(f"⏱️ Total processing time: {total_time:.2f}s")
 print(f"💾 Rules saved to {ruels_path.absolute()}")
 
