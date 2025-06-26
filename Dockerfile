@@ -30,4 +30,4 @@ ENV PORT=8000
 
 EXPOSE $PORT
 
-CMD [ "uv", "run", "fastapi", "run", "./src/text_mate_backend/app.py" ]
+CMD [ "uv", "run", "fastapi", "run", "./src/text_mate_backend/app.py" "--port" "$PORT"]
