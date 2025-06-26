@@ -8,14 +8,14 @@ RUN apt-get update && \
     libssl-dev \
     libcurl4-gnutls-dev \
     curl \
-    ca-certificates \
+    # ca-certificates \
     && apt-get clean
 
 WORKDIR /app
 
 # install certificate
-COPY ./ZID_BS_RootCA.crt /usr/local/share/ca-certificates/
-RUN update-ca-certificates
+# COPY ./ZID_BS_RootCA.crt /usr/local/share/ca-certificates/
+# RUN update-ca-certificates
 
 
 COPY uv.lock /app/uv.lock
