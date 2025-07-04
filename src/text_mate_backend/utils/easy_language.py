@@ -29,7 +29,6 @@ SYSTEM_MESSAGE_ES: str = (
     "umschreibt. Sei immer wahrheitsgemäß und objektiv. Schreibe nur das, was du sicher aus dem "
     "Text des Benutzers weisst. Arbeite die Texte immer vollständig durch und kürze nicht. "
     "Mache keine Annahmen. Schreibe einfach und klar und immer in deutscher Sprache. "
-    "Gib dein Ergebnis innerhalb von <einfachesprache> Tags aus."
 )
 
 SYSTEM_MESSAGE_LS: str = (
@@ -37,7 +36,6 @@ SYSTEM_MESSAGE_LS: str = (
     "umschreibt. Sei immer wahrheitsgemäß und objektiv. Schreibe nur das, was du sicher aus dem "
     "Text des Benutzers weisst. Arbeite die Texte immer vollständig durch und kürze nicht. "
     "Mache keine Annahmen. Schreibe einfach und klar und immer in deutscher Sprache. "
-    "Gib dein Ergebnis innerhalb von <leichtesprache> Tags aus."
 )
 
 
@@ -160,7 +158,7 @@ Beachte dabei folgende Regeln:
 {completeness}
 {rules}
 
-Formuliere den Text jetzt in Einfache Sprache, Sprachniveau B1 bis A2, um. Schreibe den vereinfachten Text innerhalb von <einfachesprache> Tags.
+Formuliere den Text jetzt in Einfache Sprache, Sprachniveau B1 bis A2, um.
 """.strip()
 
 # Claude template for "Leichte Sprache" (Easy Language)
@@ -178,7 +176,7 @@ Beachte dabei folgende Regeln:
 {completeness}
 {rules}
 
-Formuliere den Text jetzt in Leichte Sprache, Sprachniveau A2 bis A1, um. Schreibe den vereinfachten Text innerhalb von <leichtesprache> Tags.
+Formuliere den Text jetzt in Leichte Sprache, Sprachniveau A2 bis A1, um.
 """.strip()
 
 # Claude template for analyzing text for "Einfache Sprache" compliance
@@ -201,7 +199,7 @@ Die Regeln für Einfache Sprache sind diese hier:
 
 {rules}
 
-Schreibe jetzt deine Analyse und gib diese innerhalb von <einfachesprache> Tags aus.
+Schreibe jetzt deine Analyse.
 """.strip()
 
 # Claude template for analyzing text for "Leichte Sprache" compliance
@@ -224,7 +222,7 @@ Die Regeln für Leichte Sprache sind diese hier:
 
 {rules}
 
-Schreibe jetzt deine Analyse und gib diese innerhalb von <leichtesprache> Tags aus.
+Schreibe jetzt deine Analyse.
 """.strip()
 
 
@@ -241,7 +239,7 @@ Beachte dabei folgende Regeln:
 {completeness}
 {rules}
 
-Schreibe den vereinfachten Text innerhalb von <einfachesprache> Tags. Gib nur Text aus, keine Markdown-Formatierung, kein HTML.
+Gib nur Text aus, keine Markdown-Formatierung, kein HTML.
 
 Hier ist der schwer verständliche Text:
 
@@ -259,7 +257,7 @@ Beachte dabei folgende Regeln:
 {completeness}
 {rules}
 
-Schreibe den vereinfachten Text innerhalb von <leichtesprache> Tags. Gib nur Text aus, keine Markdown-Formatierung, kein HTML.
+Gib nur Text aus, keine Markdown-Formatierung, kein HTML.
 
 Hier ist der schwer verständliche Text:
 
@@ -284,7 +282,7 @@ Die Regeln für Einfache Sprache sind diese hier:
 
 {rules}
 
-Schreibe deine Analyse innerhalb von <einfachesprache> Tags. Gib nur Text aus, keine Markdown-Formatierung, kein HTML.
+Gib nur Text aus, keine Markdown-Formatierung, kein HTML.
 
 Hier ist der schwer verständliche Text:
 
@@ -309,7 +307,7 @@ Die Regeln für Leichte Sprache sind diese hier:
 
 {rules}
 
-Schreibe deine Analyse innerhalb von <leichtesprache> Tags. Gib nur Text aus, keine Markdown-Formatierung, kein HTML.
+Gib nur Text aus, keine Markdown-Formatierung, kein HTML.
 
 Hier ist der schwer verständliche Text:
 
