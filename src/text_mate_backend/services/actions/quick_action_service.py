@@ -5,8 +5,8 @@ from fastapi.responses import StreamingResponse
 from returns.result import safe
 
 from text_mate_backend.services.actions.bullet_points_action import bullet_points
-from text_mate_backend.services.actions.shorten_action import shorten
-from text_mate_backend.services.actions.simplify_action import simplify
+from text_mate_backend.services.actions.easy_language_action import easy_language
+from text_mate_backend.services.actions.plain_language_action import plain_language
 from text_mate_backend.services.actions.social_media_action import social_mediafy
 from text_mate_backend.services.actions.summarize_action import summarize
 from text_mate_backend.services.actions.translate_action import translate
@@ -17,8 +17,8 @@ logger = get_logger("quick_action_service")
 
 
 class Actions(str, Enum):
-    Simplify = "simplify"
-    Shorten = "shorten"
+    PlainLanguage = "plain_language"
+    EasyLanguage = "easy_language"
     BulletPoints = "bullet_points"
     Summarize = "summarize"
     SocialMediafy = "social_mediafy"
@@ -58,12 +58,12 @@ class QuickActionService:
         try:
             response = None
             match action:
-                case Actions.Simplify:
-                    response = simplify(text, self.llm_facade)
-                    logger.info("Applied simplify action")
-                case Actions.Shorten:
-                    response = shorten(text, self.llm_facade)
-                    logger.info("Applied shorten action")
+                case Actions.PlainLanguage:
+                    response = plain_language(text, self.llm_facade)
+                    logger.info("Applied plain language action")
+                case Actions.EasyLanguage:
+                    response = easy_language(text, self.llm_facade)
+                    logger.info("Applied easy language action")
                 case Actions.BulletPoints:
                     response = bullet_points(text, self.llm_facade)
                     logger.info("Applied bullet points action")

@@ -416,6 +416,3 @@ def get_system_message(language_type: str) -> str:
         return SYSTEM_MESSAGE_LS
     else:
         raise ValueError(f"Unsupported language type: {language_type}")
-
-
-s
