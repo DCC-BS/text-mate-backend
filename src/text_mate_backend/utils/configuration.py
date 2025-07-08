@@ -1,6 +1,5 @@
 import os
-
-from text_mate_backend.utils.load_env import load_env
+from typing import override
 
 
 class Configuration:
@@ -10,7 +9,15 @@ class Configuration:
         self.llm_model: str = os.getenv("LLM_MODEL", "ollama_chat/llama3.2")
         self.language_tool_api_url: str = os.getenv("LANGUAGE_TOOL_API_URL", "http://localhost:8010/")
         self.client_url: str = os.getenv("CLIENT_URL", "http://localhost:3000")
+        self.azure_client_id: str | None = os.getenv("AZURE_AD_CLIENT_ID")
+        self.azure_tenant_id: str | None = os.getenv("AZURE_AD_TENANT_ID")
+        self.azure_discovery_url: str | None = (
+            f"https://login.microsoftonline.com/{self.azure_tenant_id}/v2.0/.well-known/openid-configuration"
+            if self.azure_tenant_id
+            else None
+        )
 
+    @override
     def __str__(self) -> str:
         return f"""
         Configuration(
@@ -18,18 +25,8 @@ class Configuration:
             openai_api_base_url={self.openai_api_base_url},
             openai_api_key={self.openai_api_key},
             llm_model={self.llm_model},
-            language_tool_api_url={self.language_tool_api_url})
+            language_tool_api_url={self.language_tool_api_url},
+            azure_client_id={self.azure_client_id},
+            azure_tenant_id={self.azure_tenant_id},
+            azure_discovery_url={self.azure_discovery_url})
         """
-
-
-_config: Configuration | None = None
-
-
-def get_config() -> Configuration:
-    """Get the configuration."""
-    load_env()
-
-    global _config
-    if _config is None:
-        _config = Configuration()
-    return _config

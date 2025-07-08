@@ -1,5 +1,5 @@
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from returns.result import Failure, Success
 
@@ -17,13 +17,15 @@ def create_router(quick_action_service: QuickActionService = Provide[Container.q
     router: APIRouter = APIRouter(prefix="/quick-action", tags=["quick-action"])
 
     @router.post("")
-    def quick_action(request: QuickActionRequest) -> StreamingResponse:
+    def quick_action(request: QuickActionRequest, http_request: Request) -> StreamingResponse:
         text_length = len(request.text)
 
         logger.info("Quick action request received", action=request.action, text_length=text_length)
         logger.debug(
             "Quick action request details", text_preview=request.text[:50] + ("..." if text_length > 50 else "")
         )
+
+        logger.debug("The user is ", user=http_request.scope.get("user", "unknown"))
 
         result = quick_action_service.run(request.action, request.text)
 

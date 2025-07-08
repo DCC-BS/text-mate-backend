@@ -2,8 +2,10 @@ from dependency_injector import containers, providers
 from llama_index.core.llms import LLM
 
 from text_mate_backend.customLLMs.qwen3 import QwenVllm
+from text_mate_backend.middlewares import jwt_auth_middleware
 from text_mate_backend.services.actions.quick_action_service import QuickActionService
 from text_mate_backend.services.advisor import AdvisorService
+from text_mate_backend.services.azure_entra_service import AzureEntraService
 from text_mate_backend.services.language_tool_service import LanguageToolService
 from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.services.rewrite_text import TextRewriteService
@@ -35,7 +37,7 @@ class Container(containers.DeclarativeContainer):
     advisor_service: providers.Singleton[AdvisorService] = providers.Singleton(AdvisorService, llm_facade=llm_facade)
 
     quick_action_service: providers.Singleton[QuickActionService] = providers.Singleton(
-        QuickActionService, llm_facade=llm_facade
+        QuickActionService, llm_facade=llm_facade, config=config
     )
 
     text_rewrite_service: providers.Singleton[TextRewriteService] = providers.Singleton(
@@ -50,4 +52,13 @@ class Container(containers.DeclarativeContainer):
     sentence_rewrite_service: providers.Singleton[SentenceRewriteService] = providers.Singleton(
         SentenceRewriteService,
         llm_facade=llm_facade,
+    )
+
+    azure_entra_service: providers.Singleton[AzureEntraService] = providers.Singleton(
+        AzureEntraService,
+        config=config,
+    )
+
+    jwt_auth_middleware_factory: providers.Factory[jwt_auth_middleware.JWTAuthMiddleware,] = providers.Factory(
+        jwt_auth_middleware.JWTAuthMiddleware, config=config, azure_entra_service=azure_entra_service
     )

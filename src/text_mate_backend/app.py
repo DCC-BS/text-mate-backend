@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from structlog.stdlib import BoundLogger
 
 from text_mate_backend.container import Container
 
 # Import routers
+from text_mate_backend.middlewares.jwt_auth_middleware import JWTAuthMiddleware
 from text_mate_backend.routers import (
     advisor,
     quick_action,
@@ -12,7 +14,6 @@ from text_mate_backend.routers import (
     text_rewrite,
     word_synonym,
 )
-from text_mate_backend.utils.configuration import get_config
 from text_mate_backend.utils.load_env import load_env
 from text_mate_backend.utils.logger import get_logger, init_logger
 from text_mate_backend.utils.middleware import add_logging_middleware
@@ -25,7 +26,6 @@ def create_app() -> FastAPI:
 
     load_env()
     init_logger()
-    config = get_config()
 
     app = FastAPI(
         title="Text Mate API",
@@ -33,9 +33,8 @@ def create_app() -> FastAPI:
         version="0.1.0",
     )
 
-    logger = get_logger("app")
+    logger: BoundLogger = get_logger("app")
     logger.info("Starting Text Mate API application")
-    logger.info(f"Running with configuration: {config}")
 
     # Set up dependency injection container
     logger.debug("Configuring dependency injection container")
@@ -43,6 +42,9 @@ def create_app() -> FastAPI:
     container.wire(modules=[text_correction, text_rewrite, advisor, quick_action, word_synonym, sentence_rewrite])
     container.check_dependencies()
     logger.info("Dependency injection configured")
+
+    config = container.config()
+    logger.info(f"Running with configuration: {config}")
 
     # Configure CORS
     logger.debug("Setting up CORS middleware")
@@ -54,6 +56,17 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
     logger.info(f"CORS configured with origin: {config.client_url}")
+
+    app.add_middleware(
+        JWTAuthMiddleware,
+        config=config,
+        azure_entra_service=container.azure_entra_service(),
+        unprotected_routes=[
+            "/health",
+            "/docs",
+            "/openapi.json",
+        ],
+    )
 
     # Add logging middleware
     add_logging_middleware(app)

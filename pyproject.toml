@@ -13,6 +13,7 @@ dependencies = [
     "llama-index-readers-file>=0.4.7",
     "openai>=1.70.0",
     "python-dotenv>=1.0.1",
+    "python-jose[cryptography]>=3.5.0",
     "requests>=2.32.3",
     "returns>=0.25.0",
     "structlog>=25.2.0",

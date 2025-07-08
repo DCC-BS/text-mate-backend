@@ -3,15 +3,17 @@ from llama_index.core.prompts import PromptTemplate
 
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
 from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.utils.configuration import Configuration
 
 
-def bullet_points(text: str, llm_facade: LLMFacade) -> StreamingResponse:
+def bullet_points(text: str, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
     """
     Converts the given text into a structured bullet point format with key points.
 
     Args:
         text: The input text to be converted to bullet points
-        llm: The OpenAI client instance to use for generating the response
+        config: Configuration containing LLM model and other settings
+        llm_facade: The LLMFacade instance to use for generating the response
 
     Returns:
         A StreamingResponse containing the bullet points version of the text
@@ -31,7 +33,7 @@ def bullet_points(text: str, llm_facade: LLMFacade) -> StreamingResponse:
         """
     ).format(text=text)
 
-    options: PromptOptions = PromptOptions(prompt=prompt)
+    options: PromptOptions = PromptOptions(prompt=prompt, llm_model=config.llm_model)
 
     return run_prompt(
         options,

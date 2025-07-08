@@ -3,9 +3,10 @@ from llama_index.core.prompts import PromptTemplate
 
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
 from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.utils.configuration import Configuration
 
 
-def shorten(text: str, llm_facade: LLMFacade) -> StreamingResponse:
+def shorten(text: str, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
     """
     Shortens the given text while preserving its key meaning and content.
 
@@ -28,7 +29,7 @@ def shorten(text: str, llm_facade: LLMFacade) -> StreamingResponse:
         """
     ).format(text=text)
 
-    options: PromptOptions = PromptOptions(prompt=prompt)
+    options: PromptOptions = PromptOptions(prompt=prompt, llm_model=config.llm_model)
 
     return run_prompt(
         options,
