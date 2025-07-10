@@ -1,22 +1,24 @@
+from authentication import AzureEntraService, JWTDecoder
 from dependency_injector import containers, providers
 from llama_index.core.llms import LLM
 
 from text_mate_backend.customLLMs.qwen3 import QwenVllm
-from text_mate_backend.middlewares import jwt_auth_middleware
 from text_mate_backend.services.actions.quick_action_service import QuickActionService
 from text_mate_backend.services.advisor import AdvisorService
-from text_mate_backend.services.azure_entra_service import AzureEntraService
 from text_mate_backend.services.language_tool_service import LanguageToolService
 from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.services.rewrite_text import TextRewriteService
 from text_mate_backend.services.sentence_rewrite_service import SentenceRewriteService
 from text_mate_backend.services.text_correction_language_tool import TextCorrectionService
 from text_mate_backend.services.word_synonym_service import WordSynonymService
+from text_mate_backend.utils.auth_settings import AuthSettings
 from text_mate_backend.utils.configuration import Configuration
 
 
 class Container(containers.DeclarativeContainer):
     config: providers.Singleton[Configuration] = providers.Singleton(Configuration)
+    auth_settings: providers.Singleton[AuthSettings] = providers.Singleton(AuthSettings, config=config)
+
     language_tool_service: providers.Singleton[LanguageToolService] = providers.Singleton(
         LanguageToolService, config=config
     )
@@ -56,9 +58,11 @@ class Container(containers.DeclarativeContainer):
 
     azure_entra_service: providers.Singleton[AzureEntraService] = providers.Singleton(
         AzureEntraService,
-        config=config,
+        settings=auth_settings,
     )
 
-    jwt_auth_middleware_factory: providers.Factory[jwt_auth_middleware.JWTAuthMiddleware,] = providers.Factory(
-        jwt_auth_middleware.JWTAuthMiddleware, config=config, azure_entra_service=azure_entra_service
+    jwt_decoder: providers.Singleton[JWTDecoder] = providers.Singleton(
+        JWTDecoder,
+        azure_entra_service=azure_entra_service,
+        settings=auth_settings,
     )

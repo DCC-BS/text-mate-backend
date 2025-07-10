@@ -1,3 +1,4 @@
+from authentication import JWTAuthMiddleware
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from structlog.stdlib import BoundLogger
@@ -5,7 +6,6 @@ from structlog.stdlib import BoundLogger
 from text_mate_backend.container import Container
 
 # Import routers
-from text_mate_backend.middlewares.jwt_auth_middleware import JWTAuthMiddleware
 from text_mate_backend.routers import (
     advisor,
     quick_action,
@@ -59,8 +59,7 @@ def create_app() -> FastAPI:
 
     app.add_middleware(
         JWTAuthMiddleware,
-        config=config,
-        azure_entra_service=container.azure_entra_service(),
+        jwt_decoder=container.jwt_decoder(),
         unprotected_routes=[
             "/health",
             "/docs",
