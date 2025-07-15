@@ -1,10 +1,10 @@
-from authentication import AzureEntraService, JWTDecoder
 from dependency_injector import containers, providers
 from llama_index.core.llms import LLM
 
 from text_mate_backend.customLLMs.qwen3 import QwenVllm
 from text_mate_backend.services.actions.quick_action_service import QuickActionService
 from text_mate_backend.services.advisor import AdvisorService
+from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.language_tool_service import LanguageToolService
 from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.services.rewrite_text import TextRewriteService
@@ -56,13 +56,6 @@ class Container(containers.DeclarativeContainer):
         llm_facade=llm_facade,
     )
 
-    azure_entra_service: providers.Singleton[AzureEntraService] = providers.Singleton(
-        AzureEntraService,
-        settings=auth_settings,
-    )
+    auth_settings: providers.Singleton[AuthSettings] = providers.Singleton(AuthSettings, config=config)
 
-    jwt_decoder: providers.Singleton[JWTDecoder] = providers.Singleton(
-        JWTDecoder,
-        azure_entra_service=azure_entra_service,
-        settings=auth_settings,
-    )
+    azure_service: providers.Singleton[AzureService] = providers.Singleton(AzureService, auth_settings=auth_settings)
