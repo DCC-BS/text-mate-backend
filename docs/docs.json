@@ -4,62 +4,89 @@
         "description": "Statistisches Amt des Kantons Basel-Stadt, für internen Gebrauch bestimmt",
         "author": "Statistisches Amt des Kantons Basel-Stadt",
         "edition": "Ausgabe 2024/V6",
-        "file": "Redaktionsrichtlinien_V6_2024.pdf"
+        "file": "Redaktionsrichtlinien_V6_2024.pdf",
+        "access": [
+            "stata"
+        ]
     },
     {
         "title": "Empfehlungen Anglizismen",
         "description": "Empfehlungen für den Umgang mit Anglizismen in deutschsprachi-gen Texten des Bundes",
         "author": "Bundeskanzlei BK",
         "edition": "März 2020",
-        "file": "empfehlungen-anglizismen-maerz-2020.pdf"
+        "file": "empfehlungen-anglizismen-maerz-2020.pdf",
+        "access": [
+            "all"
+        ]
     },
     {
         "title": "Geschlechtergerechte Sprache",
         "description": "Leitfaden zum geschlechtergerechten Formulieren in deutschsprachigen Texten des Bundes",
         "author": "Bundeskanzlei BK",
         "edition": "3., vollständig überarbeitete Auflage 2023",
-        "file": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf"
+        "file": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+        "access": [
+            "all"
+        ]
     },
     {
         "title": "Rechtschreibung",
         "description": "Leitfaden zur deutschen Rechtschreibung",
         "author": "Bundeskanzlei BK",
         "edition": "4., aktualisierte Auflage 2017",
-        "file": "rechtschreibleitfaden-2017.pdf"
+        "file": "rechtschreibleitfaden-2017.pdf",
+        "access": [
+            "all"
+        ]
     },
     {
         "title": "Schreibweisungen",
         "description": "Weisungen der Bundeskanzlei zur Schreibung und zu Formulierungen in den deutschsprachigen amtlichen Texten des Bundes",
         "author": "Bundeskanzlei BK",
         "edition": "2., aktualisierte Auflage 2013 (korrigierte Ausgabe 2015)",
-        "file": "schreibweisungen.pdf"
+        "file": "schreibweisungen.pdf",
+        "access": [
+            "all"
+        ]
     },
     {
         "title": "Lesefreundlich schreiben",
         "description": "Leitfaden für lesefreundliches Schreiben in deutschsprachigen Texten des Bundes",
         "author": "Kanton Basel-Stadt",
         "edition": "2025",
-        "file": "docs/Lesefreundlich_schreiben_Kanton_Basel-Stadt.pdf"
+        "file": "docs/Lesefreundlich_schreiben_Kanton_Basel-Stadt.pdf",
+        "access": [
+            "all"
+        ]
     },
     {
         "title": "behördenbriefe",
         "description": "Dieses Merkblatt soll Sie dabei unterstützen, diese Briefe so zu verfassen, dass Sie damit zur guten Kommunikation zwischen dem Staat und den Bürgerinnen und Bürgern beitragen.",
         "author": "Bundeskanzlei BK",
         "edition": "2025",
-        "file": "merkblatt_behoerdenbriefe.pdf"
+        "file": "merkblatt_behoerdenbriefe.pdf",
+        "access": [
+            "all"
+        ]
     },
     {
         "title": "Schreibkonventionen und Glossar",
         "description": "Empfehlungen von Konventionen welche für neue Webinhalte zu berücksichtigen sind, um die Website konsistent zu gestalten.",
         "author": "Kanton Basel-Stadt",
         "edition": "2025",
-        "file": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf"
+        "file": "Schreibkonventionen_und_Glossar_Kanton_Basel-Stadt.pdf",
+        "access": [
+            "all"
+        ]
     },
     {
         "title": "Tonalität der Inhalte",
         "description": "Gewünschte Tonalität für die Inhalte der Webseite des Kantons Basel-Stadt",
         "author": "Kanton Basel-Stadt",
         "edition": "2025",
-        "file": "Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf"
+        "file": "Tonalität_der_Inhalte_Kanton_Basel-Stadt.pdf",
+        "access": [
+            "all"
+        ]
     }
 ]

@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from typing import final
 
+from authentication import AzureAdTokenPayload
 from llama_index.core.prompts import PromptTemplate
 
 from text_mate_backend.models.ruel_models import Ruel, RuelDocumentDescription, RuelsContainer, RuelsValidationContainer
@@ -9,6 +10,18 @@ from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("advisor_service")
+
+
+def has_access(user: AzureAdTokenPayload, doc: RuelDocumentDescription) -> bool:
+    if "all" in doc.access:
+        return True
+
+    for roles in user["roles"]:
+        for access in doc.access:
+            if roles == access:
+                return True
+
+    return False
 
 
 @final
@@ -19,12 +32,16 @@ class AdvisorService:
         self.llm_facade = llm_facade
         self.ruel_container = RuelsContainer.model_validate_json(Path("docs/ruels.json").read_text())
 
-    def get_docs(self) -> list[RuelDocumentDescription]:
+    def get_docs(self, user: AzureAdTokenPayload) -> list[RuelDocumentDescription]:
         """
         Returns the documentation file names available for the advisor service.
         """
-        json_data = json.loads(Path("docs/docs.json").read_text())
-        doc_descriptions = [RuelDocumentDescription.model_validate(doc) for doc in json_data]
+        json_data: list[object] = json.loads(Path("docs/docs.json").read_text())
+        doc_descriptions: list[RuelDocumentDescription] = [
+            RuelDocumentDescription.model_validate(doc) for doc in json_data
+        ]
+
+        doc_descriptions = list(filter(lambda doc: has_access(user, doc), doc_descriptions))
 
         doc_names = self.ruel_container.document_names
 

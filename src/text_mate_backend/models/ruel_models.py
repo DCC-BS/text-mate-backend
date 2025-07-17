@@ -41,3 +41,4 @@ class RuelDocumentDescription(BaseModel):
     author: str = Field(description="Author of the document")
     edition: str = Field(description="Edition of the document")
     file: str = Field(description="Filename of the document")
+    access: list[str] = Field(description="Access permissions for the document, e.g., 'all' for public access")
