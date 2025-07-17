@@ -1,5 +1,7 @@
-from authentication import JWTAuthMiddleware
+from collections.abc import AsyncGenerator
+
 from fastapi import FastAPI
+from fastapi.concurrency import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from structlog.stdlib import BoundLogger
 
@@ -27,12 +29,6 @@ def create_app() -> FastAPI:
     load_env()
     init_logger()
 
-    app = FastAPI(
-        title="Text Mate API",
-        description="API for text correction, rewriting, and other text-related services",
-        version="0.1.0",
-    )
-
     logger: BoundLogger = get_logger("app")
     logger.info("Starting Text Mate API application")
 
@@ -46,6 +42,17 @@ def create_app() -> FastAPI:
     config = container.config()
     logger.info(f"Running with configuration: {config}")
 
+    app = FastAPI(
+        title="Text Mate API",
+        description="API for text correction, rewriting, and other text-related services",
+        version="0.1.0",
+        swagger_ui_oauth2_redirect_url="/oauth2-redirect",
+        swagger_ui_init_oauth={
+            "usePkceWithAuthorizationCodeGrant": True,
+            "clientId": config.azure_open_api_client_id,
+        },
+    )
+
     # Configure CORS
     logger.debug("Setting up CORS middleware")
     app.add_middleware(
@@ -58,7 +65,6 @@ def create_app() -> FastAPI:
     logger.info(f"CORS configured with origin: {config.client_url}")
 
     app.add_middleware(
-        JWTAuthMiddleware,
         jwt_decoder=container.jwt_decoder(),
         unprotected_routes=[
             "/health",
@@ -79,6 +85,14 @@ def create_app() -> FastAPI:
     app.include_router(word_synonym.create_router())
     app.include_router(sentence_rewrite.create_router())
     logger.info("All routers registered")
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+        """
+        Load OpenID config on startup.
+        """
+        await container.azure_service().load_config()
+        yield
 
     logger.info("API setup complete")
     return app

@@ -1,34 +1,35 @@
-from authentication import AzureAdTokenPayload, get_current_user
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Security
 from fastapi.responses import StreamingResponse
 from returns.result import Failure, Success
 
 from text_mate_backend.container import Container
 from text_mate_backend.models.quick_actions_models import QuickActionRequest
 from text_mate_backend.services.actions.quick_action_service import QuickActionService
+from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("quick_action_router")
 
 
 @inject
-def create_router(quick_action_service: QuickActionService = Provide[Container.quick_action_service]) -> APIRouter:
+def create_router(
+    quick_action_service: QuickActionService = Provide[Container.quick_action_service],
+    azure_service: AzureService = Provide[Container.azure_service],
+) -> APIRouter:
     logger.info("Creating quick action router")
     router: APIRouter = APIRouter(prefix="/quick-action", tags=["quick-action"])
 
-    @router.post("")
-    def quick_action(
-        request: QuickActionRequest, current_user: AzureAdTokenPayload = Depends(get_current_user)
-    ) -> StreamingResponse:
+    azure_scheme = azure_service.azure_scheme
+
+    @router.post("", dependencies=[Security(azure_scheme)])
+    def quick_action(request: QuickActionRequest) -> StreamingResponse:
         text_length = len(request.text)
 
         logger.info("Quick action request received", action=request.action, text_length=text_length)
         logger.debug(
             "Quick action request details", text_preview=request.text[:50] + ("..." if text_length > 50 else "")
         )
-
-        logger.debug("The user is ", user=current_user)
 
         result = quick_action_service.run(request.action, request.text)
 

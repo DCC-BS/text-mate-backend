@@ -5,8 +5,8 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "authentication-bs-py>=0.1.2",
     "dependency-injector>=4.46.0",
+    "fastapi-azure-auth>=5.1.1",
     "fastapi[standard]>=0.115.8",
     "llama-index-core>=0.12.34.post1",
     "llama-index-llms-openai>=0.3.38",
@@ -130,5 +130,3 @@ addopts = [
 ]
 pythonpath = ["src"]
 
-[tool.uv.sources]
-authentication-bs-py = { git = "https://github.com/DCC-BS/authentication.bs.py", rev = "v0.1.2" }
