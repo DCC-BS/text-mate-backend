@@ -56,5 +56,4 @@ class Container(containers.DeclarativeContainer):
         llm_facade=llm_facade,
     )
 
-
-azure_service: providers.Singleton[AzureService] = providers.Singleton(AzureService, auth_settings=auth_settings)
+    azure_service: providers.Singleton[AzureService] = providers.Singleton(AzureService, auth_settings=auth_settings)

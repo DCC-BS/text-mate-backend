@@ -57,7 +57,7 @@ def create_app() -> FastAPI:
         swagger_ui_oauth2_redirect_url="/oauth2-redirect",
         swagger_ui_init_oauth={
             "usePkceWithAuthorizationCodeGrant": True,
-            "clientId": config.azure_open_api_client_id,
+            "clientId": config.azure_frontend_client_id,
         },
         lifespan=lifespan,
     )

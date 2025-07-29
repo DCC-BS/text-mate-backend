@@ -12,6 +12,7 @@ class Configuration:
 
         self.azure_client_id: str | None = os.getenv("AZURE_CLIENT_ID")
         self.azure_tenant_id: str | None = os.getenv("AZURE_TENANT_ID")
+        self.azure_frontend_client_id: str | None = os.getenv("AZURE_FRONTEND_CLIENT_ID")
         self.azure_discovery_url: str | None = (
             f"https://login.microsoftonline.com/{self.azure_tenant_id}/v2.0/.well-known/openid-configuration"
             if self.azure_tenant_id
