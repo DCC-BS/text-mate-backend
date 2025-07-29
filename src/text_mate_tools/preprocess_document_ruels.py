@@ -8,7 +8,7 @@ from llama_index.readers.file import PDFReader  # type: ignore
 from tqdm import tqdm
 
 from text_mate_backend.customLLMs.qwen3 import QwenVllm
-from text_mate_backend.models.ruel_models import Ruel, RuelsContainer
+from text_mate_backend.models.ruel_models import Rule, RulesContainer
 from text_mate_backend.utils.configuration import get_config
 
 documents = [
@@ -19,13 +19,13 @@ documents = [
 ]
 
 prompt = PromptTemplate(
-    """You are an expert in editorial guidelines. Take the given document and extract all relevant ruels.
+    """You are an expert in editorial guidelines. Take the given document and extract all relevant rules.
 
 Rules documentation:
 {rules}
 
 Your task:
-1. Extract all ruels from the document.
+1. Extract all rules from the document.
 2. Identify the file name and page number of the document json.
 3. Provide an example of the ruel in use.
 4. Keep the text in the original language.
@@ -39,14 +39,14 @@ token_limit = 32_000
 max_tokens_for_batch = 25_000
 pdf_reader = PDFReader()
 llm = QwenVllm(get_config())
-sllm = llm.as_structured_llm(RuelsContainer)
+sllm = llm.as_structured_llm(RulesContainer)
 
 MAX_RETRIES = 1
 
 
 def process_batch(
     batch: list[Document], batch_index: int, total_batches: int
-) -> tuple[RuelsContainer | None, Exception | None, str]:
+) -> tuple[RulesContainer | None, Exception | None, str]:
     """
     Process a batch of documents and extract rules with error handling.
 
@@ -63,8 +63,8 @@ def process_batch(
 
     try:
         json_docs = ",".join(map(lambda x: x.json(), batch))
-        response: RuelsContainer = sllm.structured_predict(
-            RuelsContainer,
+        response: RulesContainer = sllm.structured_predict(
+            RulesContainer,
             prompt,
             rules=f"[{json_docs}]",
         )
@@ -73,16 +73,16 @@ def process_batch(
         return None, e, batch_page_range
 
 
-def get_ruels(path: Path) -> RuelsContainer:
+def get_rules(path: Path) -> RulesContainer:
     """
-    Extract ruels from a PDF document with detailed progress feedback.
+    Extract rules from a PDF document with detailed progress feedback.
     Includes error handling and retry mechanism for batch processing.
 
     Args:
         path: Path to the PDF document
 
     Returns:
-        RuelsContainer with extracted rules
+            Container with extracted rules
     """
     print(f"\n📄 Processing document: {path.name}")
     start_time = time.time()
@@ -93,7 +93,7 @@ def get_ruels(path: Path) -> RuelsContainer:
     except Exception as e:
         print(f"   ❌ ERROR loading document {path.name}: {str(e)}")
         traceback.print_exc()
-        return RuelsContainer(rules=[])
+        return RulesContainer(rules=[])
 
     # batch the documents to not exceed the max token limit (32000 tokens)
     batches: list[list[Document]] = []
@@ -125,7 +125,7 @@ def get_ruels(path: Path) -> RuelsContainer:
 
     print(f"   📦 Created {len(batches)} batches")
 
-    ruels: list[Ruel] = []
+    rules: list[Rule] = []
     failed_batches = 0
 
     for i, batch in enumerate(tqdm(batches, desc="   🔍 Processing batches", unit="batch")):
@@ -156,10 +156,10 @@ def get_ruels(path: Path) -> RuelsContainer:
                 print(f"      ✅ Retry successful for batch {i + 1}/{len(batches)}")
 
         if response is not None:
-            batch_ruels = response.rules
-            ruels.extend(batch_ruels)
+            batch_rules = response.rules
+            rules.extend(batch_rules)
             batch_time = time.time() - batch_start
-            print(f"      ✅ Found {len(batch_ruels)} rules in {batch_time:.2f}s")
+            print(f"      ✅ Found {len(batch_rules)} rules in {batch_time:.2f}s")
         else:
             print("      ❌ No rules extracted from batch")
 
@@ -168,23 +168,23 @@ def get_ruels(path: Path) -> RuelsContainer:
     if failed_batches > 0:
         print(f"   ⚠️ {failed_batches} out of {len(batches)} batches failed after retries")
 
-    print(f"   📊 Completed {path.name}: {len(ruels)} rules extracted in {total_time:.2f}s\n")
+    print(f"   📊 Completed {path.name}: {len(rules)} rules extracted in {total_time:.2f}s\n")
 
-    return RuelsContainer(rules=ruels)
+    return RulesContainer(rules=rules)
 
 
 print(f"🚀 Starting rule extraction from {len(documents)} documents")
 total_start_time = time.time()
-ruels: list[Ruel] = []
+rules: list[Rule] = []
 failed_documents = []
 
 for i, document in enumerate(documents):
     try:
         print(f"\n[{i + 1}/{len(documents)}] Processing document: {document.name}")
-        response = get_ruels(document)
+        response = get_rules(document)
         document_rules = len(response.rules)
-        ruels.extend(response.rules)
-        print(f"📝 Added {document_rules} rules from {document.name} (Total: {len(ruels)} rules)")
+        rules.extend(response.rules)
+        print(f"📝 Added {document_rules} rules from {document.name} (Total: {len(rules)} rules)")
     except Exception as e:
         print(f"❌ ERROR: Failed to process document {document}: {str(e)}")
         traceback.print_exc()
@@ -193,27 +193,27 @@ for i, document in enumerate(documents):
 total_time = time.time() - total_start_time
 
 # Load existing rules if the file exists, then append new rules
-ruels_path = Path("./docs/ruels.json")
-existing_rules: list[Ruel] = []
+rules_path = Path("./docs/rules.json")
+existing_rules: list[Rule] = []
 
-if ruels_path.exists():
+if rules_path.exists():
     try:
-        existing_data = RuelsContainer.model_validate_json(ruels_path.read_text())
+        existing_data = RulesContainer.model_validate_json(rules_path.read_text())
         existing_rules = existing_data.rules
-        print(f"📁 Loaded {len(existing_rules)} existing rules from {ruels_path.name}")
+        print(f"📁 Loaded {len(existing_rules)} existing rules from {rules_path.name}")
     except Exception as e:
         print(f"⚠️ Warning: Could not load existing rules file: {str(e)}")
         print("📝 Creating new rules file...")
 
 # Combine existing and new rules
-all_rules = existing_rules + ruels
-ruels_path.write_text(data=RuelsContainer(rules=all_rules).model_dump_json(indent=2))
+all_rules = existing_rules + rules
+rules_path.write_text(data=RulesContainer(rules=all_rules).model_dump_json(indent=2))
 
 print("\n✨ Process complete!")
-print(f"📊 New rules extracted: {len(ruels)}")
+print(f"📊 New rules extracted: {len(rules)}")
 print(f"📊 Total rules in file: {len(all_rules)}")
 print(f"⏱️ Total processing time: {total_time:.2f}s")
-print(f"💾 Rules saved to {ruels_path.absolute()}")
+print(f"💾 ules saved to {rules_path.absolute()}")
 
 if failed_documents:
     print(f"\n⚠️ Warning: Failed to process {len(failed_documents)} documents:")

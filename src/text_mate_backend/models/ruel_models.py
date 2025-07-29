@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
 
-class Ruel(BaseModel):
+class Rule(BaseModel):
     name: str = Field(description="A descriptive name for the rule in the original language")
     description: str = Field(description="Description of the rule in the original language")
     file_name: str = Field(description="Filename of the source document")
@@ -9,7 +9,7 @@ class Ruel(BaseModel):
     example: str = Field(description="Example of the rule in use")
 
 
-class RuelValidation(Ruel):
+class RuelValidation(Rule):
     """
     Validation class for Ruel.
     This class is used to validate the Ruel model.
@@ -20,8 +20,8 @@ class RuelValidation(Ruel):
     source: str = Field(description="Section in the text where the rule is violated")
 
 
-class RuelsContainer(BaseModel):
-    rules: list[Ruel] = Field(description="All violations of the rules")
+class RulesContainer(BaseModel):
+    rules: list[Rule] = Field(description="All violations of the rules")
 
     @property
     def document_names(self) -> set[str]:
@@ -31,7 +31,7 @@ class RuelsContainer(BaseModel):
         return {rule.file_name for rule in self.rules}
 
 
-class RuelsValidationContainer(BaseModel):
+class RulesValidationContainer(BaseModel):
     rules: list[RuelValidation] = Field(description="All violations of the rules")
 
 
