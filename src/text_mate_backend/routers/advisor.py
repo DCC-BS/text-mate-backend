@@ -2,9 +2,10 @@ from os import path
 from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.params import Security
 from fastapi.responses import FileResponse
+from fastapi_azure_auth.user import User
 from pydantic import BaseModel
 
 from text_mate_backend.container import Container
@@ -32,8 +33,10 @@ def create_router(
     azure_scheme = azure_service.azure_scheme
 
     @router.get("/docs", dependencies=[Security(azure_scheme)])
-    def get_advisor_docs() -> list[RuelDocumentDescription]:
-        return advisor_service.get_docs()
+    def get_advisor_docs(
+        current_user: Annotated[User, Depends(azure_service.azure_scheme)],
+    ) -> list[RuelDocumentDescription]:
+        return advisor_service.get_docs(current_user)
 
     @router.post("/validate", response_model=RuelsValidationContainer, dependencies=[Security(azure_scheme)])
     def validate_advisor(data: AdvisorInput) -> RuelsValidationContainer:

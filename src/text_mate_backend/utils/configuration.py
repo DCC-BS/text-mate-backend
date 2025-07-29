@@ -10,14 +10,15 @@ class Configuration:
         self.language_tool_api_url: str = os.getenv("LANGUAGE_TOOL_API_URL", "http://localhost:8010/")
         self.client_url: str = os.getenv("CLIENT_URL", "http://localhost:3000")
 
-        self.azure_client_id: str | None = os.getenv("AZURE_AD_CLIENT_ID")
-        self.azure_open_api_client_id: str | None = os.getenv("AZURE_OPEN_API_CLIENT_ID")
-        self.azure_tenant_id: str | None = os.getenv("AZURE_AD_TENANT_ID")
+        self.azure_client_id: str | None = os.getenv("AZURE_CLIENT_ID")
+        self.azure_open_api_client_id: str | None = os.getenv("AZURE_CLIENT_ID")
+        self.azure_tenant_id: str | None = os.getenv("AZURE_TENANT_ID")
         self.azure_discovery_url: str | None = (
             f"https://login.microsoftonline.com/{self.azure_tenant_id}/v2.0/.well-known/openid-configuration"
             if self.azure_tenant_id
             else None
         )
+        self.azure_scope_description: str = os.getenv("SCOPE_DESCRIPTION", "")
 
     @override
     def __str__(self) -> str:

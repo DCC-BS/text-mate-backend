@@ -7,12 +7,12 @@ class AuthSettings(BaseModel):
     openapi_client_id: str = ""
     app_client_id: str = ""
     tenant_id: str = ""
-    scope_description: str = "all_access"
+    scope_description: str = ""
 
     def __init__(self, config: Configuration):
         super().__init__(
             openapi_client_id=config.azure_open_api_client_id,
-            app_client_id=config.azure_app_client_id,
+            app_client_id=config.azure_client_id,
             tenant_id=config.azure_tenant_id,
         )
 
@@ -21,7 +21,7 @@ class AuthSettings(BaseModel):
         return f"api://{self.app_client_id}/{self.scope_description}"
 
     @property
-    def scopes(self) -> dict:
+    def scopes(self) -> dict[str, str]:
         return {
             self.scope_name: self.scope_description,
         }

@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import final
 
-from authentication import AzureAdTokenPayload
+from fastapi_azure_auth.user import User
 from llama_index.core.prompts import PromptTemplate
 
 from text_mate_backend.models.ruel_models import Ruel, RuelDocumentDescription, RuelsContainer, RuelsValidationContainer
@@ -12,11 +12,11 @@ from text_mate_backend.utils.logger import get_logger
 logger = get_logger("advisor_service")
 
 
-def has_access(user: AzureAdTokenPayload, doc: RuelDocumentDescription) -> bool:
+def has_access(user: User, doc: RuelDocumentDescription) -> bool:
     if "all" in doc.access:
         return True
 
-    for roles in user["roles"]:
+    for roles in user.roles:
         for access in doc.access:
             if roles == access:
                 return True
@@ -32,7 +32,7 @@ class AdvisorService:
         self.llm_facade = llm_facade
         self.ruel_container = RuelsContainer.model_validate_json(Path("docs/ruels.json").read_text())
 
-    def get_docs(self, user: AzureAdTokenPayload) -> list[RuelDocumentDescription]:
+    def get_docs(self, user: User) -> list[RuelDocumentDescription]:
         """
         Returns the documentation file names available for the advisor service.
         """
