@@ -161,7 +161,7 @@ def get_ruels(path: Path) -> RuelsContainer:
             batch_time = time.time() - batch_start
             print(f"      ✅ Found {len(batch_ruels)} rules in {batch_time:.2f}s")
         else:
-            print(f"      ❌ No rules extracted from batch")
+            print("      ❌ No rules extracted from batch")
 
     total_time = time.time() - start_time
 
@@ -209,7 +209,7 @@ if ruels_path.exists():
 all_rules = existing_rules + ruels
 ruels_path.write_text(data=RuelsContainer(rules=all_rules).model_dump_json(indent=2))
 
-print(f"\n✨ Process complete!")
+print("\n✨ Process complete!")
 print(f"📊 New rules extracted: {len(ruels)}")
 print(f"📊 Total rules in file: {len(all_rules)}")
 print(f"⏱️ Total processing time: {total_time:.2f}s")

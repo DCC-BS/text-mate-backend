@@ -1,10 +1,8 @@
-import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_azure_auth import SingleTenantAzureAuthorizationCodeBearer
 from structlog.stdlib import BoundLogger
 
 from text_mate_backend.container import Container

@@ -1,5 +1,5 @@
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi import APIRouter, HTTPException, Security
 from fastapi.responses import StreamingResponse
 from returns.result import Failure, Success
 
