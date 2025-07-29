@@ -25,10 +25,6 @@ def create_router(
 
     @router.post("/text-correction", response_model=CorrectionResult, dependencies=[Security(azure_scheme)])
     def correct_text(input: CorrectionInput, user: User = Depends(azure_scheme)) -> CorrectionResult:
-        if not user:
-            logger.error("Unauthorized access attempt")
-            raise Unauthorized("User is not authenticated")
-
         logger.debug("Authenticated user", user=user)
         logger.debug("Roles", roles=user.roles)
 
