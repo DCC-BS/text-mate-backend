@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "dependency-injector>=4.46.0",
+    "fastapi-azure-auth>=5.1.1",
     "fastapi[standard]>=0.115.8",
     "llama-index-core>=0.12.34.post1",
     "llama-index-llms-openai>=0.3.38",
@@ -13,6 +14,7 @@ dependencies = [
     "llama-index-readers-file>=0.4.7",
     "openai>=1.70.0",
     "python-dotenv>=1.0.1",
+    "python-jose[cryptography]>=3.5.0",
     "requests>=2.32.3",
     "returns>=0.25.0",
     "structlog>=25.2.0",
@@ -127,3 +129,4 @@ addopts = [
     "--import-mode=importlib",
 ]
 pythonpath = ["src"]
+

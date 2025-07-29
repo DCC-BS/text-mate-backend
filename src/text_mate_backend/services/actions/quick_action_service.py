@@ -1,5 +1,6 @@
 import time
 from enum import Enum
+from typing import final
 
 from fastapi.responses import StreamingResponse
 from returns.result import safe
@@ -11,6 +12,7 @@ from text_mate_backend.services.actions.social_media_action import social_mediaf
 from text_mate_backend.services.actions.summarize_action import summarize
 from text_mate_backend.services.actions.translate_action import translate
 from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("quick_action_service")
@@ -29,9 +31,11 @@ class Actions(str, Enum):
     TranslateIt = "translate_it"
 
 
+@final
 class QuickActionService:
-    def __init__(self, llm_facade: LLMFacade) -> None:
+    def __init__(self, llm_facade: LLMFacade, config: Configuration) -> None:
         self.llm_facade = llm_facade
+        self.config = config
 
     @safe
     def run(self, action: Actions, text: str) -> StreamingResponse:
@@ -56,37 +60,38 @@ class QuickActionService:
 
         start_time = time.time()
         try:
+            app_config = self.config
             response = None
             match action:
                 case Actions.PlainLanguage:
-                    response = plain_language(text, self.llm_facade)
+                    response = plain_language(text, app_config, self.llm_facade)
                     logger.info("Applied plain language action")
                 case Actions.EasyLanguage:
-                    response = easy_language(text, self.llm_facade)
+                    response = easy_language(text, app_config, self.llm_facade)
                     logger.info("Applied easy language action")
                 case Actions.BulletPoints:
-                    response = bullet_points(text, self.llm_facade)
+                    response = bullet_points(text, app_config, self.llm_facade)
                     logger.info("Applied bullet points action")
                 case Actions.Summarize:
-                    response = summarize(text, self.llm_facade)
+                    response = summarize(text, app_config, self.llm_facade)
                     logger.info("Applied summarize action")
                 case Actions.SocialMediafy:
-                    response = social_mediafy(text, self.llm_facade)
+                    response = social_mediafy(text, app_config, self.llm_facade)
                     logger.info("Applied social media action")
                 case Actions.TranslateDeCH:
-                    response = translate(text, "German (CH)", self.llm_facade)
+                    response = translate(text, "German (CH)", app_config, self.llm_facade)
                     logger.info("Applied translate action")
                 case Actions.TranslateEnUS:
-                    response = translate(text, "English (US)", self.llm_facade)
+                    response = translate(text, "English (US)", app_config, self.llm_facade)
                     logger.info("Applied translate action")
                 case Actions.TranslateEnGB:
-                    response = translate(text, "English (GB)", self.llm_facade)
+                    response = translate(text, "English (GB)", app_config, self.llm_facade)
                     logger.info("Applied translate action")
                 case Actions.TranslateFr:
-                    response = translate(text, "French", self.llm_facade)
+                    response = translate(text, "French", app_config, self.llm_facade)
                     logger.info("Applied translate action")
                 case Actions.TranslateIt:
-                    response = translate(text, "Italian", self.llm_facade)
+                    response = translate(text, "Italian", app_config, self.llm_facade)
                     logger.info("Applied translate action")
 
             process_time = time.time() - start_time

@@ -1,16 +1,14 @@
 import time
-from typing import Generator, Iterator
+from collections.abc import Generator, Iterator
 
 from fastapi.responses import StreamingResponse
 from llama_index.core.prompts import PromptTemplate
 from pydantic import BaseModel
 
 from text_mate_backend.services.llm_facade import LLMFacade
-from text_mate_backend.utils.configuration import get_config
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("action_utils")
-config = get_config()
 
 
 class PromptOptions(BaseModel):
@@ -19,6 +17,7 @@ class PromptOptions(BaseModel):
     """
 
     prompt: str
+    llm_model: str
 
 
 def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingResponse:
@@ -33,7 +32,7 @@ def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingRespon
         A StreamingResponse that yields the generated text chunks
     """
     # Get request details for logging
-    logger.info("Starting OpenAI streaming request", model=config.llm_model)
+    logger.info("Starting OpenAI streaming request", model=options.llm_model)
 
     start_time = time.time()
     try:

@@ -1,5 +1,9 @@
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from structlog.stdlib import BoundLogger
 
 from text_mate_backend.container import Container
 
@@ -12,7 +16,6 @@ from text_mate_backend.routers import (
     text_rewrite,
     word_synonym,
 )
-from text_mate_backend.utils.configuration import get_config
 from text_mate_backend.utils.load_env import load_env
 from text_mate_backend.utils.logger import get_logger, init_logger
 from text_mate_backend.utils.middleware import add_logging_middleware
@@ -25,17 +28,9 @@ def create_app() -> FastAPI:
 
     load_env()
     init_logger()
-    config = get_config()
 
-    app = FastAPI(
-        title="Text Mate API",
-        description="API for text correction, rewriting, and other text-related services",
-        version="0.1.0",
-    )
-
-    logger = get_logger("app")
+    logger: BoundLogger = get_logger("app")
     logger.info("Starting Text Mate API application")
-    logger.info(f"Running with configuration: {config}")
 
     # Set up dependency injection container
     logger.debug("Configuring dependency injection container")
@@ -43,6 +38,29 @@ def create_app() -> FastAPI:
     container.wire(modules=[text_correction, text_rewrite, advisor, quick_action, word_synonym, sentence_rewrite])
     container.check_dependencies()
     logger.info("Dependency injection configured")
+
+    config = container.config()
+    logger.info(f"Running with configuration: {config}")
+
+    @asynccontextmanager
+    async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
+        """
+        Load OpenID config on startup.
+        """
+        await container.azure_service().load_config()
+        yield
+
+    app = FastAPI(
+        title="Text Mate API",
+        description="API for text correction, rewriting, and other text-related services",
+        version="0.1.0",
+        swagger_ui_oauth2_redirect_url="/oauth2-redirect",
+        swagger_ui_init_oauth={
+            "usePkceWithAuthorizationCodeGrant": True,
+            "clientId": config.azure_frontend_client_id,
+        },
+        lifespan=lifespan,
+    )
 
     # Configure CORS
     logger.debug("Setting up CORS middleware")

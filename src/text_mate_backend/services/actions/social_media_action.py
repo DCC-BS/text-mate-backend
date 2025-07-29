@@ -3,14 +3,16 @@ from llama_index.core.prompts import PromptTemplate
 
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
 from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.utils.configuration import Configuration
 
 
-def social_mediafy(text: str, llm_facade: LLMFacade) -> StreamingResponse:
+def social_mediafy(text: str, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
     """
     Converts the given text into a social media post by adding emojis and hashtags.
 
     Args:
         text: The input text to be converted into social media format
+        config: Configuration containing LLM model and other settings
         llm_facade: The LLMFacade instance to use for generating the response
 
     Returns:
@@ -28,7 +30,7 @@ def social_mediafy(text: str, llm_facade: LLMFacade) -> StreamingResponse:
         """
     ).format(text=text)
 
-    options: PromptOptions = PromptOptions(prompt=prompt)
+    options: PromptOptions = PromptOptions(prompt=prompt, llm_model=config.llm_model)
 
     return run_prompt(
         options,

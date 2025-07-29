@@ -3,12 +3,13 @@ from llama_index.core.prompts import PromptTemplate
 
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
 from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("summarize_action")
 
 
-def summarize(text: str, llm_facade: LLMFacade) -> StreamingResponse:
+def summarize(text: str, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
     """
     Summarizes the given text by providing a condensed version that captures main points.
 
@@ -36,7 +37,7 @@ def summarize(text: str, llm_facade: LLMFacade) -> StreamingResponse:
         """
     ).format(text=text)
 
-    options: PromptOptions = PromptOptions(prompt=prompt)
+    options: PromptOptions = PromptOptions(prompt=prompt, llm_model=config.llm_model)
 
     logger.debug("Created summarize prompt options")
     return run_prompt(
