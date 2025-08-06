@@ -4,7 +4,7 @@ import pytest
 from pytest_mock import MockerFixture
 from returns.result import Failure, Success
 
-from text_mate_backend.models.text_rewrite_models import RewriteResult, TextRewriteOptions
+from text_mate_backend.models.text_rewrite_models import RewriteResult
 from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.services.rewrite_text import RewriteOutput, TextRewriteService
 
@@ -50,7 +50,7 @@ class TestTextRewriteService:
         # Arrange
         input_text = "Hello world"
         context = "This is a <rewrite>Hello world</rewrite> context"
-        options = TextRewriteOptions(writing_style="professional", target_audience="adult", intend="informative")
+        options = "writing_style: professional\n target_audience: adult\n intend: informative"
 
         # Mock the structured_predict method to return a RewriteOutput with rewritten_text
         mock_response = Mock(spec=RewriteOutput)
@@ -81,7 +81,7 @@ class TestTextRewriteService:
         # Arrange
         input_text = "Straße"
         context = "This is a <rewrite>Straße</rewrite> context"
-        options = TextRewriteOptions()
+        options = ""
 
         # Mock the structured_predict method to return a response with special characters
         mock_response = Mock(spec=RewriteOutput)
@@ -110,7 +110,7 @@ class TestTextRewriteService:
         # Arrange
         input_text = "Hello world"
         context = "This is a <rewrite>Hello world</rewrite> context"
-        options = TextRewriteOptions()
+        options = ""
 
         # Mock the structured_predict method to return text with <rewrite> tags
         mock_response = Mock(spec=RewriteOutput)
@@ -137,7 +137,7 @@ class TestTextRewriteService:
         # Arrange
         input_text = "Hello world"
         context = "This is a context"
-        options = TextRewriteOptions()
+        options = ""
 
         # Mock the structured_predict method to raise an exception
         mock_llm_facade.structured_predict.side_effect = Exception("API error")
