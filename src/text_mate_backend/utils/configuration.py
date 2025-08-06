@@ -19,6 +19,9 @@ class Configuration:
             else None
         )
         self.azure_scope_description: str = os.getenv("SCOPE_DESCRIPTION", "")
+        self.hmac_secret: str = os.getenv("HMAC_SECRET", "none")
+        if self.hmac_secret == "none":
+            raise RuntimeError("HMAC secret is not set")
 
     @override
     def __str__(self) -> str:
