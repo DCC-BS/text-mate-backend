@@ -8,9 +8,9 @@ def get_pseudonymized_user_id(user: User, secret_key: str) -> str:
     """
     Generates a consistent, one-way pseudonym for a given user ID.
     """
-    user_id = user.oid
+    user_id = user.oid or user.sub
     if user_id is None:
-        user_id = user.sub
+        raise ValueError("User ID (oid or sub) not found in user object")
     message = user_id.encode("utf-8")
     if not secret_key or secret_key == "none":
         raise ValueError("HMAC secret is not set")
