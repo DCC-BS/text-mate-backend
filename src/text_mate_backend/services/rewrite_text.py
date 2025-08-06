@@ -5,14 +5,13 @@ from llama_index.core.prompts import PromptTemplate
 from pydantic import BaseModel, Field
 from returns.result import safe
 
-from text_mate_backend.models.text_rewrite_models import RewriteResult, TextRewriteOptions
+from text_mate_backend.models.text_rewrite_models import RewriteResult
 from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("text_rewrite_service")
 
 
-@final
 class RewriteOutput(BaseModel):
     rewritten_text: str = Field(description="The rewritten text, in the same language as the input text.")
 
@@ -25,7 +24,7 @@ class TextRewriteService:
         logger.info("TextRewriteService initialized successfully")
 
     @safe
-    def rewrite_text(self, text: str, context: str, options: TextRewriteOptions) -> RewriteResult:
+    def rewrite_text(self, text: str, context: str, options: str) -> RewriteResult:
         """Corrects the input text based on given options.
 
         Args:
@@ -46,9 +45,6 @@ class TextRewriteService:
             "Processing text rewrite request",
             text_length=text_length,
             context_length=context_length,
-            writing_style=options.writing_style,
-            target_audience=options.target_audience,
-            intend=options.intend,
         )
         logger.debug("Text preview", text_preview=text_preview)
 
@@ -76,15 +72,11 @@ class TextRewriteService:
                     ---------------
 
                     Options:
-                    - Writing style: {writing_style}
-                    - Target audience: {target_audience}
-                    - Intend: {intend}
+                    {options}
                     """,
                     text=text,
                     context=context,
-                    writing_style=options.writing_style,
-                    target_audience=options.target_audience,
-                    intend=options.intend,
+                    options=options,
                 ),
             )
 
