@@ -1,6 +1,9 @@
+from typing import Annotated
+
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.params import Security
+from fastapi_azure_auth.user import User
 
 from text_mate_backend.container import Container
 from text_mate_backend.models.text_rewrite_models import RewriteInput, RewriteResult, TextRewriteOptions
@@ -8,6 +11,7 @@ from text_mate_backend.routers.utils import handle_result
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.rewrite_text import TextRewriteService
 from text_mate_backend.utils.logger import get_logger
+from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
 
 logger = get_logger("text_rewrite_router")
 
@@ -21,24 +25,28 @@ def create_router(
     router: APIRouter = APIRouter(prefix="/text-rewrite", tags=["text-rewrite"])
 
     azure_scheme = azure_service.azure_scheme
+    config = Container.config()
 
     @router.post("", response_model=RewriteResult, dependencies=[Security(azure_scheme)])
-    def rewrite_text(data: RewriteInput) -> RewriteResult:
+    def rewrite_text(
+        data: RewriteInput,
+        current_user: Annotated[User, Depends(azure_service.azure_scheme)],
+    ) -> RewriteResult:
+        pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
         text_length = len(data.text)
         context_length = len(data.context)
 
         logger.info(
-            "Text rewrite request received",
-            text_length=text_length,
-            context_length=context_length,
-            writing_style=data.writing_style,
-            target_audience=data.target_audience,
-            intend=data.intend,
-        )
-        logger.debug(
-            "Request details",
-            text_preview=data.text[:50] + ("..." if text_length > 50 else ""),
-            context_preview=data.context[:50] + ("..." if context_length > 50 else ""),
+            "app_event",
+            extra={
+                "pseudonym_id": pseudonymized_user_id,
+                "event": "text_rewrite",
+                "text_length": text_length,
+                "context_length": context_length,
+                "writing_style": data.writing_style,
+                "target_audience": data.target_audience,
+                "intend": data.intend,
+            },
         )
 
         options: TextRewriteOptions = TextRewriteOptions(

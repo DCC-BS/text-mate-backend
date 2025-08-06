@@ -19,6 +19,7 @@ class Configuration:
             else None
         )
         self.azure_scope_description: str = os.getenv("SCOPE_DESCRIPTION", "")
+        self.hmac_secret: str = os.getenv("HMAC_SECRET", "none")
 
     @override
     def __str__(self) -> str:

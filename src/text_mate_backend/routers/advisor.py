@@ -13,6 +13,7 @@ from text_mate_backend.models.ruel_models import RuelDocumentDescription, RulesV
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.utils.logger import get_logger
+from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
 
 logger = get_logger("advisor_router")
 
@@ -31,6 +32,7 @@ def create_router(
     router: APIRouter = APIRouter(prefix="/advisor", tags=["advisor"])
 
     azure_scheme = azure_service.azure_scheme
+    config = Container.config()
 
     @router.get("/docs", dependencies=[Security(azure_scheme)])
     def get_advisor_docs(
@@ -39,7 +41,20 @@ def create_router(
         return advisor_service.get_docs(current_user)
 
     @router.post("/validate", response_model=RulesValidationContainer, dependencies=[Security(azure_scheme)])
-    def validate_advisor(data: AdvisorInput) -> RulesValidationContainer:
+    def validate_advisor(
+        data: AdvisorInput,
+        current_user: Annotated[User, Depends(azure_service.azure_scheme)],
+    ) -> RulesValidationContainer:
+        pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
+        logger.info(
+            "app_event",
+            extra={
+                "pseudonym_id": pseudonymized_user_id,
+                "event": "advisor_validate",
+                "text_length": len(data.text),
+            },
+        )
+
         return advisor_service.check_text(
             data.text,
             data.docs,
