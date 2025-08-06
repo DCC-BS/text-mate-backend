@@ -34,24 +34,21 @@ def create_router(
     ) -> StreamingResponse:
         text_length = len(request.text)
 
-        logger.info("Quick action request received", action=request.action, text_length=text_length)
-        logger.debug(
-            "Quick action request details", text_preview=request.text[:50] + ("..." if text_length > 50 else "")
+        pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
+        logger.info(
+            "app_event",
+            extra={
+                "pseudonym_id": pseudonymized_user_id,
+                "event": "quick_action",
+                "action": request.action,
+                "text_length": text_length,
+            },
         )
 
         result = quick_action_service.run(request.action, request.text)
 
         match result:
             case Success(value):
-                pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
-                logger.info(
-                    "app_event",
-                    extra={
-                        "pseudonym_id": pseudonymized_user_id,
-                        "event": "quick_action",
-                        "action": request.action,
-                    },
-                )
                 return value  # type: ignore
             case Failure(error):
                 logger.error(f"Quick action '{request.action}' failed", error=str(error))
