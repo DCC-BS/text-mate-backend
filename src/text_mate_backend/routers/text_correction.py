@@ -2,7 +2,6 @@ from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Security
-from fastapi_azure_auth.exceptions import Unauthorized
 from fastapi_azure_auth.user import User
 
 from text_mate_backend.container import Container
@@ -10,6 +9,7 @@ from text_mate_backend.models.text_corretion_models import CorrectionInput, Corr
 from text_mate_backend.routers.utils import handle_result
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.text_correction_language_tool import TextCorrectionService
+from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
 
@@ -20,12 +20,12 @@ logger = get_logger("text_correction_router")
 def create_router(
     text_correction_service: TextCorrectionService = Provide[Container.text_correction_service],
     azure_service: AzureService = Provide[Container.azure_service],
+    config: Configuration = Provide[Container.config],
 ) -> APIRouter:
     logger.info("Creating text correction router")
     router: APIRouter = APIRouter()
 
     azure_scheme = azure_service.azure_scheme
-    config = Container.config()
 
     @router.post("/text-correction", response_model=CorrectionResult, dependencies=[Security(azure_scheme)])
     def correct_text(
@@ -39,7 +39,7 @@ def create_router(
             "app_event",
             extra={
                 "pseudonym_id": pseudonymized_user_id,
-                "event": "text_correction",
+                "event": correct_text.__name__,
                 "text_length": text_length,
                 "language": input.language,
             },

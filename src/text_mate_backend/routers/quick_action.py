@@ -10,6 +10,7 @@ from text_mate_backend.container import Container
 from text_mate_backend.models.quick_actions_models import QuickActionRequest
 from text_mate_backend.services.actions.quick_action_service import QuickActionService
 from text_mate_backend.services.azure_service import AzureService
+from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
 
@@ -20,12 +21,12 @@ logger = get_logger("quick_action_router")
 def create_router(
     quick_action_service: QuickActionService = Provide[Container.quick_action_service],
     azure_service: AzureService = Provide[Container.azure_service],
+    config: Configuration = Provide[Container.config],
 ) -> APIRouter:
     logger.info("Creating quick action router")
     router: APIRouter = APIRouter(prefix="/quick-action", tags=["quick-action"])
 
     azure_scheme = azure_service.azure_scheme
-    config = Container.config()
 
     @router.post("", dependencies=[Security(azure_scheme)])
     def quick_action(
@@ -39,7 +40,7 @@ def create_router(
             "app_event",
             extra={
                 "pseudonym_id": pseudonymized_user_id,
-                "event": "quick_action",
+                "event": quick_action.__name__,
                 "action": request.action,
                 "text_length": text_length,
             },

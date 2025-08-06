@@ -9,6 +9,7 @@ from text_mate_backend.models.word_synonym_models import WordSynonymInput, WordS
 from text_mate_backend.routers.utils import handle_result
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.word_synonym_service import WordSynonymService
+from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
 
@@ -19,12 +20,12 @@ logger = get_logger("word_synonym_router")
 def create_router(
     word_synonym_service: WordSynonymService = Provide[Container.word_synonym_service],
     azure_service: AzureService = Provide[Container.azure_service],
+    config: Configuration = Provide[Container.config],
 ) -> APIRouter:
     logger.info("Creating word synonym router")
     router: APIRouter = APIRouter(prefix="/word-synonym", tags=["word-synonym"])
 
     azure_scheme = azure_service.azure_scheme
-    config = Container.config()
 
     @router.post("", response_model=WordSynonymResult, dependencies=[Security(azure_scheme)])
     def get_word_synonyms(
@@ -36,7 +37,7 @@ def create_router(
             "app_event",
             extra={
                 "pseudonym_id": pseudonymized_user_id,
-                "event": "word_synonym",
+                "event": get_word_synonyms.__name__,
                 "context_length": len(data.context),
             },
         )
