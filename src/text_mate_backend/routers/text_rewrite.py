@@ -44,9 +44,7 @@ def create_router(
                 "event": rewrite_text.__name__,
                 "text_length": text_length,
                 "context_length": context_length,
-                "writing_style": data.writing_style,
-                "target_audience": data.target_audience,
-                "intend": data.intend,
+                "options": data.options
             },
         )
 
