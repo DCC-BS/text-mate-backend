@@ -2,6 +2,10 @@ import os
 from typing import override
 
 
+def log_secret(secret: str | None) -> str:
+    return "****" if secret is not None and len(secret) > 0 else "None"
+
+
 class Configuration:
     def __init__(self) -> None:
         self.openai_api_base_url: str = os.getenv("OPENAI_API_BASE_URL", "http://localhost:8000/v1")
@@ -32,7 +36,7 @@ class Configuration:
             openai_api_key={self.openai_api_key},
             llm_model={self.llm_model},
             language_tool_api_url={self.language_tool_api_url},
-            azure_client_id={self.azure_client_id},
-            azure_tenant_id={self.azure_tenant_id},
-            azure_discovery_url={self.azure_discovery_url})
+            azure_client_id={log_secret(self.azure_client_id)},
+            azure_tenant_id={log_secret(self.azure_tenant_id)},
+            azure_discovery_url={log_secret(self.azure_discovery_url)})
         """
