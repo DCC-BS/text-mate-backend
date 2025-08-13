@@ -32,11 +32,4 @@
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "ruff.organizeImports": true,
-    "workbench.colorCustomizations": {
-        "editorCursor.foreground": "#ef857d",
-        "activityBarBadge.background": "#e9dbb7",
-        "activityBarBadge.foreground": "#262626",
-        "statusBar.background": "#9f5a51",
-        "statusBar.foreground": "#e9dbb7"
-    }
 }
