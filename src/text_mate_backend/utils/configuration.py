@@ -33,7 +33,7 @@ class Configuration:
         Configuration(
             client_url={self.client_url},
             openai_api_base_url={self.openai_api_base_url},
-            openai_api_key={self.openai_api_key},
+            openai_api_key={log_secret(self.openai_api_key)},
             llm_model={self.llm_model},
             language_tool_api_url={self.language_tool_api_url},
             azure_client_id={log_secret(self.azure_client_id)},
