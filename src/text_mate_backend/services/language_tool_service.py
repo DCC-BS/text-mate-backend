@@ -47,19 +47,10 @@ class LanguageToolService:
                 data={"text": text, "language": language, "preferredVariants": preferedVariants, "level": "picky"},
             )
 
-            elapsed_time = time.time() - start_time
             response.raise_for_status()  # Raise exception for 4XX/5XX responses
 
             # parse response
             response_data = response.json()
-            match_count = len(response_data.get("matches", []))
-
-            logger.info(
-                "LanguageTool check completed",
-                response_time_ms=round(elapsed_time * 1000),
-                status_code=response.status_code,
-                match_count=match_count,
-            )
 
             return LanguageToolResponse(**response_data)
 
