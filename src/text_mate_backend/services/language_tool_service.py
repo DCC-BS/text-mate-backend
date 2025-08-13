@@ -36,7 +36,6 @@ class LanguageToolService:
         text_length = len(text)
         text_preview = text[:50] + ("..." if text_length > 50 else "")
 
-        logger.info("Checking text with LanguageTool", text_length=text_length, language=language)
         logger.debug("Text preview", preview=text_preview)
 
         start_time = time.time()

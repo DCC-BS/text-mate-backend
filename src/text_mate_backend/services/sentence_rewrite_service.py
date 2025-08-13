@@ -36,8 +36,6 @@ class SentenceRewriteService:
         Returns:
             Result containing list of rewrite options or an exception
         """
-        logger.info("Generating sentence rewrites", sentence=sentence)
-
         result = self.llm_facade.structured_predict(
             SentenceRewriteOutput,
             PromptTemplate(

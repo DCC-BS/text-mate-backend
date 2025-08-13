@@ -21,7 +21,6 @@ def summarize(text: str, config: Configuration, llm_facade: LLMFacade) -> Stream
         A StreamingResponse containing the summarized version of the text
     """
     text_length = len(text)
-    logger.info("Processing summarize request", text_length=text_length)
 
     if text_length < 50:
         logger.warning("Text may be too short for effective summarization", text_length=text_length)

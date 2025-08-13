@@ -68,7 +68,6 @@ class AdvisorService:
 
     def _check_text(self, text: str, docs: set[str]) -> RulesValidationContainer:
         rules = self.filter_rules(docs)
-        logger.info(f"Number of rules found: {len(rules)}")
 
         formatted_rules = self.format_rules(rules)
 

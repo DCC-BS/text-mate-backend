@@ -35,10 +35,6 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         # Extract basic request info
         method = request.method
         url = str(request.url)
-        client_host = request.client.host if request.client else "unknown"
-
-        # Log request received
-        logger.info("Request received", request_id=request_id, method=method, url=url, client_ip=client_host)
 
         # Process the request and capture any errors
         try:
@@ -47,16 +43,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             status_code = response.status_code
 
             # Log successful response
-            if status_code < 400:
-                logger.info(
-                    "Request completed",
-                    request_id=request_id,
-                    method=method,
-                    url=url,
-                    status_code=status_code,
-                    process_time=f"{process_time:.3f}s",
-                )
-            else:
+            if status_code >= 400:
                 match response:
                     case JSONResponse() as json_response:
                         response_body = repr(json_response.body)

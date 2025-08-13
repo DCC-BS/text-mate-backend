@@ -26,7 +26,6 @@ def create_router(
     def quick_action(request: QuickActionRequest) -> StreamingResponse:
         text_length = len(request.text)
 
-        logger.info("Quick action request received", action=request.action, text_length=text_length)
         logger.debug(
             "Quick action request details", text_preview=request.text[:50] + ("..." if text_length > 50 else "")
         )
@@ -35,7 +34,6 @@ def create_router(
 
         match result:
             case Success(value):
-                logger.info(f"Quick action '{request.action}' completed successfully")
                 return value  # type: ignore
             case Failure(error):
                 logger.error(f"Quick action '{request.action}' failed", error=str(error))

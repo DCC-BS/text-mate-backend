@@ -21,7 +21,6 @@ class TextRewriteService:
     def __init__(self, llm_facade: LLMFacade) -> None:
         logger.info("Initializing TextRewriteService")
         self.llm_facade = llm_facade
-        logger.info("TextRewriteService initialized successfully")
 
     @safe
     def rewrite_text(self, text: str, context: str, options: str) -> RewriteResult:
@@ -38,14 +37,8 @@ class TextRewriteService:
             - Failure with an error message
         """
         text_length = len(text)
-        context_length = len(context)
         text_preview = text[:50] + ("..." if text_length > 50 else "")
 
-        logger.info(
-            "Processing text rewrite request",
-            text_length=text_length,
-            context_length=context_length,
-        )
         logger.debug("Text preview", text_preview=text_preview)
 
         start_time = time.time()
@@ -81,17 +74,10 @@ class TextRewriteService:
             )
 
             processing_time = time.time() - start_time
-            option_count = len(response.rewritten_text)
 
             # Replace special characters and <rewrite> tags
             out: str = response.rewritten_text.replace("ß", "ss")
             out = out.replace("<rewrite>", text)
-
-            logger.info(
-                "Text rewrite completed successfully",
-                processing_time_ms=round(processing_time * 1000),
-                option_count=option_count,
-            )
 
             return RewriteResult(rewritten_text=out)
 

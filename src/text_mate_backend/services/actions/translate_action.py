@@ -22,9 +22,6 @@ def translate(text: str, language: str, config: Configuration, llm_facade: LLMFa
     Returns:
         StreamingResponse: A streaming response containing the translated text
     """
-    text_length = len(text)
-    logger.info("Processing translate request", text_length=text_length)
-
     prompt = PromptTemplate(
         """
         You are a professional translator.

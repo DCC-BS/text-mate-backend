@@ -26,7 +26,6 @@ class WordSynonymService:
         """
         Get synonyms for a word in the context of a document.
         """
-        logger.info("Getting synonyms for word: %s", word)
 
         response = self.llm_facade.structured_predict(
             SynonymOutput,

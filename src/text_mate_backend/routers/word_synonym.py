@@ -23,11 +23,6 @@ def create_router(
 
     @router.post("", response_model=WordSynonymResult, dependencies=[Security(azure_scheme)])
     def get_word_synonyms(data: WordSynonymInput) -> WordSynonymResult:
-        logger.info(
-            "Word synonym request received",
-            word=data.word,
-            context=data.context,
-        )
         result = word_synonym_service.get_synonyms(data.word, data.context).map(
             lambda synonyms: WordSynonymResult(synonyms=synonyms)
         )

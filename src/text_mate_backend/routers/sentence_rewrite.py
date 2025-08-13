@@ -24,11 +24,6 @@ def create_router(
 
     @router.post("", response_model=SentenceRewriteResult, dependencies=[Security(azure_scheme)])
     def rewrite_sentence(data: SentenceRewriteInput) -> SentenceRewriteResult:
-        logger.info(
-            "Sentence rewrite request received",
-            sentence=data.sentence,
-            context_length=len(data.context),
-        )
         result = sentence_rewrite_service.rewrite_sentence(data.sentence, data.context).map(
             lambda options: SentenceRewriteResult(options=options)
         )

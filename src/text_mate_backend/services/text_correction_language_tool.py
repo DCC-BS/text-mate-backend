@@ -51,7 +51,7 @@ class TextCorrectionService:
         - Right(str) contains corrected text
         """
         text_snippet = text[:50] + ("..." if len(text) > 50 else "")
-        logger.info("Processing text correction request", text_length=len(text), text_snippet=text_snippet)
+        logger.debug("Processing text correction request", text_length=len(text), text_snippet=text_snippet)
         logger.debug("Correction options", language=options.language, writing_style=options.writing_style)
 
         start_time = time.time()

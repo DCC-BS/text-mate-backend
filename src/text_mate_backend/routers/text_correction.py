@@ -29,7 +29,6 @@ def create_router(
         logger.debug("Roles", roles=user.roles)
 
         text_length = len(input.text)
-        logger.info("Text correction request received", text_length=text_length)
         logger.debug("Text preview", text_preview=input.text[:50] + ("..." if text_length > 50 else ""))
 
         result = text_correction_service.correct_text(input.text, TextCorrectionOptions(language=input.language))

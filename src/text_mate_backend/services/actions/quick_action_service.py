@@ -55,7 +55,6 @@ class QuickActionService:
         text_length = len(text)
         text_preview = text[:50] + ("..." if text_length > 50 else "")
 
-        logger.info(f"Running quick action: {action}", text_length=text_length)
         logger.debug("Text preview", preview=text_preview)
 
         start_time = time.time()
@@ -65,37 +64,26 @@ class QuickActionService:
             match action:
                 case Actions.PlainLanguage:
                     response = plain_language(text, app_config, self.llm_facade)
-                    logger.info("Applied plain language action")
                 case Actions.EasyLanguage:
                     response = easy_language(text, app_config, self.llm_facade)
-                    logger.info("Applied easy language action")
                 case Actions.BulletPoints:
                     response = bullet_points(text, app_config, self.llm_facade)
-                    logger.info("Applied bullet points action")
                 case Actions.Summarize:
                     response = summarize(text, app_config, self.llm_facade)
-                    logger.info("Applied summarize action")
                 case Actions.SocialMediafy:
                     response = social_mediafy(text, app_config, self.llm_facade)
-                    logger.info("Applied social media action")
                 case Actions.TranslateDeCH:
                     response = translate(text, "German (CH)", app_config, self.llm_facade)
-                    logger.info("Applied translate action")
                 case Actions.TranslateEnUS:
                     response = translate(text, "English (US)", app_config, self.llm_facade)
-                    logger.info("Applied translate action")
                 case Actions.TranslateEnGB:
                     response = translate(text, "English (GB)", app_config, self.llm_facade)
-                    logger.info("Applied translate action")
                 case Actions.TranslateFr:
                     response = translate(text, "French", app_config, self.llm_facade)
-                    logger.info("Applied translate action")
                 case Actions.TranslateIt:
                     response = translate(text, "Italian", app_config, self.llm_facade)
-                    logger.info("Applied translate action")
 
             process_time = time.time() - start_time
-            logger.info(f"Quick action {action} completed", processing_time_ms=round(process_time * 1000))
 
             return response
         except Exception as e:

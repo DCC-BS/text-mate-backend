@@ -32,7 +32,6 @@ def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingRespon
         A StreamingResponse that yields the generated text chunks
     """
     # Get request details for logging
-    logger.info("Starting OpenAI streaming request", model=options.llm_model)
 
     start_time = time.time()
     try:
@@ -66,11 +65,6 @@ def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingRespon
 
                 # Log streaming completion
                 streaming_duration = time.time() - start_streaming_time
-                logger.info(
-                    "Streaming completed",
-                    tokens_streamed=total_tokens,
-                    streaming_duration_ms=round(streaming_duration * 1000),
-                )
             except Exception as e:
                 # Log errors during streaming
                 streaming_duration = time.time() - start_streaming_time
@@ -83,7 +77,6 @@ def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingRespon
                 )
                 raise
 
-        logger.info("OpenAI API call initiated successfully")
         return StreamingResponse(generate(), media_type="text/event-stream")
 
     except Exception as e:
