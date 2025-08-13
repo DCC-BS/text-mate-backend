@@ -74,7 +74,8 @@ class AdvisorService:
         validated = self.llm_facade.structured_predict(
             RulesValidationContainer,
             PromptTemplate(
-                """You are an expert in editorial guidelines. Take the given rules and extract all violated rules in the input text.
+                """You are an expert in editorial guidelines. Take the given rules and
+                extract all violated rules in the input text.
                 Your task:
                 1. Check the text for any violations of the rules.
                 2. Provide a list of all violated rules in the specified format.
@@ -91,7 +92,8 @@ class AdvisorService:
                 {text}
                 ---------------
 
-                Return your findings as structured data according to the specified format. Keep your answer in the original language.
+                Return your findings as structured data according to the specified format.
+                Keep your answer in the original language.
                 """,
                 rules=formatted_rules,
                 text=text,

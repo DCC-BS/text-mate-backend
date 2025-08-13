@@ -47,7 +47,8 @@ class TextRewriteService:
                 RewriteOutput,
                 PromptTemplate(
                     """
-                    You are an expert in rewriting text. Take the given text and rewrite it based on the provided context and options.
+                    You are an expert in rewriting text. Take the given text and rewrite
+                    it based on the provided context and options.
                     Your task:
                     1. Rewrite the text based on the provided context and options.
                     2. Provide a list of all rewritten text options.

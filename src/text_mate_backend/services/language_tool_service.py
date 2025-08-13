@@ -62,7 +62,7 @@ class LanguageToolService:
                 error_type=type(e).__name__,
                 response_time_ms=round((time.time() - start_time) * 1000),
             )
-            raise Exception(f"LanguageTool API error: {str(e)}")
+            raise Exception(f"LanguageTool API error: {str(e)}") from e
 
 
 def ge_preferred_variants(language: str) -> str | None:

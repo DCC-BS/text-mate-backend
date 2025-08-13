@@ -39,7 +39,8 @@ class SentenceRewriteService:
         result = self.llm_facade.structured_predict(
             SentenceRewriteOutput,
             PromptTemplate(
-                """You are an expert in language and rewriting. Your task is to generate alternative ways to express a sentence or a section in the given context.
+                """You are an expert in language and rewriting. Your task is to generate
+                alternative ways to express a sentence or a section in the given context.
 
                 1. Generate at least 1 but maximum of 5 alternative rewrites for the given sentence.
                 2. The rewrites should be in the same language as the input text.

@@ -10,6 +10,7 @@ check: ## Run code quality tools.
 	@uv lock --locked
 	@echo "🚀 Linting code: Running pre-commit"
 	@uv run ruff format
+	@uv run ruff check --fix
 	@echo "🚀 Static type checking: Running mypy"
 	@uv run mypy ./src/text_mate_backend
 

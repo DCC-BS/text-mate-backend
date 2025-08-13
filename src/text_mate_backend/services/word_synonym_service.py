@@ -30,7 +30,8 @@ class WordSynonymService:
         response = self.llm_facade.structured_predict(
             SynonymOutput,
             PromptTemplate(
-                """You are an expert in language and synonyms. Your task is to find synonyms for the given word in the context of the document.
+                """You are an expert in language and synonyms. Your task is to find
+                synonyms for the given word in the context of the document.
 
                 1. Find synonyms for the word in the context of the document.
                 2. Provide a list of all synonyms found, minimum 1 word maximus 5 words.
