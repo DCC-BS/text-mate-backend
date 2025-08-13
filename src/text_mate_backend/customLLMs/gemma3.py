@@ -27,8 +27,6 @@ class GemaVllm(CustomLLM):
 
         super().__init__(*args, config=config, client=client, **kwargs)
 
-        print(f"VLLM client initialized {self.config.openai_api_base_url}")
-
     @property
     def metadata(self) -> LLMMetadata:
         """Get LLM metadata."""

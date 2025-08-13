@@ -25,10 +25,6 @@ class QwenVllm(CustomLLM):
 
         super().__init__(*args, config=config, client=client, **kwargs)
 
-        print(f"""VLLM client initialized:
-              url: {self.config.openai_api_base_url}
-              key: {self.config.openai_api_key}""")
-
     @property
     def metadata(self) -> LLMMetadata:
         """Get LLM metadata."""
