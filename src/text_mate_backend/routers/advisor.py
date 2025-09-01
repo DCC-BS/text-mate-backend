@@ -9,6 +9,8 @@ from fastapi_azure_auth.user import User
 from pydantic import BaseModel
 
 from text_mate_backend.container import Container
+from text_mate_backend.models.error_codes import NO_DOCUMENT
+from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.ruel_models import RuelDocumentDescription, RulesValidationContainer
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.azure_service import AzureService
@@ -70,7 +72,7 @@ def create_router(
         file_path = path.join("docs", name)
 
         if not path.exists(file_path):
-            raise HTTPException(status_code=404, detail="Document not found")
+            raise ApiErrorException({"status": 404, "errorId": NO_DOCUMENT, "debugMessage": "Document not found"})
 
         return FileResponse(path=file_path, media_type="application/pdf", filename=name)
 

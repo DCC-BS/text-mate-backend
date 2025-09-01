@@ -7,6 +7,8 @@ from fastapi_azure_auth.user import User
 from returns.result import Failure, Success
 
 from text_mate_backend.container import Container
+from text_mate_backend.models.error_codes import UNEXPECTED_ERROR
+from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.quick_actions_models import QuickActionRequest
 from text_mate_backend.services.actions.quick_action_service import QuickActionService
 from text_mate_backend.services.azure_service import AzureService
@@ -53,10 +55,22 @@ def create_router(
                 return value  # type: ignore
             case Failure(error):
                 logger.error(f"Quick action '{request.action}' failed", error=str(error))
-                raise HTTPException(status_code=400, detail=str(error))
+                raise ApiErrorException(
+                    {
+                        "status": 500,
+                        "errorId": UNEXPECTED_ERROR,
+                        "debugMessage": str(error),
+                    }
+                )
             case _:
                 logger.error(f"Quick action '{request.action}' failed with unknown error")
-                raise HTTPException(status_code=500, detail="Unknown error")
+                raise ApiErrorException(
+                    {
+                        "status": 500,
+                        "errorId": UNEXPECTED_ERROR,
+                        "debugMessage": "Unknown error",
+                    }
+                )
 
     logger.info("Quick action router configured")
     return router

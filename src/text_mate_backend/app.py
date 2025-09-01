@@ -1,13 +1,16 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from structlog.stdlib import BoundLogger
 
 from text_mate_backend.container import Container
 
 # Import routers
+from text_mate_backend.models.error_codes import UNEXPECTED_ERROR
+from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.routers import (
     advisor,
     quick_action,
@@ -61,6 +64,22 @@ def create_app() -> FastAPI:
         },
         lifespan=lifespan,
     )
+
+    def api_error_handler(request: Request, exc: Exception) -> Response:
+        if isinstance(exc, ApiErrorException):
+            return JSONResponse(
+                status_code=exc.error_response["status"],
+                media_type="application/json",
+                content=exc.error_response,
+            )
+
+        return JSONResponse(
+            status_code=500,
+            media_type="application/json",
+            content={"errorId": UNEXPECTED_ERROR, "status": 500, "debugMessage": str(exc)},
+        )
+
+    app.add_exception_handler(ApiErrorException, api_error_handler)
 
     # Configure CORS
     logger.debug("Setting up CORS middleware")

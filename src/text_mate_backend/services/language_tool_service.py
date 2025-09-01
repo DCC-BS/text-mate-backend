@@ -4,6 +4,8 @@ from urllib.parse import urlparse
 import requests
 from returns.result import safe
 
+from text_mate_backend.models.error_codes import LANGUAGE_TOOL_ERROR
+from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.language_tool_models import LanguageToolResponse
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
@@ -40,7 +42,7 @@ class LanguageToolService:
 
         start_time = time.time()
         try:
-            preferedVariants = ge_preferred_variants(language)
+            preferedVariants = get_preferred_variants(language)
             # call language tool api
             response = requests.post(
                 f"{self.config.language_tool_api_url}/check",
@@ -62,10 +64,17 @@ class LanguageToolService:
                 error_type=type(e).__name__,
                 response_time_ms=round((time.time() - start_time) * 1000),
             )
-            raise Exception(f"LanguageTool API error: {str(e)}") from e
+
+            raise ApiErrorException(
+                {
+                    "status": 500,
+                    "errorId": LANGUAGE_TOOL_ERROR,
+                    "debugMessage": str(e),
+                }
+            ) from e
 
 
-def ge_preferred_variants(language: str) -> str | None:
+def get_preferred_variants(language: str) -> str | None:
     match language:
         case "auto":
             return "de-CH"

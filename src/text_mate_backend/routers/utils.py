@@ -1,8 +1,9 @@
 from typing import TypeVar
 
-from fastapi import HTTPException
 from returns.result import Failure, Result, Success
 
+from text_mate_backend.models.error_codes import UNEXPECTED_ERROR
+from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.utils.logger import get_logger
 
 T = TypeVar("T")
@@ -35,11 +36,23 @@ def handle_result(result: Result[T, Exception], request_id: str | None = None) -
                 f"Operation failed: {error_type}", error_message=error_message, error_type=error_type, **log_context
             )
 
-            raise HTTPException(status_code=400, detail=error_message)
+            raise ApiErrorException(
+                {
+                    "status": 400,
+                    "errorId": error_type,
+                    "debugMessage": error_message,
+                }
+            )
 
         case Success(value):
             return value  # type: ignore
 
         case _:
             logger.error("Unknown result type returned", result_type=str(type(result)), **log_context)
-            raise HTTPException(status_code=500, detail="Unknown error")
+            raise ApiErrorException(
+                {
+                    "status": 500,
+                    "errorId": UNEXPECTED_ERROR,
+                    "debugMessage": "Unknown error",
+                }
+            )

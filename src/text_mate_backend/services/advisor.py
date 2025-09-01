@@ -5,6 +5,8 @@ from typing import final
 from fastapi_azure_auth.user import User
 from llama_index.core.prompts import PromptTemplate
 
+from text_mate_backend.models.error_codes import CHECK_TEXT_ERROR
+from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.ruel_models import RuelDocumentDescription, Rule, RulesContainer, RulesValidationContainer
 from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.logger import get_logger
@@ -64,7 +66,13 @@ class AdvisorService:
             return self._check_text(text, docs)
         except Exception as e:
             logger.error(f"Error checking text: {e}")
-            raise
+            raise ApiErrorException(
+                {
+                    "status": 500,
+                    "errorId": CHECK_TEXT_ERROR,
+                    "debugMessage": str(e),
+                }
+            ) from e
 
     def _check_text(self, text: str, docs: set[str]) -> RulesValidationContainer:
         rules = self.filter_rules(docs)
