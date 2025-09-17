@@ -1,8 +1,9 @@
+import asyncio
 from os import path
 from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.params import Security
 from fastapi.responses import FileResponse
 from fastapi_azure_auth.user import User
@@ -14,6 +15,7 @@ from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.ruel_models import RuelDocumentDescription, RulesValidationContainer
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.azure_service import AzureService
+from text_mate_backend.utils.cancel_on_disconnect import CancelOnDisconnect
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
@@ -44,7 +46,8 @@ def create_router(
         return advisor_service.get_docs(current_user)
 
     @router.post("/validate", response_model=RulesValidationContainer, dependencies=[Security(azure_scheme)])
-    def validate_advisor(
+    async def validate_advisor(
+        request: Request,
         data: AdvisorInput,
         current_user: Annotated[User, Depends(azure_service.azure_scheme)],
     ) -> RulesValidationContainer:
@@ -58,10 +61,11 @@ def create_router(
             },
         )
 
-        return advisor_service.check_text(
-            data.text,
-            data.docs,
-        )
+        async with CancelOnDisconnect(request):
+            return advisor_service.check_text(
+                data.text,
+                data.docs,
+            )
 
     @router.get("/doc/{name}", dependencies=[Security(azure_scheme)])
     async def get_document(name: str) -> FileResponse:

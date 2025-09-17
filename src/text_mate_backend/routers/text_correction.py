@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Request, Security
 from fastapi_azure_auth.user import User
 
 from text_mate_backend.container import Container
@@ -9,6 +9,7 @@ from text_mate_backend.models.text_corretion_models import CorrectionInput, Corr
 from text_mate_backend.routers.utils import handle_result
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.text_correction_language_tool import TextCorrectionService
+from text_mate_backend.utils.cancel_on_disconnect import CancelOnDisconnect
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
@@ -28,7 +29,8 @@ def create_router(
     azure_scheme = azure_service.azure_scheme
 
     @router.post("/text-correction", response_model=CorrectionResult, dependencies=[Security(azure_scheme)])
-    def correct_text(
+    async def correct_text(
+        request: Request,
         input: CorrectionInput,
         current_user: Annotated[User, Depends(azure_service.azure_scheme)],
     ) -> CorrectionResult:
@@ -45,8 +47,9 @@ def create_router(
             },
         )
 
-        result = text_correction_service.correct_text(input.text, TextCorrectionOptions(language=input.language))
-        return handle_result(result)
+        async with CancelOnDisconnect(request):
+            result = text_correction_service.correct_text(input.text, TextCorrectionOptions(language=input.language))
+            return handle_result(result)
 
     logger.info("Text correction router configured")
     return router
