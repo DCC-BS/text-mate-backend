@@ -1,94 +1,64 @@
 services:
-    languagetool:
-        hostname: languagetool
-        build:
-            context: ./docker/languagetool
-            dockerfile: Dockerfile
-        container_name: languagetool
-        ports:
-        - ${LANGUAGE_TOOL_PORT}:8010 # Using default port from the image
-        environment:
-        - langtool_languageModel=/languagetool/.cache/ngrams # OPTIONAL: Using ngrams data
-        - Java_Xms=512m
-        - Java_Xmx=2g
-        volumes:
-        - ${LANGUAGE_TOOL_CACHE_DIR}:/languagetool/.cache/ngrams
+  languagetool:
+    hostname: languagetool
+    build:
+      context: ./docker/languagetool
+      dockerfile: Dockerfile
+    container_name: languagetool
+    ports:
+      - ${LANGUAGE_TOOL_PORT}:8010 # Using default port from the image
+    environment:
+      - langtool_languageModel=/languagetool/.cache/ngrams # OPTIONAL: Using ngrams data
+      - Java_Xms=512m
+      - Java_Xmx=2g
+    volumes:
+      - ${LANGUAGE_TOOL_CACHE_DIR}:/languagetool/.cache/ngrams
 
-    vllm_qwen3_32B:
-        platform: linux/amd64
-        image: vllm/vllm-openai:v0.10.1
-        container_name: vllm_qwen3_32B
-        ports:
-        - ${LLM_API_PORT}:8000
-        environment:
-        - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
-        runtime: nvidia
-        deploy:
-            resources:
-                reservations:
-                    devices:
-                    - driver: nvidia
-                      count: 1
-                      capabilities: [ gpu ]
-        ipc: host
-        volumes:
-        - ${HUGGING_FACE_CACHE_DIR}:/root/.cache/huggingface
-        command: >
-            --port 8000
-            --model Qwen/Qwen3-32B-AWQ
-            --max-model-len 10000
-            --gpu-memory-utilization 0.75
-            --enable-auto-tool-choice
-            --tool-call-parser hermes
-            --tensor-parallel-size 1
-            --reasoning-parser deepseek_r1
+  vllm_qwen3_32B:
+    platform: linux/amd64
+    image: vllm/vllm-openai:v0.11.0
+    container_name: vllm_qwen3_32B
+    ports:
+      - ${LLM_API_PORT}:8000
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    ipc: host
+    volumes:
+      - ${HUGGING_FACE_CACHE_DIR}:/root/.cache/huggingface
+    command: >
+      --port 8000
+      --model Qwen/Qwen3-32B-AWQ
+      --max-model-len 10000
+      --gpu-memory-utilization 0.75
+      --enable-auto-tool-choice
+      --tool-call-parser hermes
+      --tensor-parallel-size 1
+      --reasoning-parser deepseek_r1
 
-    docling-serve:
-        image: quay.io/docling-project/docling-serve-cu124:latest
-        container_name: docling-serve-text-mate
-        deploy:
-            resources:
-                reservations:
-                    devices:
-                    - driver: nvidia
-                      device_ids: [ '1' ]
-                      capabilities: [gpu]
-        ports:
-        - ${DOCLING_API_PORT}:5001
-        environment:
-        - DOCLING_MODELS_PATH=/models
-        - DOCLING_CONFIG_FILE=/app/docling_config.json
-        - DOCLING_SERVE_ENABLE_UI=true
-        volumes:
-        - "${HOME}/.cache/docling:/models"
-        - ./docling_config.json:/app/docling_config.json:ro
-# --rope-scaling '{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":32768}'
-
-  # vllm_gemma3_27b:
-  #   platform: linux/amd64
-  #   image: vllm/vllm-openai:v0.8.5
-  #   container_name: vllm_gemma3_27b
-  #   ports:
-  #     - ${LLM_API_PORT}:8000
-  #   environment:
-  #     - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
-  #   runtime: nvidia
-  #   deploy:
-  #     resources:
-  #       reservations:
-  #         devices:
-  #           - driver: nvidia
-  #             count: all
-  #             capabilities: [ gpu ]
-  #   ipc: host
-  #   volumes:
-  #     - ${HUGGING_FACE_CACHE_DIR}:/root/.cache/huggingface
-  #   command: >
-  #     --port 8000
-  #     --model ISTA-DASLab/gemma-3-27b-it-GPTQ-4b-128g
-  #     --max-model-len 32000
-  #     --gpu-memory-utilization 0.83
-  #     --max-num-seqs 1
-  #     --tensor-parallel-size 2
-  #     --dtype bfloat16
-  #     --block-size 32
+  docling-serve:
+    image: quay.io/docling-project/docling-serve-cu124:latest
+    container_name: docling-serve-text-mate
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["1"]
+              capabilities: [gpu]
+    ports:
+      - ${DOCLING_API_PORT}:5001
+    environment:
+      - DOCLING_MODELS_PATH=/models
+      - DOCLING_CONFIG_FILE=/app/docling_config.json
+      - DOCLING_SERVE_ENABLE_UI=true
+    volumes:
+      - "${HOME}/.cache/docling:/models"
+      - ./docling_config.json:/app/docling_config.json:ro
