@@ -13,6 +13,7 @@ from text_mate_backend.models.error_codes import UNEXPECTED_ERROR
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.routers import (
     advisor,
+    convert_route,
     quick_action,
     sentence_rewrite,
     text_correction,
@@ -38,7 +39,9 @@ def create_app() -> FastAPI:
     # Set up dependency injection container
     logger.debug("Configuring dependency injection container")
     container = Container()
-    container.wire(modules=[text_correction, text_rewrite, advisor, quick_action, word_synonym, sentence_rewrite])
+    container.wire(
+        modules=[text_correction, text_rewrite, advisor, quick_action, word_synonym, sentence_rewrite, convert_route]
+    )
     container.check_dependencies()
     logger.info("Dependency injection configured")
 
@@ -103,6 +106,7 @@ def create_app() -> FastAPI:
     app.include_router(quick_action.create_router())
     app.include_router(word_synonym.create_router())
     app.include_router(sentence_rewrite.create_router())
+    app.include_router(convert_route.create_router())
     logger.info("All routers registered")
 
     logger.info("API setup complete")

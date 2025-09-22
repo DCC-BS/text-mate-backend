@@ -13,6 +13,7 @@ class Configuration:
         self.llm_model: str = os.getenv("LLM_MODEL", "ollama_chat/llama3.2")
         self.language_tool_api_url: str = os.getenv("LANGUAGE_TOOL_API_URL", "http://localhost:8010/")
         self.client_url: str = os.getenv("CLIENT_URL", "http://localhost:3000")
+        self.docling_url: str = os.getenv("DOCLING_URL", "http://localhost:5001")
 
         self.azure_client_id: str | None = os.getenv("AZURE_CLIENT_ID")
         self.azure_tenant_id: str | None = os.getenv("AZURE_TENANT_ID")
@@ -36,7 +37,12 @@ class Configuration:
             openai_api_key={log_secret(self.openai_api_key)},
             llm_model={self.llm_model},
             language_tool_api_url={self.language_tool_api_url},
+            docling_url={self.docling_url},
             azure_client_id={log_secret(self.azure_client_id)},
             azure_tenant_id={log_secret(self.azure_tenant_id)},
-            azure_discovery_url={log_secret(self.azure_discovery_url)})
+            azure_discovery_url={log_secret(self.azure_discovery_url)},
+            azure_frontend_client_id={log_secret(self.azure_frontend_client_id)},
+            azure_scope_description={self.azure_scope_description},
+            hmac_secret={log_secret(self.hmac_secret)}
+        )
         """
