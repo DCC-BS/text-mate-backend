@@ -2,7 +2,6 @@ from dependency_injector import containers, providers
 from llama_index.core.llms import LLM
 
 from text_mate_backend.customLLMs.qwen3 import QwenVllm
-from text_mate_backend.services import document_conversion_service
 from text_mate_backend.services.actions.quick_action_service import QuickActionService
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.azure_service import AzureService
@@ -41,7 +40,7 @@ class Container(containers.DeclarativeContainer):
     advisor_service: providers.Singleton[AdvisorService] = providers.Singleton(AdvisorService, llm_facade=llm_facade)
 
     document_conversion_service: providers.Singleton[DocumentConversionService] = providers.Singleton(
-        document_conversion_service.DocumentConversionService, config=config
+        DocumentConversionService, config=config
     )
 
     quick_action_service: providers.Singleton[QuickActionService] = providers.Singleton(

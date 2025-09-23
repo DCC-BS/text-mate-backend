@@ -36,11 +36,11 @@ services:
         command: >
             --port 8000
             --model Qwen/Qwen3-32B-AWQ
-            --max-model-len 40960
+            --max-model-len 10000
             --gpu-memory-utilization 0.75
             --enable-auto-tool-choice
             --tool-call-parser hermes
-            --tensor-parallel-size 2
+            --tensor-parallel-size 1
             --reasoning-parser deepseek_r1
 
     docling-serve:
@@ -51,7 +51,7 @@ services:
                 reservations:
                     devices:
                     - driver: nvidia
-                      device_ids: [ '0' ]
+                      device_ids: [ '1' ]
                       capabilities: [gpu]
         ports:
         - ${DOCLING_API_PORT}:5001
