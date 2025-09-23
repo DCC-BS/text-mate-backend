@@ -110,6 +110,14 @@ class RefItem(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
 
+class Script(str, Enum):
+    """Text script position."""
+
+    BASELINE = "baseline"
+    SUB = "sub"
+    SUPER = "super"
+
+
 class Formatting(BaseModel):
     """Text formatting information."""
 
@@ -117,7 +125,7 @@ class Formatting(BaseModel):
     italic: bool = False
     underline: bool = False
     strikethrough: bool = False
-    script: str = "baseline"  # baseline, sub, super
+    script: Script = Script.BASELINE
 
 
 class ContentLayer(str, Enum):
@@ -145,14 +153,6 @@ class GroupLabel(str, Enum):
     COMMENT_SECTION = "comment_section"
     INLINE = "inline"
     PICTURE_AREA = "picture_area"
-
-
-class Script(str, Enum):
-    """Text script position."""
-
-    BASELINE = "baseline"
-    SUB = "sub"
-    SUPER = "super"
 
 
 class CodeLanguageLabel(str, Enum):

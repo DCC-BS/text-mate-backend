@@ -102,8 +102,49 @@ class DocumentConversionService:
         self.config = config
         self.client = httpx.AsyncClient(timeout=30.0)
 
-    async def __del__(self) -> None:
+    async def close(self) -> None:
+        """Explicitly close the HTTP client. Should be called when done with the service."""
         await self.client.aclose()
+
+    def _prepare_file_data(
+        self,
+        file: UploadFile | BytesIO,
+        filename: str | None = None,
+        content_type: str | None = None,
+    ) -> tuple[bytes, str, str]:
+        """
+        Extract common file handling logic for document conversion.
+
+        Args:
+            file: UploadFile or BytesIO object containing the document
+            filename: Optional filename override
+            content_type: Optional content type override
+
+        Returns:
+            Tuple of (content, filename, content_type)
+        """
+        # Handle both UploadFile and BytesIO cases
+        if isinstance(file, UploadFile):
+            # Seek to start for UploadFile
+            _ = file.file.seek(0)
+            content = file.file.read()
+            # Resolve filename: prefer provided, then UploadFile.filename, then default
+            resolved_filename = filename or file.filename or "uploaded_document"
+        else:
+            # It's a BytesIO object
+            _ = file.seek(0)
+            content = file.read()
+            # Resolve filename: prefer provided, then default
+            resolved_filename = filename or "uploaded_document"
+
+        # Determine content_type if missing
+        if content_type is None:
+            content_type = get_mimetype(Path(resolved_filename))
+
+        # Validate the mimetype
+        validate_mimetype(content_type, logger_context={"content_type": content_type})
+
+        return content, resolved_filename, content_type
 
     async def fetch_docling_file_convert(
         self,
@@ -150,20 +191,8 @@ class DocumentConversionService:
     ) -> DoclingDocument:
         languages = ["de", "en", "fr", "it"]
 
-        # Handle both UploadFile and BytesIO cases
-        if isinstance(file, UploadFile):
-            content = file.file.read()
-            filename = filename or file.filename or "uploaded_document"
-            if content_type is None:
-                content_type = get_mimetype(Path(filename))
-        else:
-            # It's a BytesIO object
-            content = file.read()
-            filename = filename or "uploaded_document"
-            if content_type is None:
-                content_type = get_mimetype(Path(filename))
-
-        validate_mimetype(content_type, logger_context={"content_type": content_type})
+        # Prepare file data using common helper
+        content, filename, content_type = self._prepare_file_data(file, filename, content_type)
 
         files = {"files": (filename, BytesIO(content), content_type)}
         options: dict[str, str | list[str] | bool] = {
@@ -181,23 +210,12 @@ class DocumentConversionService:
         response = await self.fetch_docling_file_convert(files, options)
         json_response = response.json()
 
-        document = extract_docling_document(json_response, logger_context)
-
-        if document.json_content is None:
-            logger.error("Docling response does not contain a document", extra=logger_context)
-
-            raise ApiErrorException(
-                {
-                    "errorId": NO_DOCUMENT,
-                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    "debugMessage": "Docling response does not contain a document",
-                }
-            )
+        document: DocumentResponse = extract_docling_document(json_response, logger_context)
 
         # Ensure we return a DoclingDocument instance
         if isinstance(document.json_content, dict):
             return DoclingDocument.model_validate(document.json_content)
-        return document.json_content
+        return document.json_content  # type: ignore  # pyright: ignore[reportReturnType]
 
     async def convert(
         self,
@@ -209,22 +227,9 @@ class DocumentConversionService:
 
         logger.debug(f"type of file: {type(file)}")
 
-        # Handle both UploadFile and BytesIO cases
-        if isinstance(file, UploadFile):
-            content = file.file.read()
-            filename = file.filename or "uploaded_document"
-            logger.debug(f"Filename from UploadFile: {filename}")
-            if content_type is None:
-                content_type = get_mimetype(Path(filename))
-        else:
-            logger.debug("File is not an UploadFile instance")
-            # It's a BytesIO object
-            content = file.read()
-            filename = filename or "uploaded_document"
-            if content_type is None:
-                content_type = get_mimetype(Path(filename))
-
-        validate_mimetype(content_type, logger_context={"content_type": content_type})
+        # Prepare file data using common helper
+        content, filename, content_type = self._prepare_file_data(file, filename, content_type)
+        logger.debug(f"Resolved filename: {filename}")
 
         files = {"files": (filename, BytesIO(content), content_type)}
         options: dict[str, str | list[str] | bool] = {
