@@ -1,11 +1,8 @@
 from pydantic import BaseModel
 
 
-class ConversionResult:
+class ConversionResult(BaseModel):
     html: str
-
-    def __init__(self, html: str):
-        self.html = html
 
 
 class ConversionOutput(BaseModel):
