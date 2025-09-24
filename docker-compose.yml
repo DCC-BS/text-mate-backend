@@ -16,7 +16,7 @@ services:
 
     vllm_qwen3_32B:
         platform: linux/amd64
-        image: vllm/vllm-openai:v0.10.1
+        image: vllm/vllm-openai:v0.10.2
         container_name: vllm_qwen3_32B
         ports:
         - ${LLM_API_PORT}:8000
@@ -62,6 +62,7 @@ services:
         volumes:
         - "${HOME}/.cache/docling:/models"
         - ./docling_config.json:/app/docling_config.json:ro
+
 # --rope-scaling '{"rope_type":"yarn","factor":4.0,"original_max_position_embeddings":32768}'
 
   # vllm_gemma3_27b:
