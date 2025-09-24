@@ -9,7 +9,6 @@ from starlette.datastructures import UploadFile
 
 from text_mate_backend.models.conversion_result import ConversionResult
 from text_mate_backend.models.docling_response import (
-    DoclingDocument,
     DoclingResponse,
     DocumentResponse,
 )
@@ -78,29 +77,11 @@ def validate_mimetype(mimetype: str, logger_context: dict[str, Any]) -> None:
         )
 
 
-def extract_docling_document(response: str, logger_context: dict[str, Any]) -> DocumentResponse:
-    docling_response = DoclingResponse.model_validate(response)
-    if docling_response.document.json_content is None:
-        logger.error(
-            "Docling response does not contain a document",
-            extra=logger_context,
-        )
-        raise ApiErrorException(
-            {
-                "errorId": NO_DOCUMENT,
-                "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
-                "debugMessage": "Document conversion failed the json content is None",
-            }
-        )
-
-    return docling_response.document
-
-
 @final
 class DocumentConversionService:
     def __init__(self, config: Configuration) -> None:
         self.config = config
-        self.client = httpx.AsyncClient(timeout=30.0)
+        self.client = httpx.AsyncClient(timeout=60.0)
 
     async def close(self) -> None:
         """Explicitly close the HTTP client. Should be called when done with the service."""
@@ -183,40 +164,6 @@ class DocumentConversionService:
                     }
                 ) from e
 
-    async def convert_to_docling(
-        self,
-        file: UploadFile | BytesIO,
-        filename: str | None = None,
-        content_type: str | None = None,
-    ) -> DoclingDocument:
-        languages = ["de", "en", "fr", "it"]
-
-        # Prepare file data using common helper
-        content, filename, content_type = self._prepare_file_data(file, filename, content_type)
-
-        files = {"files": (filename, BytesIO(content), content_type)}
-        options: dict[str, str | list[str] | bool] = {
-            "to_formats": ["json"],
-            "image_export_mode": "referenced",
-            "do_ocr": True,
-            "ocr_engine": "easyocr",
-            "ocr_lang": languages,
-            "table_mode": "accurate",
-            "pdf_backend": "pypdfium2",
-        }
-
-        logger_context = {"options": options, "content_type": content_type}
-
-        response = await self.fetch_docling_file_convert(files, options)
-        json_response = response.json()
-
-        document: DocumentResponse = extract_docling_document(json_response, logger_context)
-
-        # Ensure we return a DoclingDocument instance
-        if isinstance(document.json_content, dict):
-            return DoclingDocument.model_validate(document.json_content)
-        return document.json_content  # type: ignore  # pyright: ignore[reportReturnType]
-
     async def convert(
         self,
         file: UploadFile | BytesIO,
@@ -233,8 +180,8 @@ class DocumentConversionService:
 
         files = {"files": (filename, BytesIO(content), content_type)}
         options: dict[str, str | list[str] | bool] = {
-            "to_formats": ["md", "json"],
-            "image_export_mode": "referenced",
+            "to_formats": ["html"],
+            "image_export_mode": "placeholder",
             "do_ocr": True,
             "ocr_engine": "easyocr",
             "ocr_lang": languages,
@@ -244,11 +191,5 @@ class DocumentConversionService:
 
         response = await self.fetch_docling_file_convert(files, options)
         json_response = response.json()
-        docling_response = extract_docling_document(
-            json_response, logger_context={"options": options, "content_type": content_type}
-        )
-
-        # Extract markdown content from the docling response
-        markdown = docling_response.md_content or ""
-
-        return ConversionResult(markdown=markdown)
+        html = json_response.get("document", {}).get("html_content", "")
+        return ConversionResult(html=html)

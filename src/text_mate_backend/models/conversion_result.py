@@ -2,11 +2,11 @@ from pydantic import BaseModel
 
 
 class ConversionResult:
-    markdown: str
+    html: str
 
-    def __init__(self, markdown: str):
-        self.markdown = markdown
+    def __init__(self, html: str):
+        self.html = html
 
 
 class ConversionOutput(BaseModel):
-    markdown: str
+    html: str

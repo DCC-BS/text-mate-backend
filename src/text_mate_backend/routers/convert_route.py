@@ -80,10 +80,9 @@ def create_router(
             if await request.is_disconnected():
                 task.cancel()
                 logger.info("Conversion task cancelled due to client disconnect")
-                return ConversionOutput(markdown="")
-
+                return ConversionOutput(html="")
         result = task.result()
-        return ConversionOutput(markdown=result.markdown)
+        return ConversionOutput(html=result.html)
 
     logger.info("Conversion router configured")
     return router
