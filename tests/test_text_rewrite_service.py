@@ -4,6 +4,7 @@ import pytest
 from pytest_mock import MockerFixture
 from returns.result import Failure, Success
 
+from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.text_rewrite_models import RewriteResult
 from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.services.rewrite_text import RewriteOutput, TextRewriteService
@@ -149,5 +150,5 @@ class TestTextRewriteService:
 
         # Assert
         assert isinstance(result, Failure)
-        assert isinstance(result.failure(), Exception)
-        assert str(result.failure()["debugMessage"]) == "API error"  # pyright: ignore[reportIndexIssue, reportUnknownArgumentType]
+        assert isinstance(result.failure(), ApiErrorException)
+        assert str(result.failure().error_response["debugMessage"]) == "API error"
