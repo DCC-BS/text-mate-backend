@@ -150,4 +150,4 @@ class TestTextRewriteService:
         # Assert
         assert isinstance(result, Failure)
         assert isinstance(result.failure(), Exception)
-        assert str(result.failure()) == "API error"
+        assert str(result.failure()["debugMessage"]) == "API error"  # pyright: ignore[reportIndexIssue, reportUnknownArgumentType]
