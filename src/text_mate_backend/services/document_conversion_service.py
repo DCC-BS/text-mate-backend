@@ -8,13 +8,8 @@ from fastapi import status
 from starlette.datastructures import UploadFile
 
 from text_mate_backend.models.conversion_result import ConversionResult
-from text_mate_backend.models.docling_response import (
-    DoclingResponse,
-    DocumentResponse,
-)
 from text_mate_backend.models.error_codes import (
     INVALID_MIME_TYPE,
-    NO_DOCUMENT,
     UNEXPECTED_ERROR,
 )
 from text_mate_backend.models.error_response import ApiErrorException
