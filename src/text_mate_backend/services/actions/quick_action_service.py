@@ -7,7 +7,6 @@ from returns.result import safe
 from text_mate_backend.models.quick_actions_models import Actions, QuickActionContext
 from text_mate_backend.services.actions.bullet_points_action import bullet_points
 from text_mate_backend.services.actions.custom_action import custom_prompt
-from text_mate_backend.services.actions.easy_language_action import easy_language
 from text_mate_backend.services.actions.formality_action import formality
 from text_mate_backend.services.actions.medium_action import medium
 from text_mate_backend.services.actions.plain_language_action import plain_language
@@ -59,8 +58,6 @@ class QuickActionService:
             match action:
                 case Actions.PlainLanguage:
                     response = plain_language(context, app_config, self.llm_facade)
-                case Actions.EasyLanguage:
-                    response = easy_language(context, app_config, self.llm_facade)
                 case Actions.BulletPoints:
                     response = bullet_points(context, app_config, self.llm_facade)
                 case Actions.Summarize:
@@ -75,7 +72,8 @@ class QuickActionService:
                     response = custom_prompt(context, app_config, self.llm_facade)
 
             process_time = time.time() - start_time
-
+            if response is None:
+                raise ValueError(f"Quick action {action} returned None")
             return response
         except Exception as e:
             process_time = time.time() - start_time
