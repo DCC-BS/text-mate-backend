@@ -5,6 +5,7 @@ from text_mate_backend.customLLMs.qwen3 import QwenVllm
 from text_mate_backend.services.actions.quick_action_service import QuickActionService
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.azure_service import AzureService
+from text_mate_backend.services.document_conversion_service import DocumentConversionService
 from text_mate_backend.services.language_tool_service import LanguageToolService
 from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.services.rewrite_text import TextRewriteService
@@ -37,6 +38,10 @@ class Container(containers.DeclarativeContainer):
     )
 
     advisor_service: providers.Singleton[AdvisorService] = providers.Singleton(AdvisorService, llm_facade=llm_facade)
+
+    document_conversion_service: providers.Singleton[DocumentConversionService] = providers.Singleton(
+        DocumentConversionService, config=config
+    )
 
     quick_action_service: providers.Singleton[QuickActionService] = providers.Singleton(
         QuickActionService, llm_facade=llm_facade, config=config

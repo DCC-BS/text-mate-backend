@@ -1,9 +1,8 @@
-import asyncio
 from os import path
 from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.params import Security
 from fastapi.responses import FileResponse
 from fastapi_azure_auth.user import User
