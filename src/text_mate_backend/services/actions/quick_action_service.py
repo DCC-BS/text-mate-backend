@@ -6,7 +6,6 @@ from fastapi.responses import StreamingResponse
 from returns.result import safe
 
 from text_mate_backend.services.actions.bullet_points_action import bullet_points
-from text_mate_backend.services.actions.easy_language_action import easy_language
 from text_mate_backend.services.actions.plain_language_action import plain_language
 from text_mate_backend.services.actions.social_media_action import social_mediafy
 from text_mate_backend.services.actions.summarize_action import summarize
@@ -20,7 +19,6 @@ logger = get_logger("quick_action_service")
 
 class Actions(str, Enum):
     PlainLanguage = "plain_language"
-    EasyLanguage = "easy_language"
     BulletPoints = "bullet_points"
     Summarize = "summarize"
     SocialMediafy = "social_mediafy"
@@ -64,8 +62,6 @@ class QuickActionService:
             match action:
                 case Actions.PlainLanguage:
                     response = plain_language(text, app_config, self.llm_facade)
-                case Actions.EasyLanguage:
-                    response = easy_language(text, app_config, self.llm_facade)
                 case Actions.BulletPoints:
                     response = bullet_points(text, app_config, self.llm_facade)
                 case Actions.Summarize:
