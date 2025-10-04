@@ -14,10 +14,10 @@ services:
     volumes:
       - ${LANGUAGE_TOOL_CACHE_DIR}:/languagetool/.cache/ngrams
 
-  vllm_qwen3_32B:
+  vllm-qwen3-32B:
     platform: linux/amd64
     image: vllm/vllm-openai:v0.11.0
-    container_name: vllm_qwen3_32B
+    container_name: vllm-qwen3-32B
     ports:
       - ${LLM_API_PORT}:8000
     environment:
