@@ -5,9 +5,13 @@ from typing import final
 from fastapi.responses import StreamingResponse
 from returns.result import safe
 
+from text_mate_backend.models.quick_actions_models import Actions, QuickActionContext
 from text_mate_backend.services.actions.bullet_points_action import bullet_points
 from text_mate_backend.services.actions.easy_language_action import easy_language
 from text_mate_backend.services.actions.plain_language_action import plain_language
+from text_mate_backend.services.actions.rewrite_action import rewrite
+from text_mate_backend.services.actions.shorten_action import shorten
+from text_mate_backend.services.actions.simplify_action import simplify
 from text_mate_backend.services.actions.social_media_action import social_mediafy
 from text_mate_backend.services.actions.summarize_action import summarize
 from text_mate_backend.services.actions.translate_action import translate
@@ -18,19 +22,6 @@ from text_mate_backend.utils.logger import get_logger
 logger = get_logger("quick_action_service")
 
 
-class Actions(str, Enum):
-    PlainLanguage = "plain_language"
-    EasyLanguage = "easy_language"
-    BulletPoints = "bullet_points"
-    Summarize = "summarize"
-    SocialMediafy = "social_mediafy"
-    TranslateDeCH = "translate_de-CH"
-    TranslateEnUS = "translate_en-US"
-    TranslateEnGB = "translate_en-GB"
-    TranslateFr = "translate_fr"
-    TranslateIt = "translate_it"
-
-
 @final
 class QuickActionService:
     def __init__(self, llm_facade: LLMFacade, config: Configuration) -> None:
@@ -38,7 +29,7 @@ class QuickActionService:
         self.config = config
 
     @safe
-    def run(self, action: Actions, text: str) -> StreamingResponse:
+    def run(self, action: Actions, text: str, options: str) -> StreamingResponse:
         """
         Execute the requested quick action on the provided text.
 
@@ -57,31 +48,25 @@ class QuickActionService:
 
         logger.debug("Text preview", preview=text_preview)
 
+        context = QuickActionContext(text=text, options=options)
+
         start_time = time.time()
         try:
             app_config = self.config
             response = None
             match action:
                 case Actions.PlainLanguage:
-                    response = plain_language(text, app_config, self.llm_facade)
+                    response = plain_language(context, app_config, self.llm_facade)
                 case Actions.EasyLanguage:
-                    response = easy_language(text, app_config, self.llm_facade)
+                    response = easy_language(context, app_config, self.llm_facade)
                 case Actions.BulletPoints:
-                    response = bullet_points(text, app_config, self.llm_facade)
+                    response = bullet_points(context, app_config, self.llm_facade)
                 case Actions.Summarize:
-                    response = summarize(text, app_config, self.llm_facade)
+                    response = summarize(context, app_config, self.llm_facade)
                 case Actions.SocialMediafy:
-                    response = social_mediafy(text, app_config, self.llm_facade)
-                case Actions.TranslateDeCH:
-                    response = translate(text, "German (CH)", app_config, self.llm_facade)
-                case Actions.TranslateEnUS:
-                    response = translate(text, "English (US)", app_config, self.llm_facade)
-                case Actions.TranslateEnGB:
-                    response = translate(text, "English (GB)", app_config, self.llm_facade)
-                case Actions.TranslateFr:
-                    response = translate(text, "French", app_config, self.llm_facade)
-                case Actions.TranslateIt:
-                    response = translate(text, "Italian", app_config, self.llm_facade)
+                    response = social_mediafy(context, app_config, self.llm_facade)
+                case Actions.Rewrite:
+                    response = rewrite(context, app_config, self.llm_facade)
 
             process_time = time.time() - start_time
 

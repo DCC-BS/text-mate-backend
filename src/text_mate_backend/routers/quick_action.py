@@ -44,11 +44,12 @@ def create_router(
                 "pseudonym_id": pseudonymized_user_id,
                 "event": quick_action.__name__,
                 "action": request.action,
+                "options": request.options,
                 "text_length": text_length,
             },
         )
 
-        result = quick_action_service.run(request.action, request.text)
+        result = quick_action_service.run(request.action, request.text, request.options)
 
         match result:
             case Success(value):

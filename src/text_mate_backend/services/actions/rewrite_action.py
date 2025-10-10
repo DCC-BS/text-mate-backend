@@ -5,31 +5,31 @@ from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
 from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
-
-logger = get_logger("translate_action")
 
 
-def translate(
-    context: QuickActionContext, language: str, config: Configuration, llm_facade: LLMFacade
-) -> StreamingResponse:
+def rewrite(context: QuickActionContext, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
     """
-    Translates the given text into the specified language.
+    Rewrites the given text based on provided context and options.
 
     Args:
         context: The QuickActionContext containing text and options
-        language: The target language for translation
         config: Configuration containing LLM model and other settings
-        llm_facade: LLMFacade instance
+        llm_facade: The LLMFacade instance to use for generating the response
 
     Returns:
-        StreamingResponse: A streaming response containing the translated text
+        A StreamingResponse containing the rewritten version of the text
     """
+
     prompt = PromptTemplate(
         """
-        You are a professional translator.
-        Translate the following text into {language}:
+        You are an expert in rewriting text. Take the given text and rewrite
+        it based on the provided options.
+        Your task:
+        1. Rewrite the text based on the provided options.
+        2. The rewritten text should be in the same language as the input text.
+        3. Provide only the rewritten text without any additional explanation or formatting.
 
+        Text to be rewritten:
         # START TEXT #
         {text}
         # END TEXT #
@@ -38,11 +38,10 @@ def translate(
         {options}
         # END OPTIONS #
         """
-    ).format(text=context.text, language=language, options=context.options)
+    ).format(text=context.text, options=context.options)
 
     options: PromptOptions = PromptOptions(prompt=prompt, llm_model=config.llm_model)
 
-    logger.debug("Created translate prompt options")
     return run_prompt(
         options,
         llm_facade,
