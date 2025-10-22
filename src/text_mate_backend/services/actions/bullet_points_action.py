@@ -20,25 +20,17 @@ def bullet_points(context: QuickActionContext, config: Configuration, llm_facade
         A StreamingResponse containing the bullet points version of the text
     """
 
-    prompt = PromptTemplate(
-        """
+    sys_prompt = """
         You are an assistant that converts text into a well-structured bullet point format.
         Extract and highlight the key points from the text.
 
         Convert the following text into a structured bullet point format.
         Identify and organize the main ideas and supporting points.
-
-        # START TEXT #
-        {text}
-        # END TEXT #
-
-        # START OPTIONS #
-        {options}
-        # END OPTIONS #
         """
-    ).format(text=context.text, options=context.options)
 
-    options: PromptOptions = PromptOptions(prompt=prompt, llm_model=config.llm_model)
+    usr_propt = context.text
+
+    options: PromptOptions = PromptOptions(system_prompt=sys_prompt, user_prompt=usr_propt, llm_model=config.llm_model)
 
     return run_prompt(
         options,

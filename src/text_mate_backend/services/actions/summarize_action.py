@@ -10,6 +10,37 @@ from text_mate_backend.utils.logger import get_logger
 logger = get_logger("summarize_action")
 
 
+# const items = computed<DropdownMenuItem[]>(() => [
+#   { label: t('quick-actions.summarize.sentence'), value: 'sentence', icon: "i-lucide-tally-1" },
+#   { label: t('quick-actions.summarize.three_sentence'), value: 'three_sentence', icon: "i-lucide-tally-3" },
+#   { label: t('quick-actions.summarize.paragraph'), value: 'paragraph', icon: "i-lucide-text-wrap" },
+#   { label: t('quick-actions.summarize.page'), value: 'page', icon: "i-lucide-file-text" },
+
+
+def format_options(options: str) -> str:
+    """
+    Formats the options string for inclusion in the prompt.
+
+    Args:
+        options: The raw options string
+
+    Returns:
+        A formatted options string
+    """
+    match options.lower().strip():
+        case "sentence":
+            return "in one sentence"
+        case "three_sentence":
+            return "in three sentences"
+        case "paragraph":
+            return "in a single paragraph"
+        case "page":
+            return "in a single page"
+        case _:
+            logger.warning("Unknown summarize option, defaulting to concise manner", options=options)
+            return "in a concise manner"
+
+
 def summarize(context: QuickActionContext, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
     """
     Summarizes the given text by providing a condensed version that captures main points.
@@ -27,22 +58,16 @@ def summarize(context: QuickActionContext, config: Configuration, llm_facade: LL
     if text_length < 50:
         logger.warning("Text may be too short for effective summarization", text_length=text_length)
 
-    prompt = PromptTemplate(
+    sys_prompt = PromptTemplate(
         """
         You are an assistant that summarizes text by extracting the key points and central message.
-        Provide a summary of the following text, capturing the main ideas and essential information:
-
-        # START TEXT #
-        {text}
-        # END TEXT #
-
-        # START OPTIONS #
-        {options}
-        # END OPTIONS #
+        Provide a summary {options} of the following text, capturing the main ideas and essential information:
         """
-    ).format(text=context.text, options=context.options)
+    ).format(text=context.text, options=format_options(context.options))
 
-    options: PromptOptions = PromptOptions(prompt=prompt, llm_model=config.llm_model)
+    options: PromptOptions = PromptOptions(
+        system_prompt=sys_prompt, user_prompt=context.text, llm_model=config.llm_model
+    )
 
     logger.debug("Created summarize prompt options")
     return run_prompt(

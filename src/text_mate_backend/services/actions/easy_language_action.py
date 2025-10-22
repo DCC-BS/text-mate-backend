@@ -28,7 +28,7 @@ def easy_language(context: QuickActionContext, config: Configuration, llm_facade
         prompt=context.text, completeness=REWRITE_COMPLETE, rules=RULES_ES, options=context.options
     )
 
-    options: PromptOptions = PromptOptions(prompt=prompt, llm_model=config.llm_model)
+    options: PromptOptions = PromptOptions(user_prompt=prompt, llm_model=config.llm_model)
 
     return run_prompt(
         options,

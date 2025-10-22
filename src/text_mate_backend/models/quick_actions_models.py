@@ -10,8 +10,9 @@ class Actions(str, Enum):
     BulletPoints = "bullet_points"
     Summarize = "summarize"
     SocialMediafy = "social_mediafy"
-    Rewrite = "rewrite"
-    Translate = "translate"
+    FORMALITY = "formality"
+    MEDIUM = "medium"
+    CUSTOM = "custom"
 
 
 class QuickActionRequest(BaseModel):
@@ -26,3 +27,4 @@ class QuickActionRequest(BaseModel):
 class QuickActionContext(BaseModel):
     text: str
     options: str
+    language: str | None = None

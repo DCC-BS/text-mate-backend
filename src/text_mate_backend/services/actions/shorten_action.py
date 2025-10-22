@@ -35,7 +35,7 @@ def shorten(context: QuickActionContext, config: Configuration, llm_facade: LLMF
         """
     ).format(text=context.text, options=context.options)
 
-    options: PromptOptions = PromptOptions(prompt=prompt, llm_model=config.llm_model)
+    options: PromptOptions = PromptOptions(user_prompt=prompt, llm_model=config.llm_model)
 
     return run_prompt(
         options,

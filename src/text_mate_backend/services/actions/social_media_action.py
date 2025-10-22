@@ -19,23 +19,16 @@ def social_mediafy(context: QuickActionContext, config: Configuration, llm_facad
     Returns:
         A StreamingResponse containing the social media version of the text
     """
-
-    prompt = PromptTemplate(
+    sys_prompt = PromptTemplate(
         """
         You are an assistant that turns text into social media text. Use emojis and hashtags.
-        Turn the following text into a text for social media:
-
-        # START TEXT #
-        {text}
-        # END TEXT #
-
-        # START OPTIONS #
-        {options}
-        # END OPTIONS #
+        Turn the following text into a text for social media for {options}.:
         """
-    ).format(text=context.text, options=context.options)
+    ).format(options=context.options)
 
-    options: PromptOptions = PromptOptions(prompt=prompt, llm_model=config.llm_model)
+    usr_prompt = context.text
+
+    options: PromptOptions = PromptOptions(system_prompt=sys_prompt, user_prompt=usr_prompt, llm_model=config.llm_model)
 
     return run_prompt(
         options,

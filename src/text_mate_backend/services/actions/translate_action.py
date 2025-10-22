@@ -40,7 +40,7 @@ def translate(
         """
     ).format(text=context.text, language=language, options=context.options)
 
-    options: PromptOptions = PromptOptions(prompt=prompt, llm_model=config.llm_model)
+    options: PromptOptions = PromptOptions(user_prompt=prompt, llm_model=config.llm_model)
 
     logger.debug("Created translate prompt options")
     return run_prompt(
