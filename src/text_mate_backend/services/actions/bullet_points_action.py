@@ -26,6 +26,8 @@ def bullet_points(context: QuickActionContext, config: Configuration, llm_facade
 
         Convert the following text into a structured bullet point format.
         Identify and organize the main ideas and supporting points.
+        The bullet points should be in the same language as the input text.
+        Use markdown formatting for the bullet points.
         """
 
     usr_propt = context.text

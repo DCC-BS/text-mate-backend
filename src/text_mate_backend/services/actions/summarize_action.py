@@ -36,6 +36,11 @@ def format_options(options: str) -> str:
             return "in a single paragraph"
         case "page":
             return "in a single page"
+        case "management_summary":
+            return """as a management summary.
+            A management summary is a summary of the key points of the text for the management team.
+            A management summarys length should be one paragraph up to a single page long, depending on the length of the text.
+            Provide the management summary """
         case _:
             logger.warning("Unknown summarize option, defaulting to concise manner", options=options)
             return "in a concise manner"

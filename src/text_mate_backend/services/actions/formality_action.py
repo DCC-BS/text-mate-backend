@@ -21,7 +21,11 @@ def formality(context: QuickActionContext, config: Configuration, llm_facade: LL
     """
 
     sys_prompt = """
-        You are an assistant that converts text into a {option} text. Try to keept the original meaning.
+        You are a writing expert.
+        We want to transform the formality of the text.
+        Your task is to take the given text and convert it into a {option} text.
+        Keep the original meaning.
+        The rewritten text should be in the same language as the input text.
         """
 
     usr_prompt = context.text

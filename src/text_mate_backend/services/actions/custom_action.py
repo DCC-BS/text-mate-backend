@@ -22,7 +22,8 @@ def custom_prompt(context: QuickActionContext, config: Configuration, llm_facade
 
     sys_prompt = PromptTemplate(
         """
-        You are an assistant take the given prompt to rewrite text:
+        You are a writing assistant. Your task is to take the given prompt and rewrite text based on the prompt.
+        The rewritten text should be in the same language as the input text.
         {options}
         """,
     ).format(options=context.options)

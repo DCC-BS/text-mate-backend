@@ -1,8 +1,9 @@
 from typing import Any, final
 
+from httpx import ConnectError
 from llama_index.core.llms import CompletionResponse, CompletionResponseGen, CustomLLM, LLMMetadata
 from llama_index.core.llms.callbacks import llm_completion_callback
-from openai import OpenAI
+from openai import APIConnectionError, OpenAI
 from pydantic import Field
 
 from text_mate_backend.utils.configuration import Configuration
@@ -92,25 +93,32 @@ class QwenVllm(CustomLLM):
             CompletionResponse chunks with progressive text and deltas
         """
         response = ""
+        try:
+            stream = self.client.chat.completions.create(
+                model=self.config.llm_model,
+                messages=[{"role": "user", "content": prompt + " /no_think"}],
+                presence_penalty=1.5,
+                top_p=0.8,
+                temperature=0.7,
+                extra_body={"top_k": 20},
+                stream=True,
+            )
 
-        stream = self.client.chat.completions.create(
-            model=self.config.llm_model,
-            messages=[{"role": "user", "content": prompt + " /no_think"}],
-            presence_penalty=1.5,
-            top_p=0.8,
-            temperature=0.7,
-            extra_body={"top_k": 20},
-            stream=True,
-        )
+            for chunk in stream:
+                if chunk.choices and chunk.choices[0].delta.content is not None:
+                    content = chunk.choices[0].delta.content.replace("ß", "ss")
+                    response += content
+                    yield CompletionResponse(text=response, delta=content)
 
-        for chunk in stream:
-            if chunk.choices and chunk.choices[0].delta.content is not None:
-                content = chunk.choices[0].delta.content.replace("ß", "ss")
-                response += content
-                yield CompletionResponse(text=response, delta=content)
-
-            # Handle tool calls in streaming mode
-            if chunk.choices and hasattr(chunk.choices[0].delta, "tool_calls") and chunk.choices[0].delta.tool_calls:
-                # For tool calls in streaming, we just log them but actual tool execution
-                # should be handled by the caller after the stream is complete
-                self.last_log = f"Tool call received in chunk: {chunk.model_dump_json()}"
+                # Handle tool calls in streaming mode
+                if (
+                    chunk.choices
+                    and hasattr(chunk.choices[0].delta, "tool_calls")
+                    and chunk.choices[0].delta.tool_calls
+                ):
+                    # For tool calls in streaming, we just log them but actual tool execution
+                    # should be handled by the caller after the stream is complete
+                    self.last_log = f"Tool call received in chunk: {chunk.model_dump_json()}"
+        except (APIConnectionError, ConnectError) as e:
+            logger.error(f"Error in stream_complete: {e}")
+            yield CompletionResponse(text="Error", delta="")

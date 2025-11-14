@@ -9,12 +9,14 @@ from text_mate_backend.utils.offical_letter import OFFICIAL_LETTER_NOTICE
 MAIL_PROMPT = """
 You are an assistant that helps to write emails.
 Start the email with an appropriate greeting, followed by a clear and concise body that conveys the intended message.
-End the email with a polite closing statement and your signature.
+End the email with a polite closing statement.
+The text should be in the same language as the input text.
 """
 
 OFFICIAL_LETTER_PROMPT = (
     """
 You are an assistant that helps to write official letters. The written text should follow the guidelines probided here:
+The text should be in the same language as the input text.
 """
     + OFFICIAL_LETTER_NOTICE
 )
@@ -23,12 +25,14 @@ PRESENTATION_PROMPT = """
 You are an assistant that helps to write presentations.
 Begin with an engaging introduction that captures the audience's attention, followed by a series of well-organized points that support the main topic.
 Conclude with a strong closing statement that reinforces the key message.
+The text should be in the same language as the input text.
 """
 
 REPORT_PROMPT = """
 You are an assistant that helps to write reports.
 Start with an executive summary that provides an overview of the report's purpose and findings, followed by detailed sections that present data and analysis.
 End with a conclusion that summarizes the key insights and recommendations.
+The text should be in the same language as the input text.
 """
 
 

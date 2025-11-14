@@ -21,7 +21,9 @@ def social_mediafy(context: QuickActionContext, config: Configuration, llm_facad
     """
     sys_prompt = PromptTemplate(
         """
-        You are an assistant that turns text into social media text. Use emojis and hashtags.
+        You are a social media expert. Your task is to turn text into social media text.
+        Use emojis and hashtags if appropriate for the platform.
+        The text should be in the same language as the input text.
         Turn the following text into a text for social media for {options}.:
         """
     ).format(options=context.options)
