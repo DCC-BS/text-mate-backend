@@ -104,10 +104,14 @@ class AdvisorService:
                 """You are an expert in editorial guidelines. Review only the given rules and
                 identify any clear, material violations in the input text.
                 Guidelines:
-                1. Focus on substantive issues that meaningfully impact clarity, accuracy, or tone.
+                1. Focus on substantive issues that meaningfully impact clarity, accuracy, tone, wrong use of words, abbreviations, etc.
                 2. If you are unsure whether a rule is violated, do not report it.
                 3. Provide practical, respectful rewrite proposals that keep the author's intent.
                 4. If no qualifying violations exist, return an empty list.
+
+                Follow this schema for the response:
+                {schema}
+
 
                 Rules documentation:
                 ---------------
@@ -122,6 +126,7 @@ class AdvisorService:
                 Return your findings as structured data according to the specified format.
                 Keep your answer in the original language.
                 """,
+                schema=str(RuelValidation.model_json_schema()),
                 rules=formatted_rules,
                 text=text,
             ),
