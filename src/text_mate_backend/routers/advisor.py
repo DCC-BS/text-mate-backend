@@ -11,7 +11,7 @@ from pydantic import BaseModel
 from text_mate_backend.container import Container
 from text_mate_backend.models.error_codes import NO_DOCUMENT
 from text_mate_backend.models.error_response import ApiErrorException
-from text_mate_backend.models.ruel_models import RuelDocumentDescription, RulesValidationContainer
+from text_mate_backend.models.rule_models import RuelDocumentDescription, RulesValidationContainer
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.utils.cancel_on_disconnect import CancelOnDisconnect
