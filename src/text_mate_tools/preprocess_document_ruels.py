@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from text_mate_backend.customLLMs.qwen3 import QwenVllm
 from text_mate_backend.models.rule_models import Rule, RulesContainer
-from text_mate_backend.utils.configuration import get_config
+from text_mate_backend.utils.configuration import Configuration
 
 documents = [
     Path("./docs/Lesefreundlich_schreiben_Kanton_Basel-Stadt.pdf"),
@@ -38,7 +38,7 @@ Return your findings as structured data according to the specified format.
 token_limit = 32_000
 max_tokens_for_batch = 25_000
 pdf_reader = PDFReader()
-llm = QwenVllm(get_config())
+llm = QwenVllm(Configuration())
 sllm = llm.as_structured_llm(RulesContainer)
 
 MAX_RETRIES = 1
