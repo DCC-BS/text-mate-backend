@@ -20,6 +20,7 @@ from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("advisor_service")
 MAX_RULES_PER_REQUEST = 3
+MAX_RULES = 20
 
 
 def has_access(user: User, doc: RuelDocumentDescription) -> bool:
@@ -67,13 +68,31 @@ class AdvisorService:
 
     def check_text(self, text: str, docs: set[str]) -> RulesValidationContainer:
         """
-        Checks the text for any violations of the rules.
+        Checks the text for any violations of the rules and returns an aggregated result.
         """
 
         try:
             return self._check_text(text, docs)
         except Exception as e:
             logger.error(f"Error checking text: {e}")
+            raise ApiErrorException(
+                {
+                    "status": 500,
+                    "errorId": CHECK_TEXT_ERROR,
+                    "debugMessage": str(e),
+                }
+            ) from e
+
+    def check_text_stream(self, text: str, docs: set[str]) -> Iterator[RulesValidationContainer]:
+        """
+        Checks the text for any violations of the rules and yields validation results
+        batch-by-batch. This is intended for streaming (SSE) responses.
+        """
+
+        try:
+            yield from self._check_text_stream(text, docs)
+        except Exception as e:
+            logger.error(f"Error checking text (stream): {e}")
             raise ApiErrorException(
                 {
                     "status": 500,
@@ -97,10 +116,23 @@ class AdvisorService:
 
         return RulesValidationContainer(rules=aggregated_rules)
 
+    def _check_text_stream(self, text: str, docs: set[str]) -> Iterator[RulesValidationContainer]:
+        rules = self.filter_rules(docs)
+
+        if not rules:
+            # Maintain parity with the non-streaming API by yielding a single empty container
+            yield RulesValidationContainer(rules=[])
+            return
+
+        for rule_batch in self._batched_rules(rules, MAX_RULES_PER_REQUEST):
+            formatted_rules = self.format_rules(rule_batch)
+            validation_result = self._run_rule_validation(formatted_rules, text)
+            yield validation_result
+
     def _run_rule_validation(self, formatted_rules: str, text: str) -> RulesValidationContainer:
         return self.llm_facade.structured_predict(
-            RulesValidationContainer,
-            PromptTemplate(
+            response_type=RulesValidationContainer,
+            prompt=PromptTemplate(
                 """You are an expert in editorial guidelines. Review only the given rules and
                 identify any clear, material violations in the input text.
                 Guidelines:
@@ -123,7 +155,6 @@ class AdvisorService:
                 {text}
                 ---------------
 
-                Return your findings as structured data according to the specified format.
                 Keep your answer in the original language.
                 """,
                 schema=str(RuelValidation.model_json_schema()),
@@ -132,8 +163,8 @@ class AdvisorService:
             ),
         )
 
-    def _batched_rules(self, rules: list[Rule], batch_size: int) -> Iterator[list[Rule]]:
-        for i in range(0, len(rules), batch_size):
+    def _batched_rules(self, rules: list[Rule], batch_size: int, max_rules: int = MAX_RULES) -> Iterator[list[Rule]]:
+        for i in range(0, min(len(rules), max_rules), batch_size):
             yield rules[i : i + batch_size]
 
     def format_rules(self, rules: list[Rule]) -> str:
