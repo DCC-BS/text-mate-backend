@@ -73,7 +73,7 @@ def summarize(context: QuickActionContext, config: Configuration, llm_facade: LL
         The summary should be in the same language as the input text.
         """
     ).format(options=format_options(context.options))
-    usr_promp: str = "Summarize the following text: " + context.text
+    usr_prompt: str = "Summarize the following text: " + context.text
     options: PromptOptions = PromptOptions(system_prompt=sys_prompt, user_prompt=usr_prompt, llm_model=config.llm_model)
 
     logger.debug("Created summarize prompt options")

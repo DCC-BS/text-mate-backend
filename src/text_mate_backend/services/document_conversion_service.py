@@ -82,15 +82,18 @@ class DocumentConversionService:
         """Explicitly close the HTTP client. Should be called when done with the service."""
         await self.client.aclose()
 
-    def _prepare_file_data(
+    async def _prepare_file_data(
         self,
         file: UploadFile | BytesIO,
         filename: str | None = None,
         content_type: str | None = None,
-    ) -> tuple[BinaryIO | BytesIO, str, str]:
+    ) -> tuple[bytes, str, str]:
         """
-        Extract common file handling logic for document conversion without
-        loading the entire file into memory.
+        Extract common file handling logic for document conversion.
+
+        Uses asynchronous I/O for `UploadFile` to avoid blocking the event loop,
+        while keeping a single in-memory copy of the content (bytes) and
+        avoiding the previous extra `BytesIO` wrapper.
 
         Args:
             file: UploadFile or BytesIO object containing the document
@@ -98,22 +101,22 @@ class DocumentConversionService:
             content_type: Optional content type override
 
         Returns:
-            Tuple of (file_obj, filename, content_type) where file_obj is a
-            seeked file-like object ready for streaming.
+            Tuple of (content_bytes, filename, content_type)
         """
-        # Handle both UploadFile and BytesIO cases without creating extra copies
+        # Handle both UploadFile and BytesIO cases
         if isinstance(file, UploadFile):
-            file_obj: BinaryIO | BytesIO = file.file
+            # Ensure we start reading from the beginning of the stream
+            await file.seek(0)
+            content = await file.read()
             # Resolve filename: prefer provided, then UploadFile.filename, then default
             resolved_filename = filename or file.filename or "uploaded_document"
         else:
-            # It's a BytesIO (or compatible) object
+            # It's a BytesIO (or compatible) object; synchronous read is fine (in-memory)
             file_obj = file
+            _ = file_obj.seek(0)
+            content = file_obj.read()
             # Resolve filename: prefer provided, then default
             resolved_filename = filename or "uploaded_document"
-
-        # Ensure we start reading from the beginning of the stream
-        _ = file_obj.seek(0)
 
         # Determine content_type if missing
         if content_type is None:
@@ -122,11 +125,11 @@ class DocumentConversionService:
         # Validate the mimetype
         validate_mimetype(content_type, logger_context={"content_type": content_type})
 
-        return file_obj, resolved_filename, content_type
+        return content, resolved_filename, content_type
 
     async def fetch_docling_file_convert(
         self,
-        files: Mapping[str, tuple[str, BinaryIO | BytesIO, str]],
+        files: Mapping[str, tuple[str, bytes, str]],
         options: dict[str, str | list[str] | bool],
     ) -> httpx.Response:
         logger.debug(f"Fetching docling file convert with URL: {self.config.docling_url}/convert/file")
@@ -171,12 +174,16 @@ class DocumentConversionService:
 
         logger.debug(f"type of file: {type(file)}")
 
-        # Prepare file data using common helper (streaming, no extra copies)
-        file_obj, filename, content_type = self._prepare_file_data(file, filename, content_type)
+        # Prepare file data using common helper (single bytes copy, no extra BytesIO)
+        content, filename, content_type = await self._prepare_file_data(
+            file,
+            filename,
+            content_type,
+        )
         logger.debug(f"Resolved filename: {filename}")
 
-        # Pass the file-like object directly to httpx for streaming upload
-        files = {"files": (filename, file_obj, content_type)}
+        # Pass raw bytes to httpx; this aligns with what the docling API expects
+        files = {"files": (filename, content, content_type)}
         options: dict[str, str | list[str] | bool] = {
             "to_formats": ["html"],
             "image_export_mode": "placeholder",

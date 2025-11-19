@@ -28,5 +28,5 @@ Der Brief soll als "Brückenschlag" dienen. Er soll dem Bürger auf Augenhöhe b
 
 # FORMATIERUNG
 * Behalte alle Fakten (Daten, Fristen, Namen) exakt bei.
-* Der Output soll ein fertig formatierter Brieftext sein (Betreff, Anrede, Textkörper, Grussformel).
+* Der Output soll ein fertig strukturierter Brieftext sein (Betreff, Anrede, Textkörper, Grussformel). Verwende kein HTML oder Markdown.
 """

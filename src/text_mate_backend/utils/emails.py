@@ -28,6 +28,6 @@ Die E-Mail muss schnell erfassbar sein, Missverständnisse vermeiden und darf ni
 
 # FORMATIERUNG
 Gib die E-Mail in folgendem Format aus:
-**Betreff:** [Optimierter Betreff]
-**Inhalt:** [Optimierter E-Mail-Text]
+Betreff: [Optimierter Betreff]
+Inhalt: [Optimierter E-Mail-Text]
 """
