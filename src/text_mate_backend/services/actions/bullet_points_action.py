@@ -12,7 +12,7 @@ def bullet_points(context: QuickActionContext, config: Configuration, llm_facade
     Converts the given text into a structured bullet point format with key points.
 
     Args:
-        text: The input text to be converted to bullet points
+        context: QuickActionContext containing the input text and the bullet points option
         config: Configuration containing LLM model and other settings
         llm_facade: The LLMFacade instance to use for generating the response
 

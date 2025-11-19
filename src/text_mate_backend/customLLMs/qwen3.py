@@ -121,4 +121,4 @@ class QwenVllm(CustomLLM):
                     self.last_log = f"Tool call received in chunk: {chunk.model_dump_json()}"
         except (APIConnectionError, ConnectError) as e:
             logger.error(f"Error in stream_complete: {e}")
-            yield CompletionResponse(text="Error", delta="")
+            yield CompletionResponse(text=f"Connection error: {type(e).__name__}", delta="")

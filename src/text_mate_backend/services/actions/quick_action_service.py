@@ -42,13 +42,14 @@ class QuickActionService:
         """
         text_length = len(text)
         text_preview = text[:50] + ("..." if text_length > 50 else "")
-        language = next(filter(lambda x: "language code" in x, options.split(";")), None)
-        language = language.replace("language code:", "") if language else None
-
-        logger.debug("Text preview", preview=text_preview)
-
+        segments = [seg.strip() for seg in options.split(";") if seg.strip()]
+        lang_segment = next((s for s in segments if s.startswith("language code:")), None)
+        language = lang_segment.split(":", 1)[1].strip() if lang_segment else None
+        filtered_segments = [s for s in segments if s is not lang_segment]
         context = QuickActionContext(
-            text=text, options=options.replace(f";language code:{language}", "").strip(), language=language
+            text=text,
+            options=";".join(filtered_segments),
+            language=language,
         )
 
         start_time = time.time()
@@ -70,6 +71,8 @@ class QuickActionService:
                     response = medium(context, app_config, self.llm_facade)
                 case Actions.CUSTOM:
                     response = custom_prompt(context, app_config, self.llm_facade)
+                case _:
+                    raise ValueError(f"Unknown quick action: {action}")
 
             process_time = time.time() - start_time
             if response is None:

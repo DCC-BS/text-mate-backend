@@ -87,9 +87,10 @@ class DocumentConversionService:
         file: UploadFile | BytesIO,
         filename: str | None = None,
         content_type: str | None = None,
-    ) -> tuple[bytes, str, str]:
+    ) -> tuple[BinaryIO | BytesIO, str, str]:
         """
-        Extract common file handling logic for document conversion.
+        Extract common file handling logic for document conversion without
+        loading the entire file into memory.
 
         Args:
             file: UploadFile or BytesIO object containing the document
@@ -97,21 +98,22 @@ class DocumentConversionService:
             content_type: Optional content type override
 
         Returns:
-            Tuple of (content, filename, content_type)
+            Tuple of (file_obj, filename, content_type) where file_obj is a
+            seeked file-like object ready for streaming.
         """
-        # Handle both UploadFile and BytesIO cases
+        # Handle both UploadFile and BytesIO cases without creating extra copies
         if isinstance(file, UploadFile):
-            # Seek to start for UploadFile
-            _ = file.file.seek(0)
-            content = file.file.read()
+            file_obj: BinaryIO | BytesIO = file.file
             # Resolve filename: prefer provided, then UploadFile.filename, then default
             resolved_filename = filename or file.filename or "uploaded_document"
         else:
-            # It's a BytesIO object
-            _ = file.seek(0)
-            content = file.read()
+            # It's a BytesIO (or compatible) object
+            file_obj = file
             # Resolve filename: prefer provided, then default
             resolved_filename = filename or "uploaded_document"
+
+        # Ensure we start reading from the beginning of the stream
+        _ = file_obj.seek(0)
 
         # Determine content_type if missing
         if content_type is None:
@@ -120,7 +122,7 @@ class DocumentConversionService:
         # Validate the mimetype
         validate_mimetype(content_type, logger_context={"content_type": content_type})
 
-        return content, resolved_filename, content_type
+        return file_obj, resolved_filename, content_type
 
     async def fetch_docling_file_convert(
         self,
@@ -169,11 +171,12 @@ class DocumentConversionService:
 
         logger.debug(f"type of file: {type(file)}")
 
-        # Prepare file data using common helper
-        content, filename, content_type = self._prepare_file_data(file, filename, content_type)
+        # Prepare file data using common helper (streaming, no extra copies)
+        file_obj, filename, content_type = self._prepare_file_data(file, filename, content_type)
         logger.debug(f"Resolved filename: {filename}")
 
-        files = {"files": (filename, BytesIO(content), content_type)}
+        # Pass the file-like object directly to httpx for streaming upload
+        files = {"files": (filename, file_obj, content_type)}
         options: dict[str, str | list[str] | bool] = {
             "to_formats": ["html"],
             "image_export_mode": "placeholder",

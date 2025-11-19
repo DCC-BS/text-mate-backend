@@ -17,7 +17,7 @@ def get_default_rules_path() -> Path:
     return Path(__file__).resolve().parents[2] / "docs" / "rules.json"
 
 
-def count_rules_per_file(rules_path: Path) -> Counter:
+def count_rules_per_file(rules_path: Path) -> Counter[str]:
     with rules_path.open("r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -45,7 +45,7 @@ def main() -> None:
     rules_path = Path(args.rules_path).expanduser().resolve()
 
     if not rules_path.is_file():
-        raise SystemExit(f"rules.json not found at: {rules_path}")
+        raise SystemExit(f"File not found at: {rules_path}")
 
     counts = count_rules_per_file(rules_path)
 

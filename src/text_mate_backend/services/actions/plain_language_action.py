@@ -13,7 +13,7 @@ def plain_language(context: QuickActionContext, config: Configuration, llm_facad
     Converts the given text into plain language (Leichte Sprache) with A2-A1 language level.
 
     Args:
-        context: The QuickActionContext containing text and options
+        context: The QuickActionContext containing text
         config: Configuration containing LLM model and other settings
         llm_facade: The LLMFacade instance to use for generating the response
 

@@ -4,22 +4,22 @@ from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
 from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.configuration import Configuration
+from text_mate_backend.utils.emails import EMAIL_PROMPT
 from text_mate_backend.utils.offical_letter import OFFICIAL_LETTER_NOTICE
 
-MAIL_PROMPT = """
-You are an assistant that helps to write emails.
-Start the email with an appropriate greeting, followed by a clear and concise body that conveys the intended message.
-End the email with a polite closing statement.
+MAIL_PROMPT = (
+    """
+You are an assistant that helps to write emails. The written email should follow the guidelines provided here: {EMAIL_PROMPT}
 The text should be in the same language as the input text.
 """
+).format(EMAIL_PROMPT=EMAIL_PROMPT)
 
 OFFICIAL_LETTER_PROMPT = (
     """
-You are an assistant that helps to write official letters. The written text should follow the guidelines probided here:
+You are an assistant that helps to write official letters. The written text should follow the guidelines provided here: {OFFICIAL_LETTER_NOTICE}
 The text should be in the same language as the input text.
 """
-    + OFFICIAL_LETTER_NOTICE
-)
+).format(OFFICIAL_LETTER_NOTICE=OFFICIAL_LETTER_NOTICE)
 
 PRESENTATION_PROMPT = """
 You are an assistant that helps to write presentations.
@@ -38,7 +38,7 @@ The text should be in the same language as the input text.
 
 def get_medium_prompt(option: str) -> str:
     if option == "email":
-        return MAIL_PROMPT
+        return EMAIL_PROMPT
     elif option == "official_letter":
         return OFFICIAL_LETTER_PROMPT
     elif option == "presentation":
@@ -51,15 +51,15 @@ def get_medium_prompt(option: str) -> str:
 
 def medium(context: QuickActionContext, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
     """
-    Converts the given text into a formal or informal style based on the specified options.
+    Rewrites the given text for a specific medium (e.g. email, official letter, presentation, report).
 
     Args:
-        text: The input text to be converted to formal or informal style
+        context: QuickActionContext containing the input text and the medium option
         config: Configuration containing LLM model and other settings
         llm_facade: The LLMFacade instance to use for generating the response
 
     Returns:
-        A StreamingResponse containing the formal or informal version of the text
+        A StreamingResponse containing the rewritten version of the text for the specific medium
     """
 
     sys_prompt = get_medium_prompt(context.options)

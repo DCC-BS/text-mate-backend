@@ -37,10 +37,13 @@ def format_options(options: str) -> str:
         case "page":
             return "in a single page"
         case "management_summary":
-            return """as a management summary.
-            A management summary is a summary of the key points of the text for the management team.
-            A management summarys length should be one paragraph up to a single page long, depending on the length of the text.
-            Provide the management summary """
+            return (
+                "as a management summary. "
+                "A management summary is a summary of the key points of the text for the management team. "
+                "A management summary's length should be one paragraph up to a single page long, "
+                "depending on the length of the text. "
+                "Provide the management summary."
+            )
         case _:
             logger.warning("Unknown summarize option, defaulting to concise manner", options=options)
             return "in a concise manner"
@@ -66,13 +69,12 @@ def summarize(context: QuickActionContext, config: Configuration, llm_facade: LL
     sys_prompt = PromptTemplate(
         """
         You are an assistant that summarizes text by extracting the key points and central message.
-        Provide a summary {options} of the following text, capturing the main ideas and essential information:
+        Provide a summary {options} of the following text, capturing the main ideas and essential information.
+        The summary should be in the same language as the input text.
         """
-    ).format(text=context.text, options=format_options(context.options))
-
-    options: PromptOptions = PromptOptions(
-        system_prompt=sys_prompt, user_prompt=context.text, llm_model=config.llm_model
-    )
+    ).format(options=format_options(context.options))
+    usr_promp: str = "Summarize the following text: " + context.text
+    options: PromptOptions = PromptOptions(system_prompt=sys_prompt, user_prompt=usr_prompt, llm_model=config.llm_model)
 
     logger.debug("Created summarize prompt options")
     return run_prompt(

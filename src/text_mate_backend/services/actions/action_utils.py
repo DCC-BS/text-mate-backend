@@ -34,8 +34,6 @@ def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingRespon
     Returns:
         A StreamingResponse that yields the generated text chunks
     """
-    # Get request details for logging
-    # - Format the text as plain text, don't use any html tags or markdown.
 
     start_time = time.time()
     try:
@@ -50,8 +48,7 @@ def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingRespon
                 - Don't add any extra information or context.
                 - Don't add any whitespaces.
                """,
-            prompt=options.system_prompt,
-        ).format()
+        ).format(prompt=options.system_prompt)
         usr_prompt = options.user_prompt
 
         stream: Iterator[str] = llm_facade.stream_chat(
@@ -62,7 +59,6 @@ def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingRespon
         )
 
         def generate() -> Generator[str, None, None]:
-            total_tokens = 0
             start_streaming_time = time.time()
             try:
                 isPrefixWhiteSpace = True
@@ -79,11 +75,10 @@ def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingRespon
             except Exception as e:
                 # Log errors during streaming
                 streaming_duration = time.time() - start_streaming_time
-                logger.error(
+                logger.exception(
                     "Error during streaming",
                     error=str(e),
                     error_type=type(e).__name__,
-                    tokens_streamed=total_tokens,
                     streaming_duration_ms=round(streaming_duration * 1000),
                 )
                 raise
@@ -92,7 +87,7 @@ def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingRespon
 
     except Exception as e:
         setup_time = time.time() - start_time
-        logger.error(
+        logger.exception(
             "Failed to initiate OpenAI streaming request",
             error=str(e),
             error_type=type(e).__name__,

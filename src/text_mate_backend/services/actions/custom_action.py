@@ -9,15 +9,15 @@ from text_mate_backend.utils.configuration import Configuration
 
 def custom_prompt(context: QuickActionContext, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
     """
-    Converts the given text into a structured bullet point format with key points.
+    Rewrites the given text according to a custom prompt.
 
     Args:
-        text: The input text to be converted to bullet points
+        context: QuickActionContext containing the input text and the custom prompt/options
         config: Configuration containing LLM model and other settings
         llm_facade: The LLMFacade instance to use for generating the response
 
     Returns:
-        A StreamingResponse containing the bullet points version of the text
+        A StreamingResponse containing the rewritten version of the text
     """
 
     sys_prompt = PromptTemplate(
