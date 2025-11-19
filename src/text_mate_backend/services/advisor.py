@@ -157,7 +157,7 @@ class AdvisorService:
 
                 Keep your answer in the original language.
                 """,
-                schema=str(RuelValidation.model_json_schema()),
+                schema=str(RulesValidationContainer.model_json_schema()),
                 rules=formatted_rules,
                 text=text,
             ),
