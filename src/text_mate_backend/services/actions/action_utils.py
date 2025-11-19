@@ -1,7 +1,9 @@
+import re
 import time
 from collections.abc import Generator, Iterator
 
 from fastapi.responses import StreamingResponse
+from llama_index.core.llms import ChatMessage, MessageRole
 from llama_index.core.prompts import PromptTemplate
 from pydantic import BaseModel
 
@@ -16,7 +18,8 @@ class PromptOptions(BaseModel):
     A class to represent the options for a prompt.
     """
 
-    prompt: str
+    system_prompt: str | None = None
+    user_prompt: str
     llm_model: str
 
 
@@ -31,33 +34,37 @@ def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingRespon
     Returns:
         A StreamingResponse that yields the generated text chunks
     """
-    # Get request details for logging
 
     start_time = time.time()
     try:
-        prompt = PromptTemplate(
+        sys_prompt = PromptTemplate(
             """
                 {prompt}
 
-                - Format the text as plain text, don't use any html tags or markdown.
+                - Format the text as markdown, don't use any html tags.
+                - Don't include any introductory or closing remarks.
                 - Answer in the same language as the input text.
                 - Only respond with the answer, do not add any other text.
                 - Don't add any extra information or context.
                 - Don't add any whitespaces.
                """,
-            prompt=options.prompt,
-        ).format()
+        ).format(prompt=options.system_prompt)
+        usr_prompt = options.user_prompt
 
-        stream: Iterator[str] = llm_facade.stream_complete(prompt)
+        stream: Iterator[str] = llm_facade.stream_chat(
+            [
+                ChatMessage(role=MessageRole.SYSTEM, content=sys_prompt),
+                ChatMessage(role=MessageRole.USER, content=usr_prompt),
+            ]
+        )
 
         def generate() -> Generator[str, None, None]:
-            total_tokens = 0
             start_streaming_time = time.time()
             try:
                 isPrefixWhiteSpace = True
 
                 for chunk in stream:
-                    if isPrefixWhiteSpace and chunk == " " or chunk == "\n" or chunk == "\n\n":
+                    if isPrefixWhiteSpace and (re.match(r"^\s*$", chunk)):
                         continue
 
                     isPrefixWhiteSpace = False
@@ -68,11 +75,10 @@ def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingRespon
             except Exception as e:
                 # Log errors during streaming
                 streaming_duration = time.time() - start_streaming_time
-                logger.error(
+                logger.exception(
                     "Error during streaming",
                     error=str(e),
                     error_type=type(e).__name__,
-                    tokens_streamed=total_tokens,
                     streaming_duration_ms=round(streaming_duration * 1000),
                 )
                 raise
@@ -81,7 +87,7 @@ def run_prompt(options: PromptOptions, llm_facade: LLMFacade) -> StreamingRespon
 
     except Exception as e:
         setup_time = time.time() - start_time
-        logger.error(
+        logger.exception(
             "Failed to initiate OpenAI streaming request",
             error=str(e),
             error_type=type(e).__name__,

@@ -78,11 +78,17 @@ class DocumentConversionService:
         self.config = config
         self.client = httpx.AsyncClient(timeout=60.0)
 
+    async def __aenter__(self) -> "DocumentConversionService":
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        await self.close()
+
     async def close(self) -> None:
         """Explicitly close the HTTP client. Should be called when done with the service."""
         await self.client.aclose()
 
-    def _prepare_file_data(
+    async def _prepare_file_data(
         self,
         file: UploadFile | BytesIO,
         filename: str | None = None,
@@ -91,25 +97,30 @@ class DocumentConversionService:
         """
         Extract common file handling logic for document conversion.
 
+        Uses asynchronous I/O for `UploadFile` to avoid blocking the event loop,
+        while keeping a single in-memory copy of the content (bytes) and
+        avoiding the previous extra `BytesIO` wrapper.
+
         Args:
             file: UploadFile or BytesIO object containing the document
             filename: Optional filename override
             content_type: Optional content type override
 
         Returns:
-            Tuple of (content, filename, content_type)
+            Tuple of (content_bytes, filename, content_type)
         """
         # Handle both UploadFile and BytesIO cases
         if isinstance(file, UploadFile):
-            # Seek to start for UploadFile
-            _ = file.file.seek(0)
-            content = file.file.read()
+            # Ensure we start reading from the beginning of the stream
+            await file.seek(0)
+            content = await file.read()
             # Resolve filename: prefer provided, then UploadFile.filename, then default
             resolved_filename = filename or file.filename or "uploaded_document"
         else:
-            # It's a BytesIO object
-            _ = file.seek(0)
-            content = file.read()
+            # It's a BytesIO (or compatible) object; synchronous read is fine (in-memory)
+            file_obj = file
+            _ = file_obj.seek(0)
+            content = file_obj.read()
             # Resolve filename: prefer provided, then default
             resolved_filename = filename or "uploaded_document"
 
@@ -124,7 +135,7 @@ class DocumentConversionService:
 
     async def fetch_docling_file_convert(
         self,
-        files: Mapping[str, tuple[str, BinaryIO | BytesIO, str]],
+        files: Mapping[str, tuple[str, bytes, str]],
         options: dict[str, str | list[str] | bool],
     ) -> httpx.Response:
         logger.debug(f"Fetching docling file convert with URL: {self.config.docling_url}/convert/file")
@@ -169,11 +180,16 @@ class DocumentConversionService:
 
         logger.debug(f"type of file: {type(file)}")
 
-        # Prepare file data using common helper
-        content, filename, content_type = self._prepare_file_data(file, filename, content_type)
+        # Prepare file data using common helper (single bytes copy, no extra BytesIO)
+        content, filename, content_type = await self._prepare_file_data(
+            file,
+            filename,
+            content_type,
+        )
         logger.debug(f"Resolved filename: {filename}")
 
-        files = {"files": (filename, BytesIO(content), content_type)}
+        # Pass raw bytes to httpx; this aligns with what the docling API expects
+        files = {"files": (filename, content, content_type)}
         options: dict[str, str | list[str] | bool] = {
             "to_formats": ["html"],
             "image_export_mode": "placeholder",

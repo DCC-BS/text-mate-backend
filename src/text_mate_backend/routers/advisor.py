@@ -1,20 +1,20 @@
+from collections.abc import Generator
 from os import path
 from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request
 from fastapi.params import Security
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi_azure_auth.user import User
 from pydantic import BaseModel
 
 from text_mate_backend.container import Container
 from text_mate_backend.models.error_codes import NO_DOCUMENT
 from text_mate_backend.models.error_response import ApiErrorException
-from text_mate_backend.models.ruel_models import RuelDocumentDescription, RulesValidationContainer
+from text_mate_backend.models.rule_models import RuelDocumentDescription
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.azure_service import AzureService
-from text_mate_backend.utils.cancel_on_disconnect import CancelOnDisconnect
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
@@ -44,12 +44,12 @@ def create_router(
     ) -> list[RuelDocumentDescription]:
         return advisor_service.get_docs(current_user)
 
-    @router.post("/validate", response_model=RulesValidationContainer, dependencies=[Security(azure_scheme)])
+    @router.post("/validate", dependencies=[Security(azure_scheme)])
     async def validate_advisor(
         request: Request,
         data: AdvisorInput,
         current_user: Annotated[User, Depends(azure_service.azure_scheme)],
-    ) -> RulesValidationContainer:
+    ) -> StreamingResponse:
         pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
         logger.info(
             "app_event",
@@ -60,11 +60,17 @@ def create_router(
             },
         )
 
-        async with CancelOnDisconnect(request):
-            return advisor_service.check_text(
+        def event_generator() -> Generator[str, None, None]:
+            # NOTE: CancelOnDisconnect is not used here because StreamingResponse evaluation
+            # happens after this handler returns. Disconnections will be handled by the ASGI server.
+            for validation_result in advisor_service.check_text_stream(
                 data.text,
                 data.docs,
-            )
+            ):
+                # Each SSE event contains a single RulesValidationContainer as JSON
+                yield f"data: {validation_result.model_dump_json()}\n\n"
+
+        return StreamingResponse(event_generator(), media_type="text/event-stream")
 
     @router.get("/doc/{name}", dependencies=[Security(azure_scheme)])
     async def get_document(name: str) -> FileResponse:

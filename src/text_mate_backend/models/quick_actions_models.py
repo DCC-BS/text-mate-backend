@@ -1,10 +1,29 @@
+from enum import Enum
 from typing import Annotated
 
 from pydantic import BaseModel
 
-from text_mate_backend.services.actions.quick_action_service import Actions
+
+class Actions(str, Enum):
+    PlainLanguage = "plain_language"
+    BulletPoints = "bullet_points"
+    Summarize = "summarize"
+    SocialMediafy = "social_mediafy"
+    FORMALITY = "formality"
+    MEDIUM = "medium"
+    CUSTOM = "custom"
 
 
 class QuickActionRequest(BaseModel):
-    action: Annotated[Actions, "The quick action to perform"]
+    action: Annotated["Actions", "The quick action to perform"]
     text: Annotated[str, "The text to apply the action to"]
+    options: Annotated[
+        str,
+        "Options to guide the rewriting process, such as writing style, target audience, and intent",
+    ] = ""
+
+
+class QuickActionContext(BaseModel):
+    text: str
+    options: str
+    language: str | None = None

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from text_mate_backend.models.ruel_models import RulesContainer
+from text_mate_backend.models.rule_models import RulesContainer
 
 rules_file = Path("./docs/rules.json")
 

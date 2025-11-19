@@ -14,7 +14,7 @@ from fastapi import APIRouter, Depends, Request, Security, UploadFile
 from fastapi_azure_auth.user import User
 
 from text_mate_backend.container import Container
-from text_mate_backend.models.conversion_result import ConversionOutput
+from text_mate_backend.models.conversion_result import ConversionResult
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.document_conversion_service import DocumentConversionService
 from text_mate_backend.utils.configuration import Configuration
@@ -48,8 +48,8 @@ def create_router(
     async def convert(
         request: Request,
         file: UploadFile,
-        current_user: Annotated[User, Depends(azure_service.azure_scheme)],
-    ) -> ConversionOutput:
+        current_user: Annotated[User, Depends(azure_scheme)],
+    ) -> ConversionResult:
         """
         Convert the content of an uploaded document to markdown with images.
 
@@ -60,7 +60,7 @@ def create_router(
             file: Uploaded document file to convert
 
         Returns:
-            ConversionOutput: Conversion result with markdown content and images
+            ConversionResult: Conversion result with markdown content and images
         """
 
         pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
@@ -70,6 +70,7 @@ def create_router(
                 "pseudonym_id": pseudonymized_user_id,
                 "event": convert.__name__,
                 "file_size": file.size,
+                "content_type": file.content_type,
             },
         )
 
@@ -80,9 +81,9 @@ def create_router(
             if await request.is_disconnected():
                 task.cancel()
                 logger.info("Conversion task cancelled due to client disconnect")
-                return ConversionOutput(html="")
+                return ConversionResult(html="")
         result = task.result()
-        return ConversionOutput(html=result.html)
+        return ConversionResult(html=result.html)
 
     logger.info("Conversion router configured")
     return router

@@ -5,28 +5,32 @@ from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
 from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.easy_language import CLAUDE_TEMPLATE_LS, REWRITE_COMPLETE, RULES_LS, SYSTEM_MESSAGE_LS
 
 
-def plain_language(context: QuickActionContext, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
+def formality(context: QuickActionContext, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
     """
-    Converts the given text into plain language (Leichte Sprache) with A2-A1 language level.
+    Converts the given text into a formal or informal style based on the specified options.
 
     Args:
-        context: The QuickActionContext containing text
+        text: The input text to be converted to formal or informal style
         config: Configuration containing LLM model and other settings
         llm_facade: The LLMFacade instance to use for generating the response
 
     Returns:
-        A StreamingResponse containing the plain language version of the text
+        A StreamingResponse containing the formal or informal version of the text
     """
 
-    # Create a modified template that includes options
-    sys_prompt = SYSTEM_MESSAGE_LS
+    sys_prompt = PromptTemplate(
+        """
+        You are a writing expert.
+        We want to transform the formality of the text.
+        Your task is to take the given text and convert it into a {option} text.
+        Keep the original meaning.
+        The rewritten text should be in the same language as the input text.
+        """
+    ).format(option=context.options)
 
-    usr_prompt = PromptTemplate(CLAUDE_TEMPLATE_LS).format(
-        prompt=context.text, completeness=REWRITE_COMPLETE, rules=RULES_LS
-    )
+    usr_prompt = context.text
 
     options: PromptOptions = PromptOptions(system_prompt=sys_prompt, user_prompt=usr_prompt, llm_model=config.llm_model)
 

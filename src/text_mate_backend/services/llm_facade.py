@@ -1,6 +1,6 @@
 from typing import Any, Generator, Type, TypeVar, cast
 
-from llama_index.core.llms import LLM
+from llama_index.core.llms import LLM, ChatMessage
 from llama_index.core.prompts import PromptTemplate
 from pydantic import BaseModel
 
@@ -40,6 +40,21 @@ class LLMFacade:
         for completion in self.llm.stream_complete(prompt, **kwargs):
             if completion.delta is not None:
                 yield completion.delta
+
+    def stream_chat(self, messages: list[ChatMessage], **kwargs: Any) -> Generator[str, None, None]:
+        """
+        Complete a chat conversation using the LLM.
+
+        Args:
+            messages: The list of chat messages
+            **kwargs: Additional parameters to pass to the chat API
+
+        Returns:
+            The completed chat response from the LLM
+        """
+        for response in self.llm.stream_chat(messages, **kwargs):
+            if response.delta is not None:
+                yield response.delta
 
     def structured_predict[T](
         self,

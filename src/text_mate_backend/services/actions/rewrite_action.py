@@ -7,9 +7,9 @@ from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.configuration import Configuration
 
 
-def simplify(context: QuickActionContext, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
+def rewrite(context: QuickActionContext, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
     """
-    Simplifies the given text by removing complex words and phrases.
+    Rewrites the given text based on provided context and options.
 
     Args:
         context: The QuickActionContext containing text and options
@@ -17,14 +17,19 @@ def simplify(context: QuickActionContext, config: Configuration, llm_facade: LLM
         llm_facade: The LLMFacade instance to use for generating the response
 
     Returns:
-        A StreamingResponse containing the simplified version of the text
+        A StreamingResponse containing the rewritten version of the text
     """
 
     prompt = PromptTemplate(
         """
-        You are an assistant that simplifies text.
-        Simplify the following text:
+        You are an expert in rewriting text. Take the given text and rewrite
+        it based on the provided options.
+        Your task:
+        1. Rewrite the text based on the provided options.
+        2. The rewritten text should be in the same language as the input text.
+        3. Provide only the rewritten text without any additional explanation or formatting.
 
+        Text to be rewritten:
         # START TEXT #
         {text}
         # END TEXT #
