@@ -78,6 +78,12 @@ class DocumentConversionService:
         self.config = config
         self.client = httpx.AsyncClient(timeout=60.0)
 
+    async def __aenter__(self) -> "DocumentConversionService":
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        await self.close()
+
     async def close(self) -> None:
         """Explicitly close the HTTP client. Should be called when done with the service."""
         await self.client.aclose()
