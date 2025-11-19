@@ -20,13 +20,15 @@ def formality(context: QuickActionContext, config: Configuration, llm_facade: LL
         A StreamingResponse containing the formal or informal version of the text
     """
 
-    sys_prompt = """
+    sys_prompt = PromptTemplate(
+        """
         You are a writing expert.
         We want to transform the formality of the text.
         Your task is to take the given text and convert it into a {option} text.
         Keep the original meaning.
         The rewritten text should be in the same language as the input text.
         """
+    ).format(option=context.options)
 
     usr_prompt = context.text
 
