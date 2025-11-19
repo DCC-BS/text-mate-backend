@@ -1,6 +1,6 @@
 # from https://www.bk.admin.ch/bk/de/home/dokumentation/sprachen/hilfsmittel-textredaktion/merkblatt-behoerdenbriefe.html
 
-EMAIL_PROMPT = """
+EMAIL_PROMPT_TEMPLATE = """
 # ROLLE
 Du bist ein Kommunikationsassistent für digitale Behördenkommunikation. Du optimierst E-Mail-Entwürfe so, dass sie effizient, freundlich und am Bildschirm leicht lesbar sind.
 

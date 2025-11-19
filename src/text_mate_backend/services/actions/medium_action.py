@@ -4,7 +4,7 @@ from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
 from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.emails import EMAIL_PROMPT
+from text_mate_backend.utils.emails import EMAIL_PROMPT_TEMPLATE
 from text_mate_backend.utils.offical_letter import OFFICIAL_LETTER_NOTICE
 
 MAIL_PROMPT = (
@@ -12,7 +12,7 @@ MAIL_PROMPT = (
 You are an assistant that helps to write emails. The written email should follow the guidelines provided here: {EMAIL_PROMPT}
 The text should be in the same language as the input text.
 """
-).format(EMAIL_PROMPT=EMAIL_PROMPT)
+).format(EMAIL_PROMPT=EMAIL_PROMPT_TEMPLATE)
 
 OFFICIAL_LETTER_PROMPT = (
     """
@@ -38,7 +38,7 @@ The text should be in the same language as the input text.
 
 def get_medium_prompt(option: str) -> str:
     if option == "email":
-        return EMAIL_PROMPT
+        return MAIL_PROMPT
     elif option == "official_letter":
         return OFFICIAL_LETTER_PROMPT
     elif option == "presentation":
