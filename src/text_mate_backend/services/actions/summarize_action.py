@@ -10,13 +10,6 @@ from text_mate_backend.utils.logger import get_logger
 logger = get_logger("summarize_action")
 
 
-# const items = computed<DropdownMenuItem[]>(() => [
-#   { label: t('quick-actions.summarize.sentence'), value: 'sentence', icon: "i-lucide-tally-1" },
-#   { label: t('quick-actions.summarize.three_sentence'), value: 'three_sentence', icon: "i-lucide-tally-3" },
-#   { label: t('quick-actions.summarize.paragraph'), value: 'paragraph', icon: "i-lucide-text-wrap" },
-#   { label: t('quick-actions.summarize.page'), value: 'page', icon: "i-lucide-file-text" },
-
-
 def format_options(options: str) -> str:
     """
     Formats the options string for inclusion in the prompt.
@@ -29,20 +22,19 @@ def format_options(options: str) -> str:
     """
     match options.lower().strip():
         case "sentence":
-            return "in one sentence"
+            return "The summary should be exactly one sentence long."
         case "three_sentence":
-            return "in three sentences"
+            return "The summary should be exactly three sentences long."
         case "paragraph":
-            return "in a single paragraph"
+            return "The summary should be one paragraph long."
         case "page":
-            return "in a single page"
+            return "The summary should be up to one page long."
         case "management_summary":
             return (
                 "as a management summary. "
                 "A management summary is a summary of the key points of the text for the management team. "
-                "A management summary's length should be one paragraph up to a single page long, "
+                "A management summary's length should be one paragraph up to one page long, "
                 "depending on the length of the text. "
-                "Provide the management summary."
             )
         case _:
             logger.warning("Unknown summarize option, defaulting to concise manner", options=options)
@@ -69,12 +61,14 @@ def summarize(context: QuickActionContext, config: Configuration, llm_facade: LL
     sys_prompt = PromptTemplate(
         """
         You are an assistant that summarizes text by extracting the key points and central message.
-        Provide a summary {options} of the following text, capturing the main ideas and essential information.
+        Provide a summary of the following text, capturing the main ideas and essential information.
         The summary should be in the same language as the input text.
+        Those are the requirements for the summary: {options}
         """
     ).format(options=format_options(context.options))
-    usr_prompt: str = "Summarize the following text: " + context.text
-    options: PromptOptions = PromptOptions(system_prompt=sys_prompt, user_prompt=usr_prompt, llm_model=config.llm_model)
+    options: PromptOptions = PromptOptions(
+        system_prompt=sys_prompt, user_prompt=context.text, llm_model=config.llm_model
+    )
 
     logger.debug("Created summarize prompt options")
     return run_prompt(
