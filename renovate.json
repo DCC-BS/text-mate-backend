@@ -4,96 +4,59 @@
     "enabled": true
   },
   "dependencyDashboard": true,
-  "extends": [
-    "config:recommended"
-  ],
+  "extends": ["config:recommended"],
   "forkProcessing": "enabled",
-  "labels": [
-    "renovate"
-  ],
+  "labels": ["renovate"],
   "internalChecksFilter": "strict",
   "minimumReleaseAge": "14 days",
   "packageRules": [
     {
       "automerge": true,
       "matchCurrentVersion": "!/^0/",
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ]
+      "matchUpdateTypes": ["minor", "patch"]
     },
     {
       "automerge": false,
       "groupName": "python-dependencies",
-      "labels": [
-        "dependencies",
-        "python"
-      ],
+      "labels": ["dependencies", "python"],
       "matchDepTypes": [
         "dependencies",
         "optionalDependencies",
         "peerDependencies",
         "devDependencies"
       ],
-      "matchFileNames": [
-        "pyproject.toml"
-      ]
+      "matchFileNames": ["pyproject.toml"]
     },
     {
       "automerge": true,
       "groupName": "python-dev-tools",
-      "labels": [
-        "dev-dependencies",
-        "python"
-      ],
-      "matchDepTypes": [
-        "devDependencies"
-      ],
-      "matchPackageNames": [
-        "ruff",
-        "mkdocs",
-        "mkdocs-material"
-      ]
+      "labels": ["dev-dependencies", "python"],
+      "matchDepTypes": ["devDependencies"],
+      "matchPackageNames": ["ruff", "mkdocs", "mkdocs-material"]
     },
     {
       "automerge": true,
       "groupName": "python-dev-tools",
-      "labels": [
-        "dev-dependencies",
-        "python"
-      ],
+      "labels": ["dev-dependencies", "python"],
       "matchDepTypes": [
         "dependencies",
         "optionalDependencies",
         "devDependencies"
       ],
-      "matchPackageNames": [
-        "uv"
-      ]
+      "matchPackageNames": ["uv"]
     },
     {
       "automerge": true,
       "groupName": "devcontainer",
-      "labels": [
-        "devcontainer"
-      ],
-      "matchFileNames": [
-        ".devcontainer/devcontainer.json"
-      ]
+      "labels": ["devcontainer"],
+      "matchFileNames": [".devcontainer/devcontainer.json"]
     },
     {
       "automerge": true,
       "groupName": "docker-python-version",
-      "labels": [
-        "docker",
-        "python"
-      ],
-      "matchFileNames": [
-        "Dockerfile"
-      ],
-      "matchPackageNames": [
-        "python"
-      ]
+      "labels": ["docker", "python"],
+      "matchFileNames": ["Dockerfile"],
+      "matchPackageNames": ["python"]
     }
   ],
   "platformAutomerge": true,
