@@ -156,7 +156,7 @@ class AdvisorService:
                 ---------------
 
                 Keep your answer in the original language.
-                """,
+                """,  # noqa: E501
                 schema=str(RulesValidationContainer.model_json_schema()),
                 rules=formatted_rules,
                 text=text,

@@ -46,7 +46,7 @@ def create_router(
 
         async with CancelOnDisconnect(request):
             result = word_synonym_service.get_synonyms(data.word, data.context).map(
-                lambda synonyms: WordSynonymResult(synonyms=synonyms)
+                lambda synonyms: WordSynonymResult(synonyms=list(synonyms))
             )
 
             return handle_result(result)

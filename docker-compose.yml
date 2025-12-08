@@ -37,7 +37,7 @@ services:
       --port 8000
       --model Qwen/Qwen3-32B-AWQ
       --max-model-len 8000
-      --gpu-memory-utilization 0.98
+      --gpu-memory-utilization 0.95
       --enable-auto-tool-choice
       --tool-call-parser hermes
       --tensor-parallel-size 1

@@ -11,14 +11,14 @@ MAIL_PROMPT = (
     """
 You are an assistant that helps to write emails. The written email should follow the guidelines provided here: {EMAIL_PROMPT}
 The text should be in the same language as the input text.
-"""
+"""  # noqa: E501
 ).format(EMAIL_PROMPT=EMAIL_PROMPT_TEMPLATE)
 
 OFFICIAL_LETTER_PROMPT = (
     """
 You are an assistant that helps to write official letters. The written text should follow the guidelines provided here: {OFFICIAL_LETTER_NOTICE}
 The text should be in the same language as the input text.
-"""
+"""  # noqa: E501
 ).format(OFFICIAL_LETTER_NOTICE=OFFICIAL_LETTER_NOTICE)
 
 PRESENTATION_PROMPT = """
@@ -26,14 +26,14 @@ You are an assistant that helps to write presentations.
 Begin with an engaging introduction that captures the audience's attention, followed by a series of well-organized points that support the main topic.
 Conclude with a strong closing statement that reinforces the key message.
 The text should be in the same language as the input text.
-"""
+"""  # noqa: E501
 
 REPORT_PROMPT = """
 You are an assistant that helps to write reports.
 Start with an executive summary that provides an overview of the report's purpose and findings, followed by detailed sections that present data and analysis.
 End with a conclusion that summarizes the key insights and recommendations.
 The text should be in the same language as the input text.
-"""
+"""  # noqa: E501
 
 
 def get_medium_prompt(option: str) -> str:

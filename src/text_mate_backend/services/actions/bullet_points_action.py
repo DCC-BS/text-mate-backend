@@ -1,5 +1,4 @@
 from fastapi.responses import StreamingResponse
-from llama_index.core.prompts import PromptTemplate
 
 from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt

@@ -58,6 +58,7 @@ class TextCorrectionService:
         blocks: ResultE[list[CorrectionBlock]] = flow(
             text,
             partial(self.language_tool.check_text, options.language),
+            # pyrefly: ignore
             map_(_create_blocks),
         )
         processing_time = time.time() - start_time

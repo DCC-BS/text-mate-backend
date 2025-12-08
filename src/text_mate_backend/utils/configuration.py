@@ -15,6 +15,13 @@ class Configuration:
         self.client_url: str = os.getenv("CLIENT_URL", "http://localhost:3000")
         self.docling_url: str = os.getenv("DOCLING_URL", "http://localhost:5001")
 
+        llm_health_check_url: str | None = os.getenv("LLM_HEALTH_CHECK_URL")
+        if llm_health_check_url is None:
+            raise RuntimeError("LLM_HEALTH_CHECK_URL is not set")
+        self.llm_health_check_url: str = llm_health_check_url
+
+        self.language_tool_api_health_check_url = f"{self.language_tool_api_url}/languages"
+
         self.azure_client_id: str | None = os.getenv("AZURE_CLIENT_ID")
         self.azure_tenant_id: str | None = os.getenv("AZURE_TENANT_ID")
         self.azure_frontend_client_id: str | None = os.getenv("AZURE_FRONTEND_CLIENT_ID")
