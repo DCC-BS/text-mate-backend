@@ -137,7 +137,7 @@ wheels = [
 [[package]]
 name = "backend-common"
 version = "0.0.1"
-source = { git = "https://github.com/DCC-BS/backend-common#e22804c44879449986ef862bdea05f1f78f01d26" }
+source = { git = "https://github.com/DCC-BS/backend-common#51666a8b468cd623523397cf2ab2de08ccd6adf8" }
 dependencies = [
     { name = "python-dotenv" },
     { name = "structlog" },

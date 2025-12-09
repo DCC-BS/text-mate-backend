@@ -2,8 +2,8 @@ from typing import TypeVar
 
 from returns.result import Failure, Result, Success
 
-from text_mate_backend.models.error_codes import UNEXPECTED_ERROR
-from text_mate_backend.models.error_response import ApiErrorException
+from backend_common.fastapi_error_handling import ApiErrorException, ApiErrorCodes
+
 from text_mate_backend.utils.logger import get_logger
 
 T = TypeVar("T")
@@ -52,7 +52,7 @@ def handle_result(result: Result[T, Exception], request_id: str | None = None) -
             raise ApiErrorException(
                 {
                     "status": 500,
-                    "errorId": UNEXPECTED_ERROR,
+                    "errorId": ApiErrorCodes.UNEXPECTED_ERROR,
                     "debugMessage": "Unknown error",
                 }
             )

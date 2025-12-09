@@ -10,14 +10,15 @@ from fastapi_azure_auth.user import User
 from pydantic import BaseModel
 
 from text_mate_backend.container import Container
-from text_mate_backend.models.error_codes import NO_DOCUMENT
-from text_mate_backend.models.error_response import ApiErrorException
+from backend_common.fastapi_error_handling import ApiErrorException
 from text_mate_backend.models.rule_models import RuelDocumentDescription
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
+from text_mate_backend.models.error_codes import TextMateApiErrorCodes
+
 
 logger = get_logger("advisor_router")
 
@@ -81,7 +82,7 @@ def create_router(
         file_path = path.join("docs", name)
 
         if not path.exists(file_path):
-            raise ApiErrorException({"status": 404, "errorId": NO_DOCUMENT, "debugMessage": "Document not found"})
+            raise ApiErrorException({"status": 404, "errorId": TextMateApiErrorCodes.NO_DOCUMENT, "debugMessage": "Document not found"})
 
         return FileResponse(path=file_path, media_type="application/pdf", filename=name)
 

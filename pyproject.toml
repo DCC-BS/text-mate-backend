@@ -105,6 +105,5 @@ project-excludes = [
 ]
 python-interpreter-path = ".venv/bin/python3"
 
-
 [tool.uv.sources]
 backend-common = { git = "https://github.com/DCC-BS/backend-common" }

@@ -4,8 +4,8 @@ from urllib.parse import urlparse
 import requests
 from returns.result import safe
 
-from text_mate_backend.models.error_codes import LANGUAGE_TOOL_ERROR
-from text_mate_backend.models.error_response import ApiErrorException
+from text_mate_backend.models.error_codes import TextMateApiErrorCodes
+from backend_common.fastapi_error_handling import ApiErrorException
 from text_mate_backend.models.language_tool_models import LanguageToolResponse
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
@@ -68,7 +68,7 @@ class LanguageToolService:
             raise ApiErrorException(
                 {
                     "status": 500,
-                    "errorId": LANGUAGE_TOOL_ERROR,
+                    "errorId": TextMateApiErrorCodes.LANGUAGE_TOOL_ERROR,
                     "debugMessage": str(e),
                 }
             ) from e

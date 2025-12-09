@@ -5,8 +5,8 @@ from llama_index.core.prompts import PromptTemplate
 from pydantic import BaseModel, Field
 from returns.result import safe
 
-from text_mate_backend.models.error_codes import REWRITE_TEXT_ERROR
-from text_mate_backend.models.error_response import ApiErrorException
+from text_mate_backend.models.error_codes import TextMateApiErrorCodes
+from backend_common.fastapi_error_handling import ApiErrorException
 from text_mate_backend.models.text_rewrite_models import RewriteResult
 from text_mate_backend.services.llm_facade import LLMFacade
 from text_mate_backend.utils.logger import get_logger
@@ -96,7 +96,7 @@ class TextRewriteService:
             raise ApiErrorException(
                 {
                     "status": 500,
-                    "errorId": REWRITE_TEXT_ERROR,
+                    "errorId": TextMateApiErrorCodes.REWRITE_TEXT_ERROR,
                     "debugMessage": str(e),
                 }
             ) from e

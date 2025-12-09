@@ -1,3 +1,4 @@
+from backend_common.fastapi_error_handling.error_codes import ApiErrorCodes
 from collections.abc import Mapping
 from io import BytesIO
 from pathlib import Path
@@ -8,11 +9,8 @@ from fastapi import status
 from starlette.datastructures import UploadFile
 
 from text_mate_backend.models.conversion_result import ConversionResult
-from text_mate_backend.models.error_codes import (
-    INVALID_MIME_TYPE,
-    UNEXPECTED_ERROR,
-)
-from text_mate_backend.models.error_response import ApiErrorException
+from backend_common.fastapi_error_handling import ApiErrorException
+from text_mate_backend.models.error_codes import TextMateApiErrorCodes
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
 
@@ -55,7 +53,7 @@ def validate_mimetype(mimetype: str, logger_context: dict[str, Any]) -> None:
 
         raise ApiErrorException(
             {
-                "errorId": INVALID_MIME_TYPE,
+                "errorId": TextMateApiErrorCodes.INVALID_MIME_TYPE,
                 "status": status.HTTP_400_BAD_REQUEST,
                 "debugMessage": "MIME type is empty",
             }
@@ -65,7 +63,7 @@ def validate_mimetype(mimetype: str, logger_context: dict[str, Any]) -> None:
         logger.error("Invalid MIME type", extra=logger_context)
         raise ApiErrorException(
             {
-                "errorId": INVALID_MIME_TYPE,
+                "errorId": TextMateApiErrorCodes.INVALID_MIME_TYPE,
                 "status": status.HTTP_400_BAD_REQUEST,
                 "debugMessage": "Invalid MIME type",
             }
@@ -155,7 +153,7 @@ class DocumentConversionService:
 
                 raise ApiErrorException(
                     {
-                        "errorId": UNEXPECTED_ERROR,
+                        "errorId": ApiErrorCodes.UNEXPECTED_ERROR,
                         "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
                         "debugMessage": "Unexpected error occurred",
                     }
@@ -164,7 +162,7 @@ class DocumentConversionService:
                 logger.exception(f"Error response contains binary data (status: {response.status_code})")
                 raise ApiErrorException(
                     {
-                        "errorId": UNEXPECTED_ERROR,
+                        "errorId": ApiErrorCodes.UNEXPECTED_ERROR,
                         "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
                         "debugMessage": "Binary data in error response",
                     }

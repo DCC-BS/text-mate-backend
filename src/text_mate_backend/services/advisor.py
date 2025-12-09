@@ -6,8 +6,8 @@ from typing import cast, final
 from fastapi_azure_auth.user import User
 from llama_index.core.prompts import PromptTemplate
 
-from text_mate_backend.models.error_codes import CHECK_TEXT_ERROR
-from text_mate_backend.models.error_response import ApiErrorException
+from text_mate_backend.models.error_codes import TextMateApiErrorCodes
+from backend_common.fastapi_error_handling import ApiErrorException
 from text_mate_backend.models.rule_models import (
     RuelDocumentDescription,
     RuelValidation,
@@ -78,7 +78,7 @@ class AdvisorService:
             raise ApiErrorException(
                 {
                     "status": 500,
-                    "errorId": CHECK_TEXT_ERROR,
+                    "errorId": TextMateApiErrorCodes.CHECK_TEXT_ERROR,
                     "debugMessage": str(e),
                 }
             ) from e
@@ -96,7 +96,7 @@ class AdvisorService:
             raise ApiErrorException(
                 {
                     "status": 500,
-                    "errorId": CHECK_TEXT_ERROR,
+                    "errorId": TextMateApiErrorCodes.CHECK_TEXT_ERROR,
                     "debugMessage": str(e),
                 }
             ) from e
