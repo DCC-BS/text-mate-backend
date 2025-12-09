@@ -20,7 +20,7 @@ class Configuration:
             raise RuntimeError("LLM_HEALTH_CHECK_URL is not set")
         self.llm_health_check_url: str = llm_health_check_url
 
-        self.language_tool_api_health_check_url = f"{self.language_tool_api_url}/languages"
+        self.language_tool_api_health_check_url = f"{self.language_tool_api_url.rstrip("/")}/languages"
 
         self.azure_client_id: str | None = os.getenv("AZURE_CLIENT_ID")
         self.azure_tenant_id: str | None = os.getenv("AZURE_TENANT_ID")
