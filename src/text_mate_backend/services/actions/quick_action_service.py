@@ -28,17 +28,20 @@ class QuickActionService:
     @safe
     def run(self, action: Actions, text: str, options: str) -> StreamingResponse:
         """
-        Execute the requested quick action on the provided text.
-
-        Args:
-            action: The type of quick action to perform
-            text: The text to apply the action to
-
+        Perform the specified quick action on the given text and return a streaming response.
+        
+        Parameters:
+            action (Actions): The quick action to execute.
+            text (str): The input text to process.
+            options (str): Semicolon-delimited option segments. If a segment begins with
+                "language code:" its value is extracted as the request language and removed
+                from the options passed to the action.
+        
         Returns:
-            A StreamingResponse containing the processed text
-
+            StreamingResponse: A streaming response containing the processed text.
+        
         Raises:
-            ValueError: If the action type is unknown
+            ValueError: If the action is unknown or the action returned None.
         """
         segments = [seg.strip() for seg in options.split(";") if seg.strip()]
         lang_segment = next((s for s in segments if s.startswith("language code:")), None)

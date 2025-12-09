@@ -23,6 +23,17 @@ def create_router(
     azure_service: AzureService = Provide[Container.azure_service],
     config: Configuration = Provide[Container.config],
 ) -> APIRouter:
+    """
+    Create and configure the word-synonym API router.
+    
+    The router is mounted at the "/word-synonym" prefix and exposes a POST endpoint that accepts a word and context,
+    requires Azure authentication, and returns a WordSynonymResult containing a list of synonyms. The endpoint computes
+    a pseudonymized user id for logging, cancels work if the client disconnects, and delegates synonym lookup to the
+    provided WordSynonymService.
+    
+    Returns:
+        APIRouter: Configured FastAPI router with the word-synonym endpoint.
+    """
     logger.info("Creating word synonym router")
     router: APIRouter = APIRouter(prefix="/word-synonym", tags=["word-synonym"])
 
@@ -34,6 +45,16 @@ def create_router(
         data: WordSynonymInput,
         current_user: Annotated[User, Depends(azure_service.azure_scheme)],
     ) -> WordSynonymResult:
+        """
+        Fetch synonyms for the provided word within the given context and return them as a WordSynonymResult.
+        
+        Parameters:
+            data (WordSynonymInput): Input payload containing `word` to look up and `context` tokens to disambiguate meaning.
+            current_user (User): Authenticated Azure AD user (injected); used to derive a pseudonymized user id for telemetry.
+        
+        Returns:
+            WordSynonymResult: Result object containing a concrete list of synonym strings in its `synonyms` field.
+        """
         pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
         logger.info(
             "app_event",

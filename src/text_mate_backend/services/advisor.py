@@ -130,6 +130,16 @@ class AdvisorService:
             yield validation_result
 
     def _run_rule_validation(self, formatted_rules: str, text: str) -> RulesValidationContainer:
+        """
+        Validate the input text against the provided, formatted editorial rules using the configured LLM.
+        
+        Parameters:
+            formatted_rules (str): Human-readable rules text to be applied during validation (already formatted).
+            text (str): The input text to check for rule violations.
+        
+        Returns:
+            RulesValidationContainer: Container with detected rule violations; contains an empty list when no qualifying violations are found.
+        """
         return self.llm_facade.structured_predict(
             response_type=RulesValidationContainer,
             prompt=PromptTemplate(

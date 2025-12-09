@@ -8,6 +8,25 @@ def log_secret(secret: str | None) -> str:
 
 class Configuration:
     def __init__(self) -> None:
+        """
+        Initialize Configuration by reading required and optional environment variables.
+        
+        Reads environment variables to populate configuration attributes (with defaults when shown):
+        - OPENAI_API_BASE_URL (default "http://localhost:8000/v1")
+        - OPENAI_API_KEY (default "none")
+        - LLM_MODEL (default "ollama_chat/llama3.2")
+        - LANGUAGE_TOOL_API_URL (default "http://localhost:8010/")
+        - CLIENT_URL (default "http://localhost:3000")
+        - DOCLING_URL (default "http://localhost:5001")
+        - LLM_HEALTH_CHECK_URL (required; if unset, raises RuntimeError("LLM_HEALTH_CHECK_URL is not set"))
+        - AZURE_CLIENT_ID (optional)
+        - AZURE_TENANT_ID (optional; when present, derives azure_discovery_url as "https://login.microsoftonline.com/{tenant_id}/v2.0/.well-known/openid-configuration")
+        - AZURE_FRONTEND_CLIENT_ID (optional)
+        - SCOPE_DESCRIPTION (default "")
+        - HMAC_SECRET (default "none"; if equal to "none", raises RuntimeError("HMAC secret is not set"))
+        
+        Also derives language_tool_api_health_check_url by appending "/languages" to LANGUAGE_TOOL_API_URL with trailing slash normalized.
+        """
         self.openai_api_base_url: str = os.getenv("OPENAI_API_BASE_URL", "http://localhost:8000/v1")
         self.openai_api_key: str = os.getenv("OPENAI_API_KEY", "none")
         self.llm_model: str = os.getenv("LLM_MODEL", "ollama_chat/llama3.2")
