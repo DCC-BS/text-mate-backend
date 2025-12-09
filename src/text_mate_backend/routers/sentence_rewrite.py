@@ -26,13 +26,7 @@ def create_router(
 ) -> APIRouter:
     """
     Create and configure a FastAPI APIRouter for sentence rewriting.
-    
-    The router is mounted at "/sentence-rewrite" and exposes a POST endpoint that accepts a SentenceRewriteInput,
-    requires Azure authentication, and returns a SentenceRewriteResult containing rewrite options. The endpoint
-    pseudonymizes the authenticated user for telemetry, invokes the SentenceRewriteService to produce rewrite
-    options for the provided sentence and context, and maps those options into the response structure while
-    respecting client disconnects.
-    
+
     Returns:
         APIRouter: A router with the configured sentence-rewrite POST endpoint.
     """
@@ -47,16 +41,6 @@ def create_router(
         data: SentenceRewriteInput,
         current_user: Annotated[User, Depends(azure_service.azure_scheme)],
     ) -> SentenceRewriteResult:
-        """
-        Handle an incoming sentence rewrite request, invoke the rewrite service, and return the service options wrapped in a SentenceRewriteResult.
-        
-        Parameters:
-            data (SentenceRewriteInput): Input payload containing `sentence` (the text to rewrite) and `context` (additional context to guide rewriting).
-            current_user (User): Authenticated user; a pseudonymized user id is recorded for telemetry.
-        
-        Returns:
-            SentenceRewriteResult: Result model containing a list of rewrite option strings produced by the service.
-        """
         pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
         logger.info(
             "app_event",

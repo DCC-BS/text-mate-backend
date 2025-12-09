@@ -20,7 +20,6 @@ logger = get_logger("text_correction_service")
 
 
 def _create_blocks(response: LanguageToolResponse) -> list[CorrectionBlock]:
-    """Create correction blocks from the response."""
     blocks: list[CorrectionBlock] = []
     for match in response.matches:
         blocks.append(
@@ -47,7 +46,7 @@ class TextCorrectionService:
     def correct_text(self, text: str, options: TextCorrectionOptions) -> ResultE[CorrectionResult]:
         """
         Produce a CorrectionResult with suggested correction blocks for the provided text according to the given options.
-        
+
         Returns:
             ResultE[CorrectionResult]: `Success` contains a CorrectionResult whose `blocks` are the suggested CorrectionBlock entries and whose `original` is the input text; `Failure` contains an error describing why the correction request failed.
         """

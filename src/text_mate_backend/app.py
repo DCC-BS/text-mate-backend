@@ -28,10 +28,6 @@ from text_mate_backend.utils.middleware import add_logging_middleware
 
 
 def create_app() -> FastAPI:
-    """
-    Create and configure the FastAPI application.
-    """
-
     load_env()
     init_logger()
 
@@ -63,8 +59,8 @@ def create_app() -> FastAPI:
     async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
         """
         Load OpenID configuration on application startup and yield control for the application's runtime.
-        
-        This lifecycle context ensures the OpenID discovery/configuration is loaded before the application begins serving requests. No teardown actions are performed.
+
+        This lifecycle context ensures the OpenID discovery/configuration is loaded before the application begins serving requests.
         """
         await container.azure_service().load_config()
         yield
@@ -86,14 +82,14 @@ def create_app() -> FastAPI:
     def api_error_handler(request: Request, exc: Exception) -> Response:
         """
         Convert exceptions raised during request handling into a JSON HTTP response.
-        
+
         If `exc` is an `ApiErrorException`, returns its `error_response` payload and status code.
         Otherwise returns a 500 response with `errorId` set to `UNEXPECTED_ERROR`, `status` 500, and a `debugMessage` containing the exception string.
-        
+
         Parameters:
             request (Request): The incoming HTTP request that triggered the exception.
             exc (Exception): The exception raised during request processing.
-        
+
         Returns:
             Response: A JSON HTTP response describing the error.
         """

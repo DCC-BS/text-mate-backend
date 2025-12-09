@@ -39,13 +39,13 @@ The text should be in the same language as the input text.
 def get_medium_prompt(option: str) -> str:
     """
     Selects the prompt template corresponding to a specified output medium.
-    
+
     Parameters:
         option (str): Medium identifier; must be one of "email", "official_letter", "presentation", or "report".
-    
+
     Returns:
         str: The prompt template string for the requested medium.
-    
+
     Raises:
         ValueError: If `option` is not a supported medium identifier.
     """
