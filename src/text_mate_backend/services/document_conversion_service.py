@@ -1,7 +1,7 @@
 from collections.abc import Mapping
 from io import BytesIO
 from pathlib import Path
-from typing import Any, BinaryIO, final
+from typing import Any, final
 
 import httpx
 from fastapi import status

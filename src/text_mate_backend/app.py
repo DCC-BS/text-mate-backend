@@ -1,6 +1,8 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+from backend_common.fastapi_health_probes import health_probe_router
+from backend_common.fastapi_health_probes.router import ServiceDependency
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -48,6 +50,15 @@ def create_app() -> FastAPI:
     config = container.config()
     logger.info(f"Running with configuration: {config}")
 
+    service_dependencies: list[ServiceDependency] = [
+        {"name": "llm", "health_check_url": config.llm_health_check_url, "api_key": config.openai_api_key},
+        {
+            "name": "language tool",
+            "health_check_url": config.language_tool_api_health_check_url,
+            "api_key": None,
+        },
+    ]
+
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
         """
@@ -67,6 +78,8 @@ def create_app() -> FastAPI:
         },
         lifespan=lifespan,
     )
+
+    app.include_router(health_probe_router(service_dependencies))
 
     def api_error_handler(request: Request, exc: Exception) -> Response:
         if isinstance(exc, ApiErrorException):

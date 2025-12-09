@@ -40,8 +40,6 @@ class QuickActionService:
         Raises:
             ValueError: If the action type is unknown
         """
-        text_length = len(text)
-        text_preview = text[:50] + ("..." if text_length > 50 else "")
         segments = [seg.strip() for seg in options.split(";") if seg.strip()]
         lang_segment = next((s for s in segments if s.startswith("language code:")), None)
         language = lang_segment.split(":", 1)[1].strip() if lang_segment else None

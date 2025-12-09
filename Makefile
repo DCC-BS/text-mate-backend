@@ -11,8 +11,8 @@ check: ## Run code quality tools.
 	@echo "🚀 Linting code: Running pre-commit"
 	@uv run ruff format
 	@uv run ruff check --fix
-	@echo "🚀 Static type checking: Running mypy"
-	@uv run mypy ./src/text_mate_backend
+	@echo "🚀 Static type checking: Running pyrefly"
+	@uv run pyrefly check ./src/text_mate_backend
 
 .PHONY: test
 test: ## Test the code with pytest
