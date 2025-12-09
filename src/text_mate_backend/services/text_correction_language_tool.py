@@ -20,7 +20,6 @@ logger = get_logger("text_correction_service")
 
 
 def _create_blocks(response: LanguageToolResponse) -> list[CorrectionBlock]:
-    """Create correction blocks from the response."""
     blocks: list[CorrectionBlock] = []
     for match in response.matches:
         blocks.append(
@@ -45,10 +44,11 @@ class TextCorrectionService:
         logger.debug(f"Using language tool API URL: {self.config.language_tool_api_url}")
 
     def correct_text(self, text: str, options: TextCorrectionOptions) -> ResultE[CorrectionResult]:
-        """Corrects the input text based on given options.
-        Returns Either[str, str] where:
-        - Left(str) contains error message
-        - Right(str) contains corrected text
+        """
+        Produce a CorrectionResult with suggested correction blocks for the provided text according to the given options.
+
+        Returns:
+            ResultE[CorrectionResult]: `Success` contains a CorrectionResult whose `blocks` are the suggested CorrectionBlock entries and whose `original` is the input text; `Failure` contains an error describing why the correction request failed.
         """
         text_snippet = text[:50] + ("..." if len(text) > 50 else "")
         logger.debug("Processing text correction request", text_length=len(text), text_snippet=text_snippet)

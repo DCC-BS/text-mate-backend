@@ -23,6 +23,12 @@ def create_router(
     azure_service: AzureService = Provide[Container.azure_service],
     config: Configuration = Provide[Container.config],
 ) -> APIRouter:
+    """
+    Create and configure the word-synonym API router.
+
+    Returns:
+        APIRouter: Configured FastAPI router with the word-synonym endpoint.
+    """
     logger.info("Creating word synonym router")
     router: APIRouter = APIRouter(prefix="/word-synonym", tags=["word-synonym"])
 

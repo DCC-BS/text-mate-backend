@@ -24,6 +24,12 @@ def create_router(
     azure_service: AzureService = Provide[Container.azure_service],
     config: Configuration = Provide[Container.config],
 ) -> APIRouter:
+    """
+    Create and configure a FastAPI APIRouter for sentence rewriting.
+
+    Returns:
+        APIRouter: A router with the configured sentence-rewrite POST endpoint.
+    """
     logger.info("Creating sentence rewrite router")
     router: APIRouter = APIRouter(prefix="/sentence-rewrite", tags=["sentence-rewrite"])
 
