@@ -11,7 +11,7 @@ check: ## Run code quality tools.
 	@echo "🚀 Linting code: Running pre-commit"
 	@uv run ruff format
 	@uv run ruff check --fix
-	@echo "🚀 Static type checking: Running pyrefly"
+	@echo "🚀 Static type checking: Running ty"
 	@uv run ty check ./src/text_mate_backend
 
 .PHONY: test
