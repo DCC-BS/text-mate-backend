@@ -85,5 +85,5 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
 def add_logging_middleware(app: FastAPI) -> None:
     """Add the logging middleware to a FastAPI application."""
-    app.add_middleware(LoggingMiddleware)
+    app.add_middleware(LoggingMiddleware)  # ty:ignore[invalid-argument-type]
     logger.info("Logging middleware configured")

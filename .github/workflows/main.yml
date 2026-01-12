@@ -1,17 +1,17 @@
 name: Main
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
 
 jobs:
-  backend-ci:
-    uses: DCC-BS/ci-workflows/.github/workflows/python-backend-ci.yml@v4
-    with:
-      python_versions: '["3.10","3.11","3.12","3.13"]'
-      quality_python_version: "3.12"
-      check_command: "make check"
+    backend-ci:
+        uses: DCC-BS/ci-workflows/.github/workflows/python-backend-ci.yml@v7
+        with:
+            python_versions: '["3.10","3.11","3.12","3.13"]'
+            quality_python_version: "3.12"
+            check_command: "make check"

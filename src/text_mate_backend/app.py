@@ -60,7 +60,8 @@ def create_app() -> FastAPI:
         """
         Load OpenID configuration on application startup and yield control for the application's runtime.
 
-        This lifecycle context ensures the OpenID discovery/configuration is loaded before the application begins serving requests.
+        This lifecycle context ensures the OpenID discovery/configuration is loaded before the application begins
+        serving requests.
         """
         await container.azure_service().load_config()
         yield
@@ -84,7 +85,8 @@ def create_app() -> FastAPI:
         Convert exceptions raised during request handling into a JSON HTTP response.
 
         If `exc` is an `ApiErrorException`, returns its `error_response` payload and status code.
-        Otherwise returns a 500 response with `errorId` set to `UNEXPECTED_ERROR`, `status` 500, and a `debugMessage` containing the exception string.
+        Otherwise returns a 500 response with `errorId` set to `UNEXPECTED_ERROR`, `status` 500, and a `debugMessage`
+        containing the exception string.
 
         Parameters:
             request (Request): The incoming HTTP request that triggered the exception.
@@ -111,7 +113,7 @@ def create_app() -> FastAPI:
     # Configure CORS
     logger.debug("Setting up CORS middleware")
     app.add_middleware(
-        CORSMiddleware,
+        CORSMiddleware,  # ty:ignore[invalid-argument-type]
         allow_origins=[config.client_url],
         allow_credentials=True,
         allow_methods=["*"],
