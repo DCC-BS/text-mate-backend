@@ -12,7 +12,7 @@ check: ## Run code quality tools.
 	@uv run ruff format
 	@uv run ruff check --fix
 	@echo "🚀 Static type checking: Running pyrefly"
-	@uv run pyrefly check ./src/text_mate_backend
+	@uv run ty check ./src/text_mate_backend
 
 .PHONY: test
 test: ## Test the code with pytest

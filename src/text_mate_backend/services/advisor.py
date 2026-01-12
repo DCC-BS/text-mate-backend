@@ -138,7 +138,8 @@ class AdvisorService:
             text (str): The input text to check for rule violations.
 
         Returns:
-            RulesValidationContainer: Container with detected rule violations; contains an empty list when no qualifying violations are found.
+            RulesValidationContainer: Container with detected rule violations; contains an empty list when no qualifying
+            violations are found.
         """
         return self.llm_facade.structured_predict(
             response_type=RulesValidationContainer,

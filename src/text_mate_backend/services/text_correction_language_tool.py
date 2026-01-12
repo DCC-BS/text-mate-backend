@@ -25,7 +25,7 @@ def _create_blocks(response: LanguageToolResponse) -> list[CorrectionBlock]:
         blocks.append(
             CorrectionBlock(
                 original=match.context.text[match.context.offset : match.context.offset + match.context.length],
-                corrected=list(map(lambda replacement: replacement.value, match.replacements)),
+                corrected=[replacement.value for replacement in match.replacements],
                 explanation=match.message,
                 offset=match.offset,
                 length=match.length,
@@ -45,10 +45,13 @@ class TextCorrectionService:
 
     def correct_text(self, text: str, options: TextCorrectionOptions) -> ResultE[CorrectionResult]:
         """
-        Produce a CorrectionResult with suggested correction blocks for the provided text according to the given options.
+        Produce a CorrectionResult with suggested correction blocks for the provided text according to the given
+        options.
 
         Returns:
-            ResultE[CorrectionResult]: `Success` contains a CorrectionResult whose `blocks` are the suggested CorrectionBlock entries and whose `original` is the input text; `Failure` contains an error describing why the correction request failed.
+            ResultE[CorrectionResult]: `Success` contains a CorrectionResult whose `blocks` are the suggested
+            CorrectionBlock entries and whose `original` is the input text; `Failure` contains an error describing why
+            the correction request failed.
         """
         text_snippet = text[:50] + ("..." if len(text) > 50 else "")
         logger.debug("Processing text correction request", text_length=len(text), text_snippet=text_snippet)
