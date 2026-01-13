@@ -37,10 +37,7 @@ RUN addgroup -S app && adduser -S app -G app
 
 # Copy the environment, but not the source code
 COPY --from=builder --chown=app:app /app /app
-COPY run.sh /app/run.sh
-
-RUN chmod +x /app/run.sh
-RUN chown app:app /app/run.sh
+COPY --chown=app:app --chmod=755 run.sh /app/run.sh
 
 # Enable virtual environment
 ENV PATH="/app/.venv/bin:$PATH"
