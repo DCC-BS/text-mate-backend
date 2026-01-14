@@ -1,75 +1,67 @@
-import os
 from typing import override
 
+from dcc_backend_common.config import AbstractAppConfig, get_env_or_throw, log_secret
+from pydantic import Field
 
-def log_secret(secret: str | None) -> str:
-    return "****" if secret is not None and len(secret) > 0 else "None"
 
+class Configuration(AbstractAppConfig):
+    client_url: str = Field(description="The URL for the client application")
+    openai_api_key: str = Field(description="The API key for authenticating with OpenAI")
+    llm_url: str = Field(description="The URL for the LLM API")
+    llm_model: str = Field(description="The model for the LLM API")
+    language_tool_api_url: str = Field(description="The URL for the Language Tool API")
 
-class Configuration:
-    def __init__(self) -> None:
-        """
-            Initialize Configuration by reading required and optional environment variables.
+    docling_url: str = Field(description="The URL for the Docling service")
 
-        Reads environment variables to populate configuration attributes (with defaults when shown):
-            - OPENAI_API_BASE_URL (default "http://localhost:8000/v1")
-            - OPENAI_API_KEY (default "none")
-            - LLM_MODEL (default "ollama_chat/llama3.2")
-            - LANGUAGE_TOOL_API_URL (default "http://localhost:8010/")
-            - CLIENT_URL (default "http://localhost:3000")
-            - DOCLING_URL (default "http://localhost:5001")
-            - LLM_HEALTH_CHECK_URL (required; if unset, raises RuntimeError("LLM_HEALTH_CHECK_URL is not set"))
-            - AZURE_CLIENT_ID (optional)
-            - AZURE_TENANT_ID (optional; when present, derives azure_discovery_url as "https://login.microsoftonline.com/{tenant_id}/v2.0/.well-known/openid-configuration")
-            - AZURE_FRONTEND_CLIENT_ID (optional)
-            - SCOPE_DESCRIPTION (default "")
-            - HMAC_SECRET (default "none"; if equal to "none", raises RuntimeError("HMAC secret is not set"))
+    llm_health_check_url: str = Field(description="The URL for the LLM health check API")
+    language_tool_api_health_check_url: str = Field(description="The URL for the Language Tool API health check API")
 
-            Also derives language_tool_api_health_check_url by appending "/languages" to LANGUAGE_TOOL_API_URL with
-            trailing slash normalized.
-        """
-        self.openai_api_base_url: str = os.getenv("OPENAI_API_BASE_URL", "http://localhost:8000/v1")
-        self.openai_api_key: str = os.getenv("OPENAI_API_KEY", "none")
-        self.llm_model: str = os.getenv("LLM_MODEL", "ollama_chat/llama3.2")
-        self.language_tool_api_url: str = os.getenv("LANGUAGE_TOOL_API_URL", "http://localhost:8010/")
-        self.client_url: str = os.getenv("CLIENT_URL", "http://localhost:3000")
-        self.docling_url: str = os.getenv("DOCLING_URL", "http://localhost:5001")
+    azure_client_id: str = Field(description="The client ID for the Azure AD application")
+    azure_tenant_id: str = Field(description="The tenant ID for the Azure AD application")
+    azure_frontend_client_id: str = Field(description="The client ID for the Azure AD frontend application")
 
-        llm_health_check_url: str | None = os.getenv("LLM_HEALTH_CHECK_URL")
-        if llm_health_check_url is None:
-            raise RuntimeError("LLM_HEALTH_CHECK_URL is not set")
-        self.llm_health_check_url: str = llm_health_check_url
+    hmac_secret: str = Field(description="The secret key for HMAC authentication")
+    azure_scope_description: str = Field(description="The scope description for Azure AD authentication")
 
-        self.language_tool_api_health_check_url = f"{self.language_tool_api_url.rstrip('/')}/languages"
+    @classmethod
+    @override
+    def from_env(cls) -> "Configuration":
 
-        self.azure_client_id: str | None = os.getenv("AZURE_CLIENT_ID")
-        self.azure_tenant_id: str | None = os.getenv("AZURE_TENANT_ID")
-        self.azure_frontend_client_id: str | None = os.getenv("AZURE_FRONTEND_CLIENT_ID")
-        self.azure_discovery_url: str | None = (
-            f"https://login.microsoftonline.com/{self.azure_tenant_id}/v2.0/.well-known/openid-configuration"
-            if self.azure_tenant_id
-            else None
+        language_tool_api_url = get_env_or_throw("LANGUAGE_TOOL_API_URL")
+        language_tool_api_health_check_url = f"{language_tool_api_url.rstrip('/')}/languages"
+
+        return cls(
+            client_url=get_env_or_throw("CLIENT_URL"),
+            openai_api_key=get_env_or_throw("OPENAI_API_KEY"),
+            llm_url=get_env_or_throw("LLM_URL"),
+            llm_model=get_env_or_throw("LLM_MODEL"),
+            language_tool_api_url=language_tool_api_url,
+            language_tool_api_health_check_url=language_tool_api_health_check_url,
+            docling_url=get_env_or_throw("DOCLING_URL"),
+            llm_health_check_url=get_env_or_throw("LLM_HEALTH_CHECK_URL"),
+            azure_client_id=get_env_or_throw("AZURE_CLIENT_ID"),
+            azure_tenant_id=get_env_or_throw("AZURE_TENANT_ID"),
+            azure_frontend_client_id=get_env_or_throw("AZURE_FRONTEND_CLIENT_ID"),
+            hmac_secret=get_env_or_throw("HMAC_SECRET"),
+            azure_scope_description=get_env_or_throw("AZURE_SCOPE_DESCRIPTION")
         )
-        self.azure_scope_description: str = os.getenv("SCOPE_DESCRIPTION", "")
-        self.hmac_secret: str = os.getenv("HMAC_SECRET", "none")
-        if self.hmac_secret == "none":
-            raise RuntimeError("HMAC secret is not set")
 
     @override
     def __str__(self) -> str:
         return f"""
         Configuration(
             client_url={self.client_url},
-            openai_api_base_url={self.openai_api_base_url},
             openai_api_key={log_secret(self.openai_api_key)},
+            llm_url={self.llm_url},
             llm_model={self.llm_model},
             language_tool_api_url={self.language_tool_api_url},
+            language_tool_api_health_check_url={self.language_tool_api_health_check_url},
             docling_url={self.docling_url},
+            llm_health_check_url={self.llm_health_check_url},
             azure_client_id={log_secret(self.azure_client_id)},
             azure_tenant_id={log_secret(self.azure_tenant_id)},
-            azure_discovery_url={log_secret(self.azure_discovery_url)},
             azure_frontend_client_id={log_secret(self.azure_frontend_client_id)},
-            azure_scope_description={self.azure_scope_description},
-            hmac_secret={log_secret(self.hmac_secret)}
+            hmac_secret={log_secret(self.hmac_secret)},
+            azure_scope_description={self.azure_scope_description}
         )
         """

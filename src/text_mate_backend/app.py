@@ -1,18 +1,17 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from backend_common.fastapi_health_probes import health_probe_router
-from backend_common.fastapi_health_probes.router import ServiceDependency
-from fastapi import FastAPI, Request, Response
+from dcc_backend_common.fastapi_error_handling import inject_api_error_handler
+from dcc_backend_common.fastapi_health_probes import health_probe_router
+from dcc_backend_common.fastapi_health_probes.router import ServiceDependency
+from dcc_backend_common.logger import get_logger, init_logger
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from structlog.stdlib import BoundLogger
 
 from text_mate_backend.container import Container
 
 # Import routers
-from text_mate_backend.models.error_codes import UNEXPECTED_ERROR
-from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.routers import (
     advisor,
     convert_route,
@@ -23,7 +22,6 @@ from text_mate_backend.routers import (
     word_synonym,
 )
 from text_mate_backend.utils.load_env import load_env
-from text_mate_backend.utils.logger import get_logger, init_logger
 from text_mate_backend.utils.middleware import add_logging_middleware
 
 
@@ -79,36 +77,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health_probe_router(service_dependencies))
-
-    def api_error_handler(request: Request, exc: Exception) -> Response:
-        """
-        Convert exceptions raised during request handling into a JSON HTTP response.
-
-        If `exc` is an `ApiErrorException`, returns its `error_response` payload and status code.
-        Otherwise returns a 500 response with `errorId` set to `UNEXPECTED_ERROR`, `status` 500, and a `debugMessage`
-        containing the exception string.
-
-        Parameters:
-            request (Request): The incoming HTTP request that triggered the exception.
-            exc (Exception): The exception raised during request processing.
-
-        Returns:
-            Response: A JSON HTTP response describing the error.
-        """
-        if isinstance(exc, ApiErrorException):
-            return JSONResponse(
-                status_code=exc.error_response["status"],
-                media_type="application/json",
-                content=exc.error_response,
-            )
-
-        return JSONResponse(
-            status_code=500,
-            media_type="application/json",
-            content={"errorId": UNEXPECTED_ERROR, "status": 500, "debugMessage": str(exc)},
-        )
-
-    app.add_exception_handler(ApiErrorException, api_error_handler)
+    inject_api_error_handler(app)
 
     # Configure CORS
     logger.debug("Setting up CORS middleware")
