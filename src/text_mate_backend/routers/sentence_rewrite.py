@@ -53,7 +53,7 @@ def create_router(
         )
 
         async with CancelOnDisconnect(request):
-            result = sentence_rewrite_service.rewrite_sentence(data.sentence, data.context).map(
+            result = (await sentence_rewrite_service.rewrite_sentence(data.sentence, data.context)).map(
                 lambda options: SentenceRewriteResult(options=list(options))
             )
 

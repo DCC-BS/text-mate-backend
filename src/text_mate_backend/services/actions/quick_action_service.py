@@ -12,7 +12,7 @@ from text_mate_backend.services.actions.medium_action import medium
 from text_mate_backend.services.actions.plain_language_action import plain_language
 from text_mate_backend.services.actions.social_media_action import social_mediafy
 from text_mate_backend.services.actions.summarize_action import summarize
-from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.logger import get_logger
 
@@ -21,14 +21,14 @@ logger = get_logger("quick_action_service")
 
 @final
 class QuickActionService:
-    def __init__(self, llm_facade: LLMFacade, config: Configuration) -> None:
+    def __init__(self, llm_facade: PydanticAIAgent, config: Configuration) -> None:
         self.llm_facade = llm_facade
         self.config = config
 
     @safe
-    def run(self, action: Actions, text: str, options: str) -> StreamingResponse:
+    async def run(self, action: Actions, text: str, options: str) -> StreamingResponse:
         """
-        Perform the specified quick action on the given text and return a streaming response.
+        Perform the specified quick action on a given text and return a streaming response.
 
         Parameters:
             action (Actions): The quick action to execute.
@@ -41,7 +41,7 @@ class QuickActionService:
             StreamingResponse: A streaming response containing the processed text.
 
         Raises:
-            ValueError: If the action is unknown or the action returned None.
+            ValueError: If action is unknown or action returned None.
         """
         segments = [seg.strip() for seg in options.split(";") if seg.strip()]
         lang_segment = next((s for s in segments if s.startswith("language code:")), None)
@@ -59,19 +59,19 @@ class QuickActionService:
             response = None
             match action:
                 case Actions.PlainLanguage:
-                    response = plain_language(context, app_config, self.llm_facade)
+                    response = await plain_language(context, app_config, self.llm_facade)
                 case Actions.BulletPoints:
-                    response = bullet_points(context, app_config, self.llm_facade)
+                    response = await bullet_points(context, app_config, self.llm_facade)
                 case Actions.Summarize:
-                    response = summarize(context, app_config, self.llm_facade)
+                    response = await summarize(context, app_config, self.llm_facade)
                 case Actions.SocialMediafy:
-                    response = social_mediafy(context, app_config, self.llm_facade)
+                    response = await social_mediafy(context, app_config, self.llm_facade)
                 case Actions.FORMALITY:
-                    response = formality(context, app_config, self.llm_facade)
+                    response = await formality(context, app_config, self.llm_facade)
                 case Actions.MEDIUM:
-                    response = medium(context, app_config, self.llm_facade)
+                    response = await medium(context, app_config, self.llm_facade)
                 case Actions.CUSTOM:
-                    response = custom_prompt(context, app_config, self.llm_facade)
+                    response = await custom_prompt(context, app_config, self.llm_facade)
                 case _:
                     raise ValueError(f"Unknown quick action: {action}")
 

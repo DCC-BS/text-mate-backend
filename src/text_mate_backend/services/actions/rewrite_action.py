@@ -1,48 +1,44 @@
 from fastapi.responses import StreamingResponse
-from llama_index.core.prompts import PromptTemplate
 
 from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
-from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
 from text_mate_backend.utils.configuration import Configuration
 
-
-def rewrite(context: QuickActionContext, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
+async def rewrite(context: QuickActionContext, config: Configuration, llm_facade: PydanticAIAgent) -> StreamingResponse:
     """
-    Rewrites the given text based on provided context and options.
+    Rewrites a given text based on provided context and options.
 
     Args:
         context: The QuickActionContext containing text and options
         config: Configuration containing LLM model and other settings
-        llm_facade: The LLMFacade instance to use for generating the response
+        llm_facade: The PydanticAIAgent instance to use for generating the response
 
     Returns:
-        A StreamingResponse containing the rewritten version of the text
+        A StreamingResponse containing a rewritten version of the text
     """
 
-    prompt = PromptTemplate(
-        """
-        You are an expert in rewriting text. Take the given text and rewrite
-        it based on the provided options.
+    prompt = f"""
+        You are an expert in rewriting text. Take a given text and rewrite
+        it based on a provided options.
         Your task:
-        1. Rewrite the text based on the provided options.
-        2. The rewritten text should be in the same language as the input text.
+        1. Rewrite text based on provided options.
+        2. The rewritten text should be in a same language as a input text.
         3. Provide only the rewritten text without any additional explanation or formatting.
 
         Text to be rewritten:
         # START TEXT #
-        {text}
+        {context.text}
         # END TEXT #
 
         # START OPTIONS #
-        {options}
+        {context.options}
         # END OPTIONS #
         """
-    ).format(text=context.text, options=context.options)
 
     options: PromptOptions = PromptOptions(user_prompt=prompt, llm_model=config.llm_model)
 
-    return run_prompt(
+    return await run_prompt(
         options,
         llm_facade,
     )

@@ -31,7 +31,7 @@ def create_router(
     azure_scheme = azure_service.azure_scheme
 
     @router.post("", dependencies=[Security(azure_scheme)])
-    def quick_action(
+    async def quick_action(
         request: QuickActionRequest,
         current_user: Annotated[User, Depends(azure_service.azure_scheme)],
     ) -> StreamingResponse:
@@ -49,7 +49,7 @@ def create_router(
             },
         )
 
-        result = quick_action_service.run(request.action, request.text, request.options)
+        result = await quick_action_service.run(request.action, request.text, request.options)
 
         match result:
             case Success(value):
@@ -58,19 +58,19 @@ def create_router(
                 logger.error(f"Quick action '{request.action}' failed", error=str(error))
                 raise ApiErrorException(
                     {
-                        "status": 500,
-                        "errorId": UNEXPECTED_ERROR,
-                        "debugMessage": str(error),
-                    }
+                            "status": 500,
+                            "errorId": UNEXPECTED_ERROR,
+                            "debugMessage": str(error),
+                        }
                 )
             case _:
                 logger.error(f"Quick action '{request.action}' failed with unknown error")
                 raise ApiErrorException(
                     {
-                        "status": 500,
-                        "errorId": UNEXPECTED_ERROR,
-                        "debugMessage": "Unknown error",
-                    }
+                            "status": 500,
+                            "errorId": UNEXPECTED_ERROR,
+                            "debugMessage": "Unknown error",
+                        }
                 )
 
     logger.info("Quick action router configured")

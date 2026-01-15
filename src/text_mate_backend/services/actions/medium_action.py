@@ -2,7 +2,7 @@ from fastapi.responses import StreamingResponse
 
 from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
-from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.emails import EMAIL_PROMPT_TEMPLATE
 from text_mate_backend.utils.offical_letter import OFFICIAL_LETTER_NOTICE
@@ -61,14 +61,14 @@ def get_medium_prompt(option: str) -> str:
         raise ValueError(f"Unsupported medium option: {option}")
 
 
-def medium(context: QuickActionContext, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
+async def medium(context: QuickActionContext, config: Configuration, llm_facade: PydanticAIAgent) -> StreamingResponse:
     """
-    Rewrites the given text for a specific medium (e.g. email, official letter, presentation, report).
+    Rewrites the given text for a specific medium (e.g., email, official letter, presentation, report).
 
     Args:
         context: QuickActionContext containing the input text and the medium option
         config: Configuration containing LLM model and other settings
-        llm_facade: The LLMFacade instance to use for generating the response
+        llm_facade: The PydanticAIAgent instance to use for generating the response
 
     Returns:
         A StreamingResponse containing the rewritten version of the text for the specific medium
@@ -79,7 +79,7 @@ def medium(context: QuickActionContext, config: Configuration, llm_facade: LLMFa
 
     options: PromptOptions = PromptOptions(system_prompt=sys_prompt, user_prompt=usr_prompt, llm_model=config.llm_model)
 
-    return run_prompt(
+    return await run_prompt(
         options,
         llm_facade,
     )

@@ -1,43 +1,39 @@
 from fastapi.responses import StreamingResponse
-from llama_index.core.prompts import PromptTemplate
 
 from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
-from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
 from text_mate_backend.utils.configuration import Configuration
 
-
-def simplify(context: QuickActionContext, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
+async def simplify(context: QuickActionContext, config: Configuration, llm_facade: PydanticAIAgent) -> StreamingResponse:
     """
-    Simplifies the given text by removing complex words and phrases.
+    Simplifies a given text by removing complex words and phrases.
 
     Args:
-        context: The QuickActionContext containing text and options
+        context: The QuickActionContext containing the text and options
         config: Configuration containing LLM model and other settings
-        llm_facade: The LLMFacade instance to use for generating the response
+        llm_facade: The PydanticAIAgent instance to use for generating the response
 
     Returns:
-        A StreamingResponse containing the simplified version of the text
+        A StreamingResponse containing a simplified version of the text
     """
 
-    prompt = PromptTemplate(
-        """
+    prompt = f"""
         You are an assistant that simplifies text.
         Simplify the following text:
 
         # START TEXT #
-        {text}
+        {context.text}
         # END TEXT #
 
         # START OPTIONS #
-        {options}
+        {context.options}
         # END OPTIONS #
         """
-    ).format(text=context.text, options=context.options)
 
     options: PromptOptions = PromptOptions(user_prompt=prompt, llm_model=config.llm_model)
 
-    return run_prompt(
+    return await run_prompt(
         options,
         llm_facade,
     )

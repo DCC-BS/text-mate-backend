@@ -51,7 +51,7 @@ def create_router(
         )
 
         async with CancelOnDisconnect(request):
-            result = text_rewrite_service.rewrite_text(data.text, data.context, data.options)
+            result = await text_rewrite_service.rewrite_text(data.text, data.context, data.options)
             return handle_result(result)
 
     logger.info("Text rewrite router configured")

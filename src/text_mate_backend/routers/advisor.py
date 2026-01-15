@@ -1,4 +1,4 @@
-from collections.abc import Generator
+from collections.abc import AsyncGenerator
 from os import path
 from typing import Annotated
 
@@ -60,10 +60,10 @@ def create_router(
             },
         )
 
-        def event_generator() -> Generator[str, None, None]:
+        async def event_generator() -> AsyncGenerator[str, None]:
             # NOTE: CancelOnDisconnect is not used here because StreamingResponse evaluation
-            # happens after this handler returns. Disconnections will be handled by the ASGI server.
-            for validation_result in advisor_service.check_text_stream(
+            # happens after this handler returns. Disconnects will be handled by ASGI server.
+            async for validation_result in advisor_service.check_text_stream(
                 data.text,
                 data.docs,
             ):

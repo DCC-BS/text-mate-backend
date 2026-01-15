@@ -1,11 +1,10 @@
+from dcc_backend_common.logger import get_logger
 from fastapi.responses import StreamingResponse
-from llama_index.core.prompts import PromptTemplate
 
 from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
-from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("summarize_action")
 
@@ -32,7 +31,7 @@ def format_options(options: str) -> str:
         case "management_summary":
             return (
                 "as a management summary. "
-                "A management summary is a summary of the key points of the text for the management team. "
+                "A management summary is a summary of the key points of a text for the management team. "
                 "A management summary's length should be one paragraph up to one page long, "
                 "depending on the length of the text. "
             )
@@ -40,6 +39,39 @@ def format_options(options: str) -> str:
             logger.warning("Unknown summarize option, defaulting to concise manner", options=options)
             return "in a concise manner"
 
+
+async def summarize(context: QuickActionContext, config: Configuration, llm_facade: PydanticAIAgent) -> StreamingResponse:
+    """
+    Summarizes the given text by providing a condensed version that captures the main points.
+
+    Args:
+        context: The QuickActionContext containing the text and the options
+        config: Configuration containing LLM model and other settings
+        llm_facade: The PydanticAIAgent instance to use for generating the response
+
+    Returns:
+        A StreamingResponse containing the summarized version of the text
+    """
+    text_length = len(context.text)
+
+    if text_length < 50:
+        logger.warning("Text may be too short for effective summarization", text_length=text_length)
+
+    sys_prompt = f"""
+        You are an assistant that summarizes text by extracting the key points and the central message.
+        Provide a summary of the following text, capturing the main ideas and the essential information.
+        The summary should be in the same language as the input text.
+        Those are the requirements for the summary: {format_options(context.options)}
+        """
+    options: PromptOptions = PromptOptions(
+        system_prompt=sys_prompt, user_prompt=context.text, llm_model=config.llm_model
+    )
+
+    logger.debug("Created summarize prompt options")
+    return await run_prompt(
+        options,
+        llm_facade,
+    )
 
 def summarize(context: QuickActionContext, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
     """

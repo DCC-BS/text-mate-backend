@@ -1,14 +1,13 @@
 import time
 from typing import final
 
-from llama_index.core.prompts import PromptTemplate
 from pydantic import BaseModel, Field
 from returns.result import safe
 
 from text_mate_backend.models.error_codes import REWRITE_TEXT_ERROR
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.text_rewrite_models import RewriteResult
-from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
 from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("text_rewrite_service")
@@ -20,18 +19,18 @@ class RewriteOutput(BaseModel):
 
 @final
 class TextRewriteService:
-    def __init__(self, llm_facade: LLMFacade) -> None:
+    def __init__(self, llm_facade: PydanticAIAgent) -> None:
         logger.info("Initializing TextRewriteService")
         self.llm_facade = llm_facade
 
     @safe
-    def rewrite_text(self, text: str, context: str, options: str) -> RewriteResult:
-        """Corrects the input text based on given options.
+    async def rewrite_text(self, text: str, context: str, options: str) -> RewriteResult:
+        """Corrects a input text based on given options.
 
         Args:
             text: The text to be rewritten
             context: The surrounding context for the text
-            options: Options to guide the rewriting process
+            options: Options to guide rewriting process
 
         Returns:
             ResultE containing either:
@@ -45,17 +44,14 @@ class TextRewriteService:
 
         start_time = time.time()
         try:
-            response = self.llm_facade.structured_predict(
-                RewriteOutput,
-                PromptTemplate(
-                    """
-                    You are an expert in rewriting text. Take the given text and rewrite
-                    it based on the provided context and options.
+            prompt = f"""
+                    You are an expert in rewriting text. Take a given text and rewrite
+                    it based on a provided context and options.
                     Your task:
-                    1. Rewrite the text based on the provided context and options.
+                    1. Rewrite text based on a provided context and options.
                     2. Provide a list of all rewritten text options.
                     3. If no options are found, return an empty list.
-                    4. The rewritten text should be in the same language as the input text.
+                    4. The rewritten text should be in a same language as the input text.
 
                     Text to be rewritten:
                     ---------------
@@ -69,11 +65,14 @@ class TextRewriteService:
 
                     Options:
                     {options}
-                    """,
-                    text=text,
-                    context=context,
-                    options=options,
-                ),
+                    """
+
+            response = await self.llm_facade.structured_predict(
+                RewriteOutput,
+                prompt,
+                text=text,
+                context=context,
+                options=options,
             )
 
             processing_time = time.time() - start_time
@@ -95,8 +94,8 @@ class TextRewriteService:
 
             raise ApiErrorException(
                 {
-                    "status": 500,
-                    "errorId": REWRITE_TEXT_ERROR,
-                    "debugMessage": str(e),
-                }
+                        "status": 500,
+                        "errorId": REWRITE_TEXT_ERROR,
+                        "debugMessage": str(e),
+                    }
             ) from e
