@@ -1,10 +1,10 @@
 from typing import Annotated
 
+from dcc_backend_common.logger import get_logger
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Security
 from fastapi.responses import StreamingResponse
 from fastapi_azure_auth.user import User
-from returns.result import Failure, Success
 
 from text_mate_backend.container import Container
 from text_mate_backend.models.error_codes import UNEXPECTED_ERROR
@@ -13,7 +13,6 @@ from text_mate_backend.models.quick_actions_models import QuickActionRequest
 from text_mate_backend.services.actions.quick_action_service import QuickActionService
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
 
 logger = get_logger("quick_action_router")
@@ -49,29 +48,17 @@ def create_router(
             },
         )
 
-        result = await quick_action_service.run(request.action, request.text, request.options)
-
-        match result:
-            case Success(value):
-                return value  # type: ignore
-            case Failure(error):
-                logger.error(f"Quick action '{request.action}' failed", error=str(error))
-                raise ApiErrorException(
-                    {
-                            "status": 500,
-                            "errorId": UNEXPECTED_ERROR,
-                            "debugMessage": str(error),
-                        }
-                )
-            case _:
-                logger.error(f"Quick action '{request.action}' failed with unknown error")
-                raise ApiErrorException(
-                    {
-                            "status": 500,
-                            "errorId": UNEXPECTED_ERROR,
-                            "debugMessage": "Unknown error",
-                        }
-                )
+        try:
+            return await quick_action_service.run(request.action, request.text, request.options)
+        except Exception as e:
+            logger.error(f"Quick action '{request.action}' failed", error=str(e))
+            raise ApiErrorException(
+                {
+                    "status": 500,
+                    "errorId": UNEXPECTED_ERROR,
+                    "debugMessage": str(e),
+                }
+            ) from e
 
     logger.info("Quick action router configured")
     return router

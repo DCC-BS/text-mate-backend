@@ -5,7 +5,10 @@ from text_mate_backend.services.actions.action_utils import PromptOptions, run_p
 from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
 from text_mate_backend.utils.configuration import Configuration
 
-async def social_mediafy(context: QuickActionContext, config: Configuration, llm_facade: PydanticAIAgent) -> StreamingResponse:
+
+async def social_mediafy(
+    context: QuickActionContext, config: Configuration, llm_facade: PydanticAIAgent
+) -> StreamingResponse:
     """
     Converts a given text into a social media post by adding emojis and hashtags.
 

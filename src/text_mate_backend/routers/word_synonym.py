@@ -1,17 +1,17 @@
 from typing import Annotated
 
+from dcc_backend_common.logger import get_logger
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request, Security
 from fastapi_azure_auth.user import User
 
 from text_mate_backend.container import Container
 from text_mate_backend.models.word_synonym_models import WordSynonymInput, WordSynonymResult
-from text_mate_backend.routers.utils import handle_result
+from text_mate_backend.routers.utils import handle_exception
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.word_synonym_service import WordSynonymService
 from text_mate_backend.utils.cancel_on_disconnect import CancelOnDisconnect
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
 
 logger = get_logger("word_synonym_router")
@@ -50,12 +50,13 @@ def create_router(
             },
         )
 
-        async with CancelOnDisconnect(request):
-            result = (await word_synonym_service.get_synonyms(data.word, data.context)).map(
-                lambda synonyms: WordSynonymResult(synonyms=list(synonyms))
-            )
-
-            return handle_result(result)
+        try:
+            async with CancelOnDisconnect(request):
+                synonyms = await word_synonym_service.get_synonyms(data.word, data.context)
+                return WordSynonymResult(synonyms=list(synonyms))
+        except Exception as err:
+            handle_exception(err)
+            raise err
 
     logger.info("Word synonym router configured")
     return router

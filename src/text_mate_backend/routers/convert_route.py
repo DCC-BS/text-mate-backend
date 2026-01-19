@@ -9,6 +9,7 @@ to markdown with image extraction capabilities.
 import asyncio
 from typing import Annotated
 
+from dcc_backend_common.logger import get_logger
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request, Security, UploadFile
 from fastapi_azure_auth.user import User
@@ -18,7 +19,6 @@ from text_mate_backend.models.conversion_result import ConversionResult
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.document_conversion_service import DocumentConversionService
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
 
 logger = get_logger("convert_router")

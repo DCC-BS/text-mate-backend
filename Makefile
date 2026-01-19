@@ -32,12 +32,12 @@ docker down: ## Stop and remove the Docker container
 .PHONY: run
 run: ## Run the application
 	@echo "🚀 Running the application"
-	@uv run fastapi run ./src/text_mate_backend/app.py --port 8000
+	@uv run --env-file .env fastapi run ./src/text_mate_backend/app.py --port 8000
 
 .PHONY: dev
 dev: ## Run the application in development mode
 	@echo "🚀 Running the application in development mode"
-	@uv run fastapi dev ./src/text_mate_backend/app.py --port 8000
+	@uv run --env-file .env fastapi dev ./src/text_mate_backend/app.py --port 8000
 
 .PHONY: build
 build: clean-build ## Build wheel file

@@ -6,7 +6,10 @@ from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.easy_language import CLAUDE_TEMPLATE_LS, REWRITE_COMPLETE, RULES_LS, SYSTEM_MESSAGE_LS
 
-async def plain_language(context: QuickActionContext, config: Configuration, llm_facade: PydanticAIAgent) -> StreamingResponse:
+
+async def plain_language(
+    context: QuickActionContext, config: Configuration, llm_facade: PydanticAIAgent
+) -> StreamingResponse:
     """
     Converts a given text into plain language (Leichte Sprache) with A2-A1 language level.
 
@@ -22,9 +25,7 @@ async def plain_language(context: QuickActionContext, config: Configuration, llm
     # Create a modified template that includes options
     sys_prompt = SYSTEM_MESSAGE_LS
 
-    usr_prompt = CLAUDE_TEMPLATE_LS.format(
-        prompt=context.text, completeness=REWRITE_COMPLETE, rules=RULES_LS
-    )
+    usr_prompt = CLAUDE_TEMPLATE_LS.format(prompt=context.text, completeness=REWRITE_COMPLETE, rules=RULES_LS)
 
     options: PromptOptions = PromptOptions(system_prompt=sys_prompt, user_prompt=usr_prompt, llm_model=config.llm_model)
 

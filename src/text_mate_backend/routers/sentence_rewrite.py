@@ -1,5 +1,6 @@
 from typing import Annotated
 
+from dcc_backend_common.logger import get_logger
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request
 from fastapi.params import Security
@@ -7,12 +8,11 @@ from fastapi_azure_auth.user import User
 
 from text_mate_backend.container import Container
 from text_mate_backend.models.sentence_rewrite_model import SentenceRewriteInput, SentenceRewriteResult
-from text_mate_backend.routers.utils import handle_result
+from text_mate_backend.routers.utils import handle_exception
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.sentence_rewrite_service import SentenceRewriteService
 from text_mate_backend.utils.cancel_on_disconnect import CancelOnDisconnect
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
 
 logger = get_logger("sentence_rewrite_router")
@@ -52,12 +52,13 @@ def create_router(
             },
         )
 
-        async with CancelOnDisconnect(request):
-            result = (await sentence_rewrite_service.rewrite_sentence(data.sentence, data.context)).map(
-                lambda options: SentenceRewriteResult(options=list(options))
-            )
-
-            return handle_result(result)
+        try:
+            async with CancelOnDisconnect(request):
+                options = await sentence_rewrite_service.rewrite_sentence(data.sentence, data.context)
+                return SentenceRewriteResult(options=options)
+        except Exception as exp:
+            handle_exception(exp)
+            raise exp
 
     logger.info("Sentence rewrite router configured")
     return router

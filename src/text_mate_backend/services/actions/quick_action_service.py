@@ -1,8 +1,8 @@
 import time
 from typing import final
 
+from dcc_backend_common.logger import get_logger
 from fastapi.responses import StreamingResponse
-from returns.result import safe
 
 from text_mate_backend.models.quick_actions_models import Actions, QuickActionContext
 from text_mate_backend.services.actions.bullet_points_action import bullet_points
@@ -14,7 +14,6 @@ from text_mate_backend.services.actions.social_media_action import social_mediaf
 from text_mate_backend.services.actions.summarize_action import summarize
 from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("quick_action_service")
 
@@ -25,7 +24,6 @@ class QuickActionService:
         self.llm_facade = llm_facade
         self.config = config
 
-    @safe
     async def run(self, action: Actions, text: str, options: str) -> StreamingResponse:
         """
         Perform the specified quick action on a given text and return a streaming response.

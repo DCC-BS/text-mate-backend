@@ -40,40 +40,9 @@ def format_options(options: str) -> str:
             return "in a concise manner"
 
 
-async def summarize(context: QuickActionContext, config: Configuration, llm_facade: PydanticAIAgent) -> StreamingResponse:
-    """
-    Summarizes the given text by providing a condensed version that captures the main points.
-
-    Args:
-        context: The QuickActionContext containing the text and the options
-        config: Configuration containing LLM model and other settings
-        llm_facade: The PydanticAIAgent instance to use for generating the response
-
-    Returns:
-        A StreamingResponse containing the summarized version of the text
-    """
-    text_length = len(context.text)
-
-    if text_length < 50:
-        logger.warning("Text may be too short for effective summarization", text_length=text_length)
-
-    sys_prompt = f"""
-        You are an assistant that summarizes text by extracting the key points and the central message.
-        Provide a summary of the following text, capturing the main ideas and the essential information.
-        The summary should be in the same language as the input text.
-        Those are the requirements for the summary: {format_options(context.options)}
-        """
-    options: PromptOptions = PromptOptions(
-        system_prompt=sys_prompt, user_prompt=context.text, llm_model=config.llm_model
-    )
-
-    logger.debug("Created summarize prompt options")
-    return await run_prompt(
-        options,
-        llm_facade,
-    )
-
-def summarize(context: QuickActionContext, config: Configuration, llm_facade: LLMFacade) -> StreamingResponse:
+async def summarize(
+    context: QuickActionContext, config: Configuration, llm_facade: PydanticAIAgent
+) -> StreamingResponse:
     """
     Summarizes the given text by providing a condensed version that captures main points.
 
@@ -90,20 +59,19 @@ def summarize(context: QuickActionContext, config: Configuration, llm_facade: LL
     if text_length < 50:
         logger.warning("Text may be too short for effective summarization", text_length=text_length)
 
-    sys_prompt = PromptTemplate(
-        """
+    sys_prompt = f"""
         You are an assistant that summarizes text by extracting the key points and central message.
         Provide a summary of the following text, capturing the main ideas and essential information.
         The summary should be in the same language as the input text.
-        Those are the requirements for the summary: {options}
+        Those are the requirements for the summary: {format_options(context.options)}
         """
-    ).format(options=format_options(context.options))
+
     options: PromptOptions = PromptOptions(
         system_prompt=sys_prompt, user_prompt=context.text, llm_model=config.llm_model
     )
 
     logger.debug("Created summarize prompt options")
-    return run_prompt(
+    return await run_prompt(
         options,
         llm_facade,
     )

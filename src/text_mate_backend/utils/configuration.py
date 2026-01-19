@@ -2,7 +2,7 @@ import os
 from typing import override
 
 from dcc_backend_common.config import AbstractAppConfig, get_env_or_throw, log_secret
-from pydantic import Field
+from pydantic import Field, AnyHttpUrl
 
 
 class Configuration(AbstractAppConfig):

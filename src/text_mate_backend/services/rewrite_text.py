@@ -1,6 +1,7 @@
 import time
 from typing import final
 
+from dcc_backend_common.logger import get_logger
 from pydantic import BaseModel, Field
 from returns.result import safe
 
@@ -8,7 +9,6 @@ from text_mate_backend.models.error_codes import REWRITE_TEXT_ERROR
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.text_rewrite_models import RewriteResult
 from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
-from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("text_rewrite_service")
 
@@ -67,12 +67,9 @@ class TextRewriteService:
                     {options}
                     """
 
-            response = await self.llm_facade.structured_predict(
-                RewriteOutput,
+            response = await self.llm_facade.run(
                 prompt,
-                text=text,
-                context=context,
-                options=options,
+                RewriteOutput,
             )
 
             processing_time = time.time() - start_time
@@ -94,8 +91,8 @@ class TextRewriteService:
 
             raise ApiErrorException(
                 {
-                        "status": 500,
-                        "errorId": REWRITE_TEXT_ERROR,
-                        "debugMessage": str(e),
-                    }
+                    "status": 500,
+                    "errorId": REWRITE_TEXT_ERROR,
+                    "debugMessage": str(e),
+                }
             ) from e

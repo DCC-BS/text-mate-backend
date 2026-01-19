@@ -1,8 +1,8 @@
-from dcc_backend_common.logger import get_logger
 import re
 import time
 from collections.abc import AsyncGenerator
 
+from dcc_backend_common.logger import get_logger
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
@@ -35,7 +35,7 @@ async def run_prompt(options: PromptOptions, llm_facade: PydanticAIAgent) -> Str
 
     start_time = time.time()
     try:
-        sys_prompt = f"""
+        prompt = f"""
         {options.system_prompt}
 
         - Format the text as markdown, don't use any html tags.
@@ -44,20 +44,16 @@ async def run_prompt(options: PromptOptions, llm_facade: PydanticAIAgent) -> Str
         - Only respond with the answer, do not add any other text.
         - Don't add any extra information or context.
         - Don't add any whitespaces.
-        """
-        usr_prompt = options.user_prompt
 
-        messages = [
-            {"role": "system", "content": sys_prompt},
-            {"role": "user", "content": usr_prompt},
-        ]
+        {options.user_prompt}
+        """
 
         async def generate() -> AsyncGenerator[str, None]:
             start_streaming_time = time.time()
             try:
                 isPrefixWhiteSpace = True
 
-                async for chunk in llm_facade.stream_chat(messages):
+                async for chunk in llm_facade.stream_text(prompt):
                     if isPrefixWhiteSpace and (re.match(r"^\s*$", chunk)):
                         continue
 
@@ -76,18 +72,6 @@ async def run_prompt(options: PromptOptions, llm_facade: PydanticAIAgent) -> Str
                     streaming_duration_ms=round(streaming_duration * 1000),
                 )
                 raise
-
-        return StreamingResponse(generate(), media_type="text/event-stream")
-
-    except Exception as e:
-        setup_time = time.time() - start_time
-        logger.exception(
-            "Failed to initiate OpenAI streaming request",
-            error=str(e),
-            error_type=type(e).__name__,
-            setup_time_ms=round(setup_time * 1000),
-        )
-        raise
 
         return StreamingResponse(generate(), media_type="text/event-stream")
 

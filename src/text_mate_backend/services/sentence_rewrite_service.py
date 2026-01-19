@@ -1,10 +1,9 @@
 from typing import TypeVar
 
+from dcc_backend_common.logger import get_logger
 from pydantic import BaseModel, Field
-from returns.result import safe
 
 from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
-from text_mate_backend.utils.logger import get_logger
 
 T = TypeVar("T")
 
@@ -23,7 +22,6 @@ class SentenceRewriteService:
     def __init__(self, llm_facade: PydanticAIAgent) -> None:
         self.llm_facade = llm_facade
 
-    @safe
     async def rewrite_sentence(self, sentence: str, context: str) -> list[str]:
         """
         Generate alternative rewrite options for a sentence based on context.
@@ -55,12 +53,7 @@ class SentenceRewriteService:
                 ---------------
                 """
 
-        result = await self.llm_facade.structured_predict(
-            SentenceRewriteOutput,
-            prompt,
-            sentence=sentence,
-            context=context,
-        )
+        result = await self.llm_facade.run(prompt, SentenceRewriteOutput)
 
         # Filter out empty options or options identical to the original
         valid_options = [option for option in result.options if option and option.strip() != sentence.strip()]

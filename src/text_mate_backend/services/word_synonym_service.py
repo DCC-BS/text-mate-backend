@@ -1,10 +1,9 @@
 from typing import final
 
+from dcc_backend_common.logger import get_logger
 from pydantic import BaseModel, Field
-from returns.result import safe
 
 from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
-from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("word_synonym_service")
 
@@ -20,7 +19,6 @@ class WordSynonymService:
     def __init__(self, llm_facade: PydanticAIAgent) -> None:
         self.llm_facade = llm_facade
 
-    @safe
     async def get_synonyms(self, word: str, context: str) -> list[str]:
         """
         Get synonyms for a word in context of a document.
@@ -44,11 +42,9 @@ class WordSynonymService:
                 ---------------
                 """
 
-        response = await self.llm_facade.structured_predict(
-            SynonymOutput,
+        response = await self.llm_facade.run(
             prompt,
-            word=word,
-            context=context,
+            SynonymOutput,
         )
 
         return response.options

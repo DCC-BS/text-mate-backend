@@ -15,7 +15,7 @@ from text_mate_backend.utils.configuration import Configuration
 
 
 class Container(containers.DeclarativeContainer):
-    config: providers.Singleton[Configuration] = providers.Singleton(Configuration)
+    config: providers.Object[Configuration] = providers.Object(Configuration.from_env())
     auth_settings: providers.Singleton[AuthSettings] = providers.Singleton(AuthSettings, config=config)
 
     language_tool_service: providers.Singleton[LanguageToolService] = providers.Singleton(
