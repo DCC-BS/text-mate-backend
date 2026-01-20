@@ -1,9 +1,16 @@
+from typing import AsyncGenerator
 from fastapi.responses import StreamingResponse
 
+from pydantic_ai.ui._web.app import AgentDepsT
+from text_mate_backend.agents.agent_types.bullet_point_agent import get_bulletpoint_agent
+from text_mate_backend.agents.run_agent import run_stream_text
 from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.services.actions.action_utils import PromptOptions, run_prompt
 from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
 from text_mate_backend.utils.configuration import Configuration
+import time
+
+from dcc_backend_common.logger import get_logger
 
 
 async def bullet_points(
@@ -20,22 +27,42 @@ async def bullet_points(
     Returns:
         A StreamingResponse containing bullet points version of text
     """
+    logger = get_logger()
 
-    sys_prompt = """
-        You are an assistant that converts text into a well-structured bullet point format.
-        Extract and highlight key points from text.
+    agent = get_bulletpoint_agent(config)
 
-        Convert to following text into a structured bullet point format.
-        Identify and organize main ideas and supporting points.
-        The bullet points should be in the same language as the input text.
-        Use markdown formatting for bullet points.
-        """
+    start_time = time.time()
+    try:
 
-    usr_propt = context.text
+        async def generate() -> AsyncGenerator[str, None]:
+            start_streaming_time = time.time()
+            try:
+                isPrefixWhiteSpace = True
 
-    options: PromptOptions = PromptOptions(system_prompt=sys_prompt, user_prompt=usr_propt, llm_model=config.llm_model)
+                async with agent.run_stream(user_prompt=context.text) as result:
+                    async for chunk in run_stream_text(result):
+                        yield chunk
 
-    return await run_prompt(
-        options,
-        llm_facade,
-    )
+                streaming_duration = time.time() - start_streaming_time
+            except Exception as e:
+                # Log errors during streaming
+                streaming_duration = time.time() - start_streaming_time
+                logger.exception(
+                    "Error during streaming",
+                    error=str(e),
+                    error_type=type(e).__name__,
+                    streaming_duration_ms=round(streaming_duration * 1000),
+                )
+                raise
+
+        return StreamingResponse(generate(), media_type="text/event-stream")
+
+    except Exception as e:
+        setup_time = time.time() - start_time
+        logger.exception(
+            "Failed to initiate OpenAI streaming request",
+            error=str(e),
+            error_type=type(e).__name__,
+            setup_time_ms=round(setup_time * 1000),
+        )
+        raise

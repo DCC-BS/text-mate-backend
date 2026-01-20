@@ -13,12 +13,12 @@ T = TypeVar("T")
 
 
 class PydanticAIAgent:
-    """Async facade wrapping Pydantic AI Agent for backward compatibility"""
+    """Async facade wrapping Pydantic AI Agent with new agent structure"""
 
     def __init__(self, config: Configuration) -> None:
         self.config = config
 
-        # Create OpenAI-compatible model with custom provider
+        # Create OpenAI-compatible model with custom provider (for backward compatibility)
         self.model = OpenAIChatModel(
             config.llm_model,
             provider=OpenAIProvider(

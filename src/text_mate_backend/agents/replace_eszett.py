@@ -35,16 +35,3 @@ def replace_eszett(obj: Any) -> Any:
     elif isinstance(obj, list):
         return [replace_eszett(item) for item in obj]
     return obj
-
-def apply_eszett_validator[T](agent: Agent[Any, T]):
-
-    logger = get_logger()
-
-    @agent.output_validator
-    def preprocess_german_text(ctx: RunContext, output: T) -> T:
-        logger.info(f"process german in text: {output} with: {replace_eszett(output)}")
-        # if ctx.partial_output:
-        #     return output  # Skip for streaming
-        return replace_eszett(output)
-
-    return agent
