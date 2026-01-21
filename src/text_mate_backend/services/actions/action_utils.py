@@ -21,6 +21,28 @@ class PromptOptions(BaseModel):
     llm_model: str
 
 
+async def create_streaming_response(generator: AsyncGenerator[str, None]) -> StreamingResponse:
+    logger = get_logger()
+
+    async def generate() -> AsyncGenerator[str, None]:
+        start_streaming_time = time.time()
+        try:
+            async for chunk in generator:
+                yield chunk
+
+        except Exception as e:
+            # Log errors during streaming
+            streaming_duration = time.time() - start_streaming_time
+            logger.exception(
+                "Error during streaming",
+                error=str(e),
+                error_type=type(e).__name__,
+                streaming_duration_ms=round(streaming_duration * 1000),
+            )
+            raise
+
+    return StreamingResponse(generate(), media_type="text/event-stream")
+
 async def run_prompt(options: PromptOptions, llm_facade: PydanticAIAgent) -> StreamingResponse:
     """
     Runs a given prompt using the OpenAI API and returns a streaming response.

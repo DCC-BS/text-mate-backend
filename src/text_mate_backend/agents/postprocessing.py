@@ -1,13 +1,35 @@
 """Postprocessing utilities for agent outputs."""
+from typing import Any, Mapping
+
+from pydantic import BaseModel
+from structlog.typing import Context
+
+class PostprocessingContext(BaseModel):
+    index: int
+    isParial: bool
 
 
-def trim_text(text: str) -> str:
-    """Remove blank lines from start and end of text."""
-    lines = text.split('\n')
-    start = 0
-    while start < len(lines) and not lines[start].strip():
-        start += 1
-    end = len(lines) - 1
-    while end >= start and not lines[end].strip():
-        end -= 1
-    return '\n'.join(lines[start:end + 1])
+def trim_text(text: Any, context: PostprocessingContext) -> Any:
+    """Remove blank lines from start of text."""
+    if not isinstance(text, str):
+        raise Exception("Input must be a string")
+
+    if context.isParial and context.index is not 0:
+        return text
+
+    return text.lstrip()
+
+def replace_eszett(obj: Any, _: PostprocessingContext) -> Any:
+    """Recursively replace ß with ss in all string fields."""
+    if isinstance(obj, str):
+        return obj.replace('ß', 'ss')
+    elif isinstance(obj, BaseModel):
+        for field_name in type(obj).model_fields:
+            value = getattr(obj, field_name)
+            setattr(obj, field_name, replace_eszett(value, _))
+        return obj
+    elif isinstance(obj, Mapping):
+        return {k: replace_eszett(v, _) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [replace_eszett(item, _) for item in obj]
+    return obj

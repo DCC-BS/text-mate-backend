@@ -1,41 +1,34 @@
 """Base agent with comprehensive pydantic AI features."""
 
+import json
 from abc import ABC, abstractmethod
-from typing import Sequence, TypeVar, Optional, AsyncGenerator, Any
-from collections.abc import Mapping, Callable
+from typing import TypeVar, AsyncGenerator, Any, TypedDict
+from collections.abc import Callable
 
-from pydantic_ai import Agent, RunContext, ModelSettings, UsageLimits
-from pydantic_ai.agent.abstract import Instructions
+from dcc_backend_common.logger import get_logger
+from pydantic_ai import Agent
+from pydantic_ai.models import Model
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
 
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.agents.validators import apply_eszett_validator, apply_text_trimmer
+from text_mate_backend.agents.postprocessing import PostprocessingContext, replace_eszett, trim_text
 
 DepsType = TypeVar('DepsType')
 OutputType = TypeVar('OutputType')
 
+logger = get_logger(__name__)
 
-class BaseAgent(ABC):
+class BaseAgent[DepsType, OutputType](ABC):
     """Abstract base class for reusable pydantic AI agents with full feature support."""
 
     def __init__(
         self,
         config: Configuration,
-        deps_type: Optional[type[DepsType]] = None,
-        output_type: Optional[type[OutputType]] = None,
-        model_settings: Optional[ModelSettings] = None,
-        usage_limits: Optional[UsageLimits] = None,
-        retries: int | None = None,
-        metadata: dict[str, Any] | Callable[[RunContext], dict[str, Any]] | None = None,
+        enable_thinking: bool = False
     ):
         self.config = config
-        self._deps_type = deps_type
-        self._output_type = output_type
-        self._model_settings = model_settings
-        self._usage_limits = usage_limits
-        self._retries = retries
-        self._metadata = metadata
+        self._enable_thinking = enable_thinking
 
         self._model = OpenAIChatModel(
             config.llm_model,
@@ -45,137 +38,98 @@ class BaseAgent(ABC):
             ),
         )
 
-        self._agent = self._create_agent()
+        self._agent = self.create_agent(self._model)
 
-    def _create_agent(self) -> Agent[DepsType, OutputType]:
-        """Create and configure agent with validators."""
-        agent_kwargs = {
-            'model': self._model,
-            'system_prompt': self.get_system_prompt(),
-            'instructions': self.get_instructions(),
-        }
+    def process_prompt(self, prompt: str, deps: DepsType):
+        postfix = "" if self._enable_thinking else " /no_think"
+        return f"{prompt}{postfix}"
 
-        if self._deps_type is not None:
-            agent_kwargs['deps_type'] = self._deps_type
+    def _get_postprocessors(self) -> list[Callable[[Any, PostprocessingContext], Any]]:
+        postprocessors: list[Callable[[Any, PostprocessingContext], Any]] = [replace_eszett]
 
-        if self._output_type is not None:
-            agent_kwargs['output_type'] = self._output_type
+        if OutputType == str:
+            postprocessors.append(trim_text)
 
-        if self._model_settings is not None:
-            agent_kwargs['model_settings'] = self._model_settings
+        return postprocessors
 
-        if self._retries is not None:
-            agent_kwargs['retries'] = self._retries
-
-        if self._metadata is not None:
-            agent_kwargs['metadata'] = self._metadata
-
-        agent = Agent(**agent_kwargs)
-
-        agent = self._apply_validators(agent)
-        agent = self._register_tools(agent)
-        agent = self._register_instructions(agent)
-
-        return agent
-
-    def _apply_validators(self, agent: Agent[DepsType, OutputType]) -> Agent[DepsType, OutputType]:
-        """Apply common validators to the agent."""
-        agent = apply_eszett_validator(agent)
-        agent = apply_text_trimmer(agent)
-        return agent
-
-    def _register_tools(self, agent: Agent[DepsType, OutputType]) -> Agent[DepsType, OutputType]:
-        """Register agent-specific tools. Override in subclasses."""
-        return agent
-
-    def _register_instructions(self, agent: Agent[DepsType, OutputType]) -> Agent[DepsType, OutputType]:
-        return agent
+    def _postprocess(self, output: Any, context: PostprocessingContext) -> Any:
+        for processor in self._get_postprocessors():
+            output = processor(output, context)
+        return output
 
     @abstractmethod
-    def get_name(self) -> str:
-        """Return the agent's name."""
-        pass
-
-    def get_system_prompt(self) -> str | Sequence[str]:
-        """Return the agent's system prompt."""
-        return ()
-
-    def get_instructions(self) -> Instructions:
-        return None
+    def create_agent(self, model: Model) -> Agent[DepsType, OutputType]: ...
 
     async def run(
         self,
         user_prompt: str,
-        deps: Optional[DepsType] = None,
-        model_settings: Optional[ModelSettings] = None,
-        usage_limits: Optional[UsageLimits] = None,
-        message_history: Optional[list] = None,
+        deps: DepsType = None
     ) -> OutputType:
         """Run the agent and return structured output."""
-        result = await self._agent.run(
-            user_prompt + " /no_think",
-            deps=deps,
-            model_settings=model_settings,
-            usage_limits=usage_limits,
-            message_history=message_history,
-        )
-        return result.output
+        prompt = self.process_prompt(user_prompt,  deps)
 
-    def run_sync(
+        result = await self._agent.run(user_prompt=prompt, deps=deps)
+
+        context = PostprocessingContext(isParial=False, index=0)
+
+        logger.debug(f"{result.all_messages_json()}")
+        return self._postprocess(result.output, context)
+
+    async def run_stream_text(
         self,
         user_prompt: str,
-        deps: Optional[DepsType] = None,
-        model_settings: Optional[ModelSettings] = None,
-        usage_limits: Optional[UsageLimits] = None,
-        message_history: Optional[list] = None,
-    ) -> OutputType:
-        """Synchronous version of run()."""
-        result = self._agent.run_sync(
-            user_prompt + " /no_think",
-            deps=deps,
-            model_settings=model_settings,
-            usage_limits=usage_limits,
-            message_history=message_history,
-        )
-        return result.output
-
-    async def run_stream(
-        self,
-        user_prompt: str,
-        deps: Optional[DepsType] = None,
-        model_settings: Optional[ModelSettings] = None,
-        usage_limits: Optional[UsageLimits] = None,
-        message_history: Optional[list] = None,
+        deps: DepsType = None,
+        delta: bool = True,
+        **kwargs: Any
     ) -> AsyncGenerator[str, None]:
-        """Stream agent execution text output."""
-        async with self._agent.run_stream(
-            user_prompt + " /no_think",
-            deps=deps,
-            model_settings=model_settings,
-            usage_limits=usage_limits,
-            message_history=message_history,
-        ) as result:
-            async for event in result.stream_text():
-                yield event
+        """Stream text output with optional delta parameter and postprocessing."""
+        prompt = self.process_prompt(user_prompt, deps)
 
-    async def run_stream_events(
+        async with self._agent.run_stream(user_prompt=prompt, deps=deps, **kwargs) as result:
+            print(result.all_messages())
+
+            i = 0
+            async for chunk in result.stream_text(delta=delta):
+                context = PostprocessingContext(isParial=True, index=i)
+                yield self._postprocess(chunk, context)
+                i += 1
+
+    async def stream_list[T](
         self,
         user_prompt: str,
-        deps: Optional[DepsType] = None,
-        model_settings: Optional[ModelSettings] = None,
-        usage_limits: Optional[UsageLimits] = None,
-        message_history: Optional[list] = None,
-    ):
-        """Stream all events from the agent run."""
-        async for event in self._agent.run_stream_events(
-            user_prompt + " /no_think",
-            deps=deps,
-            model_settings=model_settings,
-            usage_limits=usage_limits,
-            message_history=message_history,
-        ):
-            yield event
+        deps: DepsType = None,
+        **kwargs: Any
+    ) -> AsyncGenerator[T, None]:
+        """Stream list items one-by-one from a TypedDict container with postprocessing."""
+        prompt = self.process_prompt(user_prompt, deps)
 
-    def iter(self, user_prompt: str, deps: Optional[DepsType] = None):
-        """Iterate over the agent's graph nodes."""
-        return self._agent.iter(user_prompt + " /no_think", deps=deps)
+        class Container(TypedDict):
+            list: list[T]
+
+        async with self._agent.run_stream(user_prompt=prompt, output_type=Container, deps=deps, **kwargs) as result:
+            logger.debug(json.dumps(result.all_messages()))
+
+            i = 0
+            async for chunk in result.stream_output():
+                context = PostprocessingContext(isParial=True, index=i)
+                yield self._postprocess(chunk["list"][-1], context)
+                i += 1
+
+
+    async def run_stream_output(
+        self,
+        user_prompt: str,
+        deps: DepsType = None,
+        **kwargs: Any
+    ) -> AsyncGenerator[Any, None]:
+        """Stream full structured output with postprocessing."""
+        prompt = self.process_prompt(user_prompt, deps)
+
+        async with self._agent.run_stream(user_prompt=prompt, deps=deps, **kwargs) as result:
+            logger.debug(json.dumps(result.all_messages()))
+
+            i = 0
+            async for chunk in result.stream_output():
+                context = PostprocessingContext(isParial=True, index=i)
+                yield self._postprocess(chunk, context)
+                i += 1

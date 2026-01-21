@@ -4,16 +4,19 @@ from typing import final
 from dcc_backend_common.logger import get_logger
 from fastapi.responses import StreamingResponse
 
-from text_mate_backend.models.quick_actions_models import Actions, QuickActionContext
-from text_mate_backend.services.actions.bullet_points_action import bullet_points
-from text_mate_backend.services.actions.custom_action import custom_prompt
-from text_mate_backend.services.actions.formality_action import formality
-from text_mate_backend.services.actions.medium_action import medium
-from text_mate_backend.services.actions.plain_language_action import plain_language
-from text_mate_backend.services.actions.social_media_action import social_mediafy
-from text_mate_backend.services.actions.summarize_action import summarize
+from text_mate_backend.agents.agent_types.quick_actions.bullet_point_agent import BulletPointAgent
+from text_mate_backend.agents.agent_types.quick_actions.custom_agent import CustomAgent
+from text_mate_backend.agents.agent_types.quick_actions.formality_agent import FormalityAgent
+from text_mate_backend.agents.agent_types.quick_actions.medium_agent import MediumAgent
+from text_mate_backend.agents.agent_types.quick_actions.plain_language_agent import PlainLanguageAgent
+from text_mate_backend.agents.agent_types.quick_actions.social_media_agent import SocialMediaAgent
+from text_mate_backend.agents.agent_types.quick_actions.summarize_agent import SummarizeAgent
+from text_mate_backend.agents.base import BaseAgent
+from text_mate_backend.models.quick_actions_models import Actions, MediumExtra, QuickActionContext
+from text_mate_backend.services.actions.action_utils import create_streaming_response
 from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
 from text_mate_backend.utils.configuration import Configuration
+from text_mate_backend.utils.usage_tracking import User
 
 logger = get_logger("quick_action_service")
 
@@ -24,7 +27,17 @@ class QuickActionService:
         self.llm_facade = llm_facade
         self.config = config
 
-    async def run(self, action: Actions, text: str, options: str) -> StreamingResponse:
+        self.agent_mapping: dict[Actions, BaseAgent[QuickActionContext, str]] = {
+            Actions.BulletPoints: BulletPointAgent(config),
+            Actions.Custom: CustomAgent(config),
+            Actions.Formaility: FormalityAgent(config),
+            Actions.Medium: MediumAgent(config),
+            Actions.PlainLanguage: PlainLanguageAgent(config),
+            Actions.SocialMediafy: SocialMediaAgent(config),
+            Actions.Summarize: SummarizeAgent(config)
+        }
+
+    async def run(self, action: Actions, text: str, options: str, current_user: User) -> StreamingResponse:
         """
         Perform the specified quick action on a given text and return a streaming response.
 
@@ -51,27 +64,25 @@ class QuickActionService:
             language=language,
         )
 
+        if action == Actions.Medium:
+            context = QuickActionContext[MediumExtra](
+                text=text,
+                options=options,
+                extras={
+                    "email": current_user.email or "",
+                    "family_name": current_user.family_name or "",
+                    "given_name": current_user.given_name or ""
+                }
+            )
+
+
         start_time = time.time()
         try:
-            app_config = self.config
-            response = None
-            match action:
-                case Actions.PlainLanguage:
-                    response = await plain_language(context, app_config, self.llm_facade)
-                case Actions.BulletPoints:
-                    response = await bullet_points(context, app_config, self.llm_facade)
-                case Actions.Summarize:
-                    response = await summarize(context, app_config, self.llm_facade)
-                case Actions.SocialMediafy:
-                    response = await social_mediafy(context, app_config, self.llm_facade)
-                case Actions.FORMALITY:
-                    response = await formality(context, app_config, self.llm_facade)
-                case Actions.MEDIUM:
-                    response = await medium(context, app_config, self.llm_facade)
-                case Actions.CUSTOM:
-                    response = await custom_prompt(context, app_config, self.llm_facade)
-                case _:
-                    raise ValueError(f"Unknown quick action: {action}")
+            agent = self.agent_mapping[action]
+            generator = agent.run_stream_text(
+                user_prompt=context.text,
+                deps=context)
+            response = await create_streaming_response(generator)
 
             process_time = time.time() - start_time
             if response is None:

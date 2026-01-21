@@ -1,17 +1,20 @@
+from ast import TypeVar
 from enum import Enum
 from typing import Annotated
 
 from pydantic import BaseModel
+from text_mate_backend.models.output_models import TypedDict
 
+TExtra = TypeVar("TExtra", bound=TypedDict)
 
 class Actions(str, Enum):
     PlainLanguage = "plain_language"
     BulletPoints = "bullet_points"
     Summarize = "summarize"
     SocialMediafy = "social_mediafy"
-    FORMALITY = "formality"
-    MEDIUM = "medium"
-    CUSTOM = "custom"
+    Formaility = "formality"
+    Medium = "medium"
+    Custom = "custom"
 
 
 class QuickActionRequest(BaseModel):
@@ -22,8 +25,13 @@ class QuickActionRequest(BaseModel):
         "Options to guide the rewriting process, such as writing style, target audience, and intent",
     ] = ""
 
+class MediumExtra(TypedDict):
+    family_name: str
+    given_name: str
+    email: str
 
-class QuickActionContext(BaseModel):
+class QuickActionContext[TExtra](BaseModel):
     text: str
     options: str
     language: str | None = None
+    extras: TExtra = {}
