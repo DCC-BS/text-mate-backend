@@ -1,10 +1,13 @@
 """Bullet point agent for converting text to bullet points."""
 
 from typing import override
+
 from pydantic_ai import RunContext
+
 from text_mate_backend.agents.agent_types.quick_actions.quick_action_base_agent import QuickActionBaseAgent
 from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.utils.configuration import Configuration
+
 
 class BulletPointAgent(QuickActionBaseAgent):
     def __init__(self, config: Configuration):

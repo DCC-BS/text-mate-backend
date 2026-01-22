@@ -2,7 +2,7 @@ import os
 from typing import override
 
 from dcc_backend_common.config import AbstractAppConfig, get_env_or_throw, log_secret
-from pydantic import Field, AnyHttpUrl
+from pydantic import Field
 
 
 class Configuration(AbstractAppConfig):
@@ -28,6 +28,8 @@ class Configuration(AbstractAppConfig):
     hmac_secret: str = Field(description="The secret key for HMAC authentication")
     azure_scope_description: str = Field(description="The scope description for Azure AD authentication")
 
+    disable_auth: bool = Field(description="Flag to disable authentification")
+
     @classmethod
     @override
     def from_env(cls) -> "Configuration":
@@ -52,6 +54,7 @@ class Configuration(AbstractAppConfig):
             azure_frontend_client_id=get_env_or_throw("AZURE_FRONTEND_CLIENT_ID"),
             azure_scope_description=get_env_or_throw("AZURE_SCOPE_DESCRIPTION"),
             hmac_secret=get_env_or_throw("HMAC_SECRET"),
+            disable_auth=os.getenv("DISABLE_AUTH", "false").lower().strip() == "true",
         )
 
     @override
@@ -75,5 +78,6 @@ class Configuration(AbstractAppConfig):
             azure_frontend_client_id={log_secret(self.azure_frontend_client_id)},
             azure_scope_description={self.azure_scope_description},
             hmac_secret={log_secret(self.hmac_secret)}
+            disable_auth={self.disable_auth}
         )
         """

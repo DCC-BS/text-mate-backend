@@ -4,10 +4,14 @@ import hmac
 from fastapi_azure_auth.user import User
 
 
-def get_pseudonymized_user_id(user: User, secret_key: str) -> str:
+def get_pseudonymized_user_id(user: User | None, secret_key: str) -> str:
     """
     Generates a consistent, one-way pseudonym for a given user ID.
     """
+
+    if user is None:
+        return "Not authenticated"
+
     user_id = user.oid or user.sub
     if user_id is None:
         raise ValueError("User ID (oid or sub) not found in user object")

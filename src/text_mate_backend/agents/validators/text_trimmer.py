@@ -1,11 +1,12 @@
 """Text trimming validator for agent outputs."""
 
+from typing import Any, TypeVar
+
 from pydantic_ai import Agent, RunContext
-from typing import TypeVar, Any
 
 from text_mate_backend.agents.postprocessing import trim_text
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def apply_text_trimmer[T](agent: Agent[Any, T]) -> Agent[Any, T]:

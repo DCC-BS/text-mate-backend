@@ -1,10 +1,12 @@
 """Plain language agent for converting text to simple language."""
 
 from typing import final, override
-from pydantic_ai import Agent, RunContext
 
+from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
+
 from text_mate_backend.agents.agent_types.quick_actions.quick_action_base_agent import QuickActionBaseAgent
+from text_mate_backend.agents.base import UserPrompt
 from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.easy_language import CLAUDE_TEMPLATE_LS, REWRITE_COMPLETE, RULES_LS, SYSTEM_MESSAGE_LS
@@ -25,7 +27,7 @@ class PlainLanguageAgent(QuickActionBaseAgent):
         async def check_readability_score(ctx: RunContext[QuickActionContext], text: str) -> dict:
             """Calculate basic readability metrics."""
             words = text.split()
-            sentences = [s.strip() for s in text.split('.') if s.strip()]
+            sentences = [s.strip() for s in text.split(".") if s.strip()]
             avg_word_length = sum(len(w) for w in words) / max(len(words), 1)
             avg_sentence_length = len(words) / max(len(sentences), 1)
 
@@ -43,7 +45,7 @@ class PlainLanguageAgent(QuickActionBaseAgent):
         return SYSTEM_MESSAGE_LS
 
     @override
-    def process_prompt(self, prompt: str, deps: QuickActionContext):
+    def process_prompt(self, prompt: UserPrompt, deps: QuickActionContext):
         usr_prompt = CLAUDE_TEMPLATE_LS.format(prompt=prompt, completeness=REWRITE_COMPLETE, rules=RULES_LS)
 
         return super().process_prompt(usr_prompt, deps)

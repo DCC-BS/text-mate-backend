@@ -2,4 +2,4 @@
 
 from text_mate_backend.agents.base import BaseAgent
 
-__all__ = ['BaseAgent']
+__all__ = ["BaseAgent"]

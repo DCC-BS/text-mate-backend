@@ -12,19 +12,16 @@ from text_mate_backend.agents.agent_types.quick_actions.plain_language_agent imp
 from text_mate_backend.agents.agent_types.quick_actions.social_media_agent import SocialMediaAgent
 from text_mate_backend.agents.agent_types.quick_actions.summarize_agent import SummarizeAgent
 from text_mate_backend.agents.base import BaseAgent
-from text_mate_backend.models.quick_actions_models import Actions, MediumExtra, QuickActionContext
+from text_mate_backend.models.quick_actions_models import Actions, CurrentUser, QuickActionContext
 from text_mate_backend.services.actions.action_utils import create_streaming_response
-from text_mate_backend.services.pydantic_ai_facade import PydanticAIAgent
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.usage_tracking import User
 
 logger = get_logger("quick_action_service")
 
 
 @final
 class QuickActionService:
-    def __init__(self, llm_facade: PydanticAIAgent, config: Configuration) -> None:
-        self.llm_facade = llm_facade
+    def __init__(self, config: Configuration) -> None:
         self.config = config
 
         self.agent_mapping: dict[Actions, BaseAgent[QuickActionContext, str]] = {
@@ -34,10 +31,10 @@ class QuickActionService:
             Actions.Medium: MediumAgent(config),
             Actions.PlainLanguage: PlainLanguageAgent(config),
             Actions.SocialMediafy: SocialMediaAgent(config),
-            Actions.Summarize: SummarizeAgent(config)
+            Actions.Summarize: SummarizeAgent(config),
         }
 
-    async def run(self, action: Actions, text: str, options: str, current_user: User) -> StreamingResponse:
+    async def run(self, action: Actions, text: str, options: str, current_user: CurrentUser) -> StreamingResponse:
         """
         Perform the specified quick action on a given text and return a streaming response.
 
@@ -65,23 +62,12 @@ class QuickActionService:
         )
 
         if action == Actions.Medium:
-            context = QuickActionContext[MediumExtra](
-                text=text,
-                options=options,
-                extras={
-                    "email": current_user.email or "",
-                    "family_name": current_user.family_name or "",
-                    "given_name": current_user.given_name or ""
-                }
-            )
-
+            context = QuickActionContext[CurrentUser](text=text, options=options, extras=current_user)
 
         start_time = time.time()
         try:
             agent = self.agent_mapping[action]
-            generator = agent.run_stream_text(
-                user_prompt=context.text,
-                deps=context)
+            generator = agent.run_stream_text(user_prompt=context.text, deps=context)
             response = await create_streaming_response(generator)
 
             process_time = time.time() - start_time

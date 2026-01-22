@@ -15,7 +15,7 @@ from text_mate_backend.models.error_codes import NO_DOCUMENT
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.rule_models import RuelDocumentDescription
 from text_mate_backend.services.advisor import AdvisorService
-from text_mate_backend.services.azure_service import AzureService
+from text_mate_backend.utils.auth import AuthSchema
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
 
@@ -30,25 +30,23 @@ class AdvisorInput(BaseModel):
 @inject
 def create_router(
     advisor_service: AdvisorService = Provide[Container.advisor_service],
-    azure_service: AzureService = Provide[Container.azure_service],
+    auth_scheme: AuthSchema = Provide[Container.auth_scheme],
     config: Configuration = Provide[Container.config],
 ) -> APIRouter:
     logger.info("Creating advisor router")
     router: APIRouter = APIRouter(prefix="/advisor", tags=["advisor"])
 
-    azure_scheme = azure_service.azure_scheme
-
-    @router.get("/docs", dependencies=[Security(azure_scheme)])
+    @router.get("/docs", dependencies=[Security(auth_scheme)])
     def get_advisor_docs(
-        current_user: Annotated[User, Depends(azure_service.azure_scheme)],
+        current_user: Annotated[User | None, Depends(auth_scheme)],
     ) -> list[RuelDocumentDescription]:
         return advisor_service.get_docs(current_user)
 
-    @router.post("/validate", dependencies=[Security(azure_scheme)])
+    @router.post("/validate", dependencies=[Security(auth_scheme)])
     async def validate_advisor(
         request: Request,
         data: AdvisorInput,
-        current_user: Annotated[User, Depends(azure_service.azure_scheme)],
+        current_user: Annotated[User, Depends(auth_scheme)],
     ) -> StreamingResponse:
         pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
         logger.info(
@@ -72,7 +70,7 @@ def create_router(
 
         return StreamingResponse(event_generator(), media_type="text/event-stream")
 
-    @router.get("/doc/{name}", dependencies=[Security(azure_scheme)])
+    @router.get("/doc/{name}", dependencies=[Security(auth_scheme)])
     async def get_document(name: str) -> FileResponse:
         """
         Get the document description by name.

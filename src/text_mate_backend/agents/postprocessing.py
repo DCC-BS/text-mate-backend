@@ -1,8 +1,9 @@
 """Postprocessing utilities for agent outputs."""
+
 from typing import Any, Mapping
 
 from pydantic import BaseModel
-from structlog.typing import Context
+
 
 class PostprocessingContext(BaseModel):
     index: int
@@ -14,15 +15,16 @@ def trim_text(text: Any, context: PostprocessingContext) -> Any:
     if not isinstance(text, str):
         raise Exception("Input must be a string")
 
-    if context.isParial and context.index is not 0:
+    if context.isParial and context.index != 0:
         return text
 
     return text.lstrip()
 
+
 def replace_eszett(obj: Any, _: PostprocessingContext) -> Any:
     """Recursively replace ß with ss in all string fields."""
     if isinstance(obj, str):
-        return obj.replace('ß', 'ss')
+        return obj.replace("ß", "ss")
     elif isinstance(obj, BaseModel):
         for field_name in type(obj).model_fields:
             value = getattr(obj, field_name)

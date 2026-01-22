@@ -1,19 +1,22 @@
 from typing import override
+
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
+
 from text_mate_backend.agents.agent_types.quick_actions.quick_action_base_agent import QuickActionBaseAgent
-from text_mate_backend.models.quick_actions_models import MediumExtra, QuickActionContext
+from text_mate_backend.models.quick_actions_models import CurrentUser, QuickActionContext
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.emails import EMAIL_PROMPT_TEMPLATE
 from text_mate_backend.utils.offical_letter import OFFICIAL_LETTER_NOTICE
-from text_mate_backend.utils.usage_tracking import User
 
-MAIL_PROMPT = ("""
+MAIL_PROMPT = (
+    """
 You are an assistant that helps to write emails. The written email should follow the guidelines provided here: {EMAIL_PROMPT}
 """  # noqa: E501
 ).format(EMAIL_PROMPT=EMAIL_PROMPT_TEMPLATE)
 
-OFFICIAL_LETTER_PROMPT = ("""
+OFFICIAL_LETTER_PROMPT = (
+    """
 You are an assistant that helps to write official letters. The written text should follow the guidelines provided here: {OFFICIAL_LETTER_NOTICE}
 """  # noqa: E501
 ).format(OFFICIAL_LETTER_NOTICE=OFFICIAL_LETTER_NOTICE)
@@ -30,6 +33,7 @@ Start with an executive summary that provides an overview of the report's purpos
 End with a conclusion that summarizes the key insights and recommendations.
 """  # noqa: E501
 
+
 class MediumAgent(QuickActionBaseAgent):
     def __init__(self, config: Configuration):
         super().__init__(config)
@@ -39,14 +43,21 @@ class MediumAgent(QuickActionBaseAgent):
         agent = super().create_agent(model)
 
         @agent.tool
-        def get_current_user(ctx: RunContext[QuickActionContext[MediumExtra]]):
+        def get_current_user(ctx: RunContext[QuickActionContext[CurrentUser]]):
             """
-                Get info about the user name.
+            Get info about the user name.
             """
+            extras = ctx.deps.extras
+            if extras is None:
+                return {
+                    "given_name": "",
+                    "family_name": "",
+                    "email": "",
+                }
             return {
-                "given_name": ctx.deps.extras["given_name"],
-                "family_name": ctx.deps.extras["family_name"],
-                "email": ctx.deps.extras["email"]
+                "given_name": extras["given_name"],
+                "family_name": extras["family_name"],
+                "email": extras["email"],
             }
 
         return agent
