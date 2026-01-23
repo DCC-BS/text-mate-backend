@@ -5,11 +5,10 @@ from dcc_backend_common.config import AbstractAppConfig, get_env_or_throw, log_s
 from pydantic import Field
 
 
-class Configuration(AbstractAppConfig):
+
+
+class Configuration(AbstractAppConfig, LlmConfig):
     client_url: str = Field(description="The URL for client application")
-    openai_api_key: str = Field(description="The API key for authenticating with OpenAI")
-    llm_url: str = Field(description="The URL for LLM API")
-    llm_model: str = Field(description="The model for LLM API")
     llm_temperature: float = Field(description="The temperature for LLM API")
     llm_presence_penalty: float = Field(description="The presence penalty for LLM API")
     llm_top_p: float = Field(description="The top_p for LLM API")

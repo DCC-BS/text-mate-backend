@@ -34,9 +34,9 @@ Return your response with:
 """
 
 
-class SentenceRewriteAgent(BaseAgent[SentenceRewriteInput, SentenceRewriteResult]):
+class SentenceRewriteAgent(BaseAgent):
     def __init__(self, config: Configuration):
-        super().__init__(config)
+        super().__init__(config, deps_type=SentenceRewriteInput, output_type=SentenceRewriteResult)
 
     @override
     def create_agent(self, model: Model) -> Agent[SentenceRewriteInput, SentenceRewriteResult]:

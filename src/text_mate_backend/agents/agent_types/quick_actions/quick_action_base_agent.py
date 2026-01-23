@@ -10,9 +10,9 @@ from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.utils.configuration import Configuration
 
 
-class QuickActionBaseAgent(BaseAgent[QuickActionContext, str]):
+class QuickActionBaseAgent(BaseAgent):
     def __init__(self, config: Configuration):
-        super().__init__(config)
+        super().__init__(config, deps_type=QuickActionContext, output_type=str)
 
     @abstractmethod
     def create_instruction(self, ctx: RunContext[QuickActionContext]) -> str: ...

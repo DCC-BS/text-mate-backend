@@ -12,6 +12,7 @@ from text_mate_backend.agents.agent_types.quick_actions.plain_language_agent imp
 from text_mate_backend.agents.agent_types.quick_actions.social_media_agent import SocialMediaAgent
 from text_mate_backend.agents.agent_types.quick_actions.summarize_agent import SummarizeAgent
 from text_mate_backend.agents.base import BaseAgent
+from text_mate_backend.agents.debugging.agent_debugger import withDebbugger
 from text_mate_backend.models.quick_actions_models import Actions, CurrentUser, QuickActionContext
 from text_mate_backend.services.actions.action_utils import create_streaming_response
 from text_mate_backend.utils.configuration import Configuration
@@ -62,12 +63,15 @@ class QuickActionService:
         )
 
         if action == Actions.Medium:
-            context = QuickActionContext[CurrentUser](text=text, options=options, extras=current_user)
+            context = QuickActionContext[CurrentUser](
+                text=context.text, options=context.options, extras=current_user, language=context.language
+            )
 
         start_time = time.time()
         try:
             agent = self.agent_mapping[action]
-            generator = agent.run_stream_text(user_prompt=context.text, deps=context)
+
+            generator = withDebbugger(agent.run_stream_text)(user_prompt=context.text, deps=context)
             response = await create_streaming_response(generator)
 
             process_time = time.time() - start_time

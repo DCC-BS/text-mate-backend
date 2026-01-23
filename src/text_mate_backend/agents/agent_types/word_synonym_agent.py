@@ -1,10 +1,9 @@
 from typing import override
 
-from pydantic_ai import Agent
+from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 
-from text_mate_backend.agents.agent_types.quick_actions.plain_language_agent import RunContext
-from text_mate_backend.agents.agent_types.quick_actions.quick_action_base_agent import BaseAgent
+from text_mate_backend.agents.base import BaseAgent
 from text_mate_backend.models.word_synonym_models import WordSynonymInput, WordSynonymResult
 from text_mate_backend.utils.configuration import Configuration
 
@@ -28,9 +27,9 @@ Context:
 """
 
 
-class WordSynonymAgent(BaseAgent[WordSynonymInput, WordSynonymResult]):
+class WordSynonymAgent(BaseAgent):
     def __init__(self, config: Configuration):
-        super().__init__(config)
+        super().__init__(config, deps_type=WordSynonymInput, output_type=WordSynonymResult)
 
     @override
     def create_agent(self, model: Model) -> Agent[WordSynonymInput, WordSynonymResult]:

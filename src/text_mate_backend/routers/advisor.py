@@ -49,6 +49,7 @@ def create_router(
         current_user: Annotated[User, Depends(auth_scheme)],
     ) -> StreamingResponse:
         pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
+
         logger.info(
             "app_event",
             extra={

@@ -3,10 +3,19 @@
 import json
 from abc import ABC, abstractmethod
 from collections.abc import Callable
-from typing import Any, AsyncGenerator, Sequence, TypeAlias, TypedDict, TypeVar
+from typing import Any, AsyncGenerator, Sequence, Type, TypeAlias, TypedDict, TypeVar
 
 from dcc_backend_common.logger import get_logger
-from pydantic_ai import Agent, AgentRunResult, UserContent
+from pydantic_ai import (
+    Agent,
+    AgentRunResult,
+    AgentRunResultEvent,
+    AgentStreamEvent,
+    PartDeltaEvent,
+    UserContent,
+)
+from pydantic_ai.agent import NoneType
+from pydantic_ai.messages import TextPartDelta
 from pydantic_ai.models import Model
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.openai import OpenAIProvider
@@ -27,9 +36,18 @@ Preprocessor: TypeAlias = Callable[[Any, PostprocessingContext], Any]
 class BaseAgent[DepsType, OutputType](ABC):
     """Abstract base class for reusable pydantic AI agents with full feature support."""
 
-    def __init__(self, config: Configuration, enable_thinking: bool = False):
+    def __init__(
+        self,
+        config: Configuration,
+        deps_type: Type[DepsType] = NoneType,
+        output_type: Type[OutputType] = str,
+        enable_thinking: bool = False,
+    ):
         self.config = config
         self._enable_thinking = enable_thinking
+
+        self.deps_type = deps_type
+        self.output_type = output_type
 
         self._model = OpenAIChatModel(
             config.llm_model,
@@ -45,10 +63,8 @@ class BaseAgent[DepsType, OutputType](ABC):
         if prompt is None:
             return None
 
-        return list(prompt) + [" /no_think"]
-
-        # postfix = "" if self._enable_thinking else " /no_think"
-        # return f"{prompt}{postfix}"
+        postfix = "" if self._enable_thinking else " /no_think"
+        return list(prompt) + [postfix]
 
     def _log_result[TOutput](self, result: AgentRunResult[TOutput] | StreamedRunResult[DepsType, TOutput]):
         usage = result.usage()
@@ -71,7 +87,7 @@ class BaseAgent[DepsType, OutputType](ABC):
     def _get_postprocessors(self) -> list[Preprocessor]:
         postprocessors: list[Preprocessor] = [replace_eszett]
 
-        if OutputType is str:
+        if self.output_type is str:
             postprocessors.append(trim_text)
 
         return postprocessors
@@ -84,11 +100,11 @@ class BaseAgent[DepsType, OutputType](ABC):
     @abstractmethod
     def create_agent(self, model: Model) -> Agent[DepsType, OutputType]: ...
 
-    async def run(self, user_prompt: UserPrompt = None, deps: DepsType = None) -> OutputType:
+    async def run(self, user_prompt: UserPrompt = None, deps: DepsType = None, **kwargs: Any) -> OutputType:
         """Run the agent and return structured output."""
         prompt = self.process_prompt(user_prompt, deps)
 
-        result = await self._agent.run(user_prompt=prompt, deps=deps)
+        result = await self._agent.run(user_prompt=prompt, deps=deps, **kwargs)
 
         context = PostprocessingContext(isParial=False, index=0)
 
@@ -137,8 +153,6 @@ class BaseAgent[DepsType, OutputType](ABC):
         prompt = self.process_prompt(user_prompt, deps)
 
         async with self._agent.run_stream(user_prompt=prompt, deps=deps, **kwargs) as result:
-            logger.debug(json.dumps(result.all_messages()))
-
             i = 0
             async for chunk in result.stream_output():
                 context = PostprocessingContext(isParial=True, index=i)
@@ -146,3 +160,21 @@ class BaseAgent[DepsType, OutputType](ABC):
                 i += 1
 
             self._log_result(result)
+
+    async def run_stream_events(
+        self, user_prompt: UserPrompt = None, deps: DepsType = None, **kwargs: Any
+    ) -> AsyncGenerator[AgentStreamEvent | AgentRunResultEvent[OutputType]]:
+        prompt = self.process_prompt(user_prompt, deps)
+
+        async for event in self._agent.run_stream_events(user_prompt=prompt, deps=deps, **kwargs):
+            if isinstance(event, AgentRunResultEvent):
+                # context = PostprocessingContext(isParial=False, index=0)
+                # event.result.output = self._postprocess(event.result.output, context)
+                # self._log_result(event.result)
+                yield event
+            elif isinstance(event, PartDeltaEvent) and isinstance(event.delta, TextPartDelta):
+                context = PostprocessingContext(isParial=True, index=event.index)
+                event.delta.content_delta = self._postprocess(event.delta.content_delta, context)
+                yield event
+            else:
+                yield event

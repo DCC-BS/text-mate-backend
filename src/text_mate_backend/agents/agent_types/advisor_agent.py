@@ -25,11 +25,11 @@ INSTRUCTION = """ You are an expert in editorial guidelines. Review only the giv
                 Keep your answer in the original language."""
 
 
-class AdvisorAgent(BaseAgent[List[Rule], RulesValidationContainer]):
+class AdvisorAgent(BaseAgent):
     def __init__(self, config: Configuration):
-        super().__init__(config, enable_thinking=True)
+        super().__init__(config, deps_type=list[Rule], output_type=RulesValidationContainer, enable_thinking=True)
 
-    def create_agent(self, model: Model) -> Agent[List[Rule], RulesValidationContainer]:
+    def create_agent(self, model: Model):
         agent = Agent(model=model, deps_type=List[Rule], output_type=RulesValidationContainer)
 
         @agent.instructions

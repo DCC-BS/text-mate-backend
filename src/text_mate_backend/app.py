@@ -56,7 +56,8 @@ def create_app() -> FastAPI:
         This lifecycle context ensures the OpenID discovery/configuration is loaded before the application begins
         serving requests.
         """
-        await container.azure_service().load_config()
+        if not config.disable_auth:
+            await container.azure_service().load_config()
         yield
 
     app = FastAPI(
