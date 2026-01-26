@@ -1,11 +1,11 @@
 from abc import abstractmethod
 from typing import override
 
+from dcc_backend_common.llm_agent import BaseAgent
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 
 from text_mate_backend.agents.agent_utils import get_language_instruction
-from text_mate_backend.agents.base import BaseAgent
 from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.utils.configuration import Configuration
 

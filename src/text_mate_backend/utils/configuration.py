@@ -1,13 +1,12 @@
 import os
 from typing import override
 
-from dcc_backend_common.config import AbstractAppConfig, get_env_or_throw, log_secret
+from dcc_backend_common.config import get_env_or_throw, log_secret
+from dcc_backend_common.config.app_config import LlmConfig
 from pydantic import Field
 
 
-
-
-class Configuration(AbstractAppConfig, LlmConfig):
+class Configuration(LlmConfig):
     client_url: str = Field(description="The URL for client application")
     llm_temperature: float = Field(description="The temperature for LLM API")
     llm_presence_penalty: float = Field(description="The presence penalty for LLM API")
@@ -35,9 +34,14 @@ class Configuration(AbstractAppConfig, LlmConfig):
         language_tool_api_url = get_env_or_throw("LANGUAGE_TOOL_API_URL")
         language_tool_api_health_check_url = f"{language_tool_api_url.rstrip('/')}/languages"
 
+        llm_api_key = os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY")
+
+        if not llm_api_key:
+            raise ValueError("LLM_API_KEY environment variable must be set")
+
         return cls(
             client_url=get_env_or_throw("CLIENT_URL"),
-            openai_api_key=get_env_or_throw("OPENAI_API_KEY"),
+            llm_api_key=llm_api_key,
             llm_url=get_env_or_throw("LLM_URL"),
             llm_model=get_env_or_throw("LLM_MODEL"),
             llm_temperature=float(os.getenv("LLM_TEMPERATURE", "0.7")),
@@ -61,7 +65,7 @@ class Configuration(AbstractAppConfig, LlmConfig):
         return f"""
         Configuration(
             client_url={self.client_url},
-            openai_api_key={log_secret(self.openai_api_key)},
+            llm_api_key={log_secret(self.llm_api_key)},
             llm_url={self.llm_url},
             llm_model={self.llm_model},
             llm_temperature={self.llm_temperature},

@@ -1,6 +1,7 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+import logfire
 from dcc_backend_common.fastapi_error_handling import inject_api_error_handler
 from dcc_backend_common.fastapi_health_probes import health_probe_router
 from dcc_backend_common.fastapi_health_probes.router import ServiceDependency
@@ -22,6 +23,9 @@ from text_mate_backend.routers import (
 )
 from text_mate_backend.utils.middleware import add_logging_middleware
 
+logfire.configure()
+logfire.instrument_pydantic_ai()
+
 
 def create_app() -> FastAPI:
     init_logger()
@@ -40,7 +44,7 @@ def create_app() -> FastAPI:
     logger.info(f"Running with configuration: {config}")
 
     service_dependencies: list[ServiceDependency] = [
-        {"name": "llm", "health_check_url": config.llm_health_check_url, "api_key": config.openai_api_key},
+        {"name": "llm", "health_check_url": config.llm_health_check_url, "api_key": config.llm_api_key},
         {
             "name": "language tool",
             "health_check_url": config.language_tool_api_health_check_url,

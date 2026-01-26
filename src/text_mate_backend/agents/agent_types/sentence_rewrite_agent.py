@@ -1,10 +1,10 @@
 from typing import override
 
+from dcc_backend_common.llm_agent import BaseAgent
 from pydantic_ai import Agent
 from pydantic_ai.models import Model
 
 from text_mate_backend.agents.agent_types.quick_actions.formality_agent import RunContext
-from text_mate_backend.agents.base import BaseAgent
 from text_mate_backend.models.sentence_rewrite_model import SentenceRewriteInput, SentenceRewriteResult
 from text_mate_backend.utils.auth_settings import Configuration
 

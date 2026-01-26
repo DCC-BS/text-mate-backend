@@ -2,11 +2,11 @@
 
 from typing import final, override
 
+from dcc_backend_common.llm_agent.base_agent import UserPrompt
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 
 from text_mate_backend.agents.agent_types.quick_actions.quick_action_base_agent import QuickActionBaseAgent
-from text_mate_backend.agents.base import UserPrompt
 from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.easy_language import CLAUDE_TEMPLATE_LS, REWRITE_COMPLETE, RULES_LS, SYSTEM_MESSAGE_LS

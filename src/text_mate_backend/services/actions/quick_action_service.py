@@ -1,9 +1,12 @@
 import time
 from typing import final
 
+from dcc_backend_common.llm_agent import BaseAgent
+from dcc_backend_common.llm_agent.debugging.agent_debugger import withDebbugger
 from dcc_backend_common.logger import get_logger
 from fastapi.responses import StreamingResponse
 
+from text_mate_backend.agents import QuickActionBaseAgent
 from text_mate_backend.agents.agent_types.quick_actions.bullet_point_agent import BulletPointAgent
 from text_mate_backend.agents.agent_types.quick_actions.custom_agent import CustomAgent
 from text_mate_backend.agents.agent_types.quick_actions.formality_agent import FormalityAgent
@@ -11,8 +14,6 @@ from text_mate_backend.agents.agent_types.quick_actions.medium_agent import Medi
 from text_mate_backend.agents.agent_types.quick_actions.plain_language_agent import PlainLanguageAgent
 from text_mate_backend.agents.agent_types.quick_actions.social_media_agent import SocialMediaAgent
 from text_mate_backend.agents.agent_types.quick_actions.summarize_agent import SummarizeAgent
-from text_mate_backend.agents.base import BaseAgent
-from text_mate_backend.agents.debugging.agent_debugger import withDebbugger
 from text_mate_backend.models.quick_actions_models import Actions, CurrentUser, QuickActionContext
 from text_mate_backend.services.actions.action_utils import create_streaming_response
 from text_mate_backend.utils.configuration import Configuration
@@ -25,7 +26,7 @@ class QuickActionService:
     def __init__(self, config: Configuration) -> None:
         self.config = config
 
-        self.agent_mapping: dict[Actions, BaseAgent[QuickActionContext, str]] = {
+        self.agent_mapping: dict[Actions, QuickActionBaseAgent] = {
             Actions.BulletPoints: BulletPointAgent(config),
             Actions.Custom: CustomAgent(config),
             Actions.Formaility: FormalityAgent(config),
@@ -71,7 +72,7 @@ class QuickActionService:
         try:
             agent = self.agent_mapping[action]
 
-            generator = withDebbugger(agent.run_stream_text)(user_prompt=context.text, deps=context)
+            generator = agent.run_stream_text(user_prompt=context.text, deps=context)
             response = await create_streaming_response(generator)
 
             process_time = time.time() - start_time

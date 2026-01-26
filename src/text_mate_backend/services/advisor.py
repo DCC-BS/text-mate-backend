@@ -101,7 +101,7 @@ class AdvisorService:
             return
 
         for rule_batch in self._batched_rules(rules, MAX_RULES_PER_REQUEST):
-            validation_result = await self.agent.run(text, deps=rule_batch)
+            validation_result = await self.agent.run(text, deps=RulesContainer(rules=rule_batch))
             yield validation_result
 
     def _batched_rules(self, rules: list[Rule], batch_size: int, max_rules: int = MAX_RULES) -> Iterator[list[Rule]]:

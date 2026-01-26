@@ -1,9 +1,9 @@
 from typing import override
 
+from dcc_backend_common.llm_agent import BaseAgent
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 
-from text_mate_backend.agents.base import BaseAgent
 from text_mate_backend.models.word_synonym_models import WordSynonymInput, WordSynonymResult
 from text_mate_backend.utils.configuration import Configuration
 

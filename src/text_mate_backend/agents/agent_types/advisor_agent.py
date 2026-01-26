@@ -1,11 +1,8 @@
-import json
-from typing import List
-
+from dcc_backend_common.llm_agent import BaseAgent
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 
-from text_mate_backend.agents.base import BaseAgent
-from text_mate_backend.models.rule_models import Rule, RulesValidationContainer
+from text_mate_backend.models.rule_models import RulesContainer, RulesValidationContainer
 from text_mate_backend.utils.configuration import Configuration
 
 INSTRUCTION = """ You are an expert in editorial guidelines. Review only the given rules and
@@ -25,15 +22,15 @@ INSTRUCTION = """ You are an expert in editorial guidelines. Review only the giv
                 Keep your answer in the original language."""
 
 
-class AdvisorAgent(BaseAgent):
+class AdvisorAgent(BaseAgent[RulesContainer, RulesValidationContainer]):
     def __init__(self, config: Configuration):
-        super().__init__(config, deps_type=list[Rule], output_type=RulesValidationContainer, enable_thinking=True)
+        super().__init__(config, deps_type=RulesContainer, output_type=RulesValidationContainer, enable_thinking=True)
 
     def create_agent(self, model: Model):
-        agent = Agent(model=model, deps_type=List[Rule], output_type=RulesValidationContainer)
+        agent = Agent(model=model, deps_type=RulesContainer, output_type=RulesValidationContainer)
 
         @agent.instructions
-        def get_instruction(ctx: RunContext[List[Rule]]):
-            return INSTRUCTION.format(rules=json.dumps(ctx.deps))
+        def get_instruction(ctx: RunContext[RulesContainer]):
+            return INSTRUCTION.format(rules=ctx.deps.model_dump_json())
 
         return agent
