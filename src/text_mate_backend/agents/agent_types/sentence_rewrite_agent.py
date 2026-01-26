@@ -40,7 +40,9 @@ class SentenceRewriteAgent(BaseAgent):
 
     @override
     def create_agent(self, model: Model) -> Agent[SentenceRewriteInput, SentenceRewriteResult]:
-        agent = Agent(model=model, deps_type=SentenceRewriteInput, output_type=SentenceRewriteResult)
+        agent = Agent[SentenceRewriteInput, SentenceRewriteResult](
+            model=model, deps_type=SentenceRewriteInput, output_type=SentenceRewriteResult
+        )
 
         @agent.instructions
         def get_instruction(ctx: RunContext[SentenceRewriteInput]):

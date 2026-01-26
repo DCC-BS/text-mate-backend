@@ -4,10 +4,10 @@ import pytest
 from pytest_mock import MockerFixture
 from returns.result import Failure, Success
 from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.services.rewrite_text import RewriteOutput, TextRewriteService
 
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.text_rewrite_models import RewriteResult
-from text_mate_backend.services.rewrite_text import RewriteOutput, TextRewriteService
 
 
 @pytest.fixture

@@ -27,7 +27,7 @@ class QuickActionBaseAgent(BaseAgent):
                 {self.create_instruction(ctx)}
                 {get_language_instruction(ctx.deps.language)}
 
-                - Format the text as markdown, don't use any html tags.
+                - Format the text as raw text, don't use any html tags, dont use markdown.
                 - Don't include any introductory or closing remarks.
                 - Answer in the same language as the input text.
                 - Only respond with the answer, do not add any other text.

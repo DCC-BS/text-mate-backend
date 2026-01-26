@@ -33,7 +33,9 @@ class WordSynonymAgent(BaseAgent):
 
     @override
     def create_agent(self, model: Model) -> Agent[WordSynonymInput, WordSynonymResult]:
-        agent = Agent(model=model, deps_type=WordSynonymInput, output_type=WordSynonymResult)
+        agent = Agent[WordSynonymInput, WordSynonymResult](
+            model=model, deps_type=WordSynonymInput, output_type=WordSynonymResult
+        )
 
         @agent.instructions
         def get_instruction(ctx: RunContext[WordSynonymInput]):

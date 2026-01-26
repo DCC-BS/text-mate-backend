@@ -16,6 +16,7 @@ class Actions(str, Enum):
     Formaility = "formality"
     Medium = "medium"
     Custom = "custom"
+    Proofread = "proofread"
 
 
 class QuickActionRequest(BaseModel):

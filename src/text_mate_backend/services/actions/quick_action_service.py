@@ -1,8 +1,6 @@
 import time
 from typing import final
 
-from dcc_backend_common.llm_agent import BaseAgent
-from dcc_backend_common.llm_agent.debugging.agent_debugger import withDebbugger
 from dcc_backend_common.logger import get_logger
 from fastapi.responses import StreamingResponse
 
@@ -12,6 +10,7 @@ from text_mate_backend.agents.agent_types.quick_actions.custom_agent import Cust
 from text_mate_backend.agents.agent_types.quick_actions.formality_agent import FormalityAgent
 from text_mate_backend.agents.agent_types.quick_actions.medium_agent import MediumAgent
 from text_mate_backend.agents.agent_types.quick_actions.plain_language_agent import PlainLanguageAgent
+from text_mate_backend.agents.agent_types.quick_actions.proof_read_agent import ProofReadAgent
 from text_mate_backend.agents.agent_types.quick_actions.social_media_agent import SocialMediaAgent
 from text_mate_backend.agents.agent_types.quick_actions.summarize_agent import SummarizeAgent
 from text_mate_backend.models.quick_actions_models import Actions, CurrentUser, QuickActionContext
@@ -34,6 +33,7 @@ class QuickActionService:
             Actions.PlainLanguage: PlainLanguageAgent(config),
             Actions.SocialMediafy: SocialMediaAgent(config),
             Actions.Summarize: SummarizeAgent(config),
+            Actions.Proofread: ProofReadAgent(config),
         }
 
     async def run(self, action: Actions, text: str, options: str, current_user: CurrentUser) -> StreamingResponse:

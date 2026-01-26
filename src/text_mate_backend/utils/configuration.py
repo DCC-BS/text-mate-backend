@@ -28,6 +28,8 @@ class Configuration(LlmConfig):
 
     disable_auth: bool = Field(description="Flag to disable authentification")
 
+    environment: str = Field(description="The application environment", default="production")
+
     @classmethod
     @override
     def from_env(cls) -> "Configuration":
@@ -58,6 +60,7 @@ class Configuration(LlmConfig):
             azure_scope_description=get_env_or_throw("AZURE_SCOPE_DESCRIPTION"),
             hmac_secret=get_env_or_throw("HMAC_SECRET"),
             disable_auth=os.getenv("DISABLE_AUTH", "false").lower().strip() == "true",
+            environment=os.getenv("ENVIRONMENT", "production"),
         )
 
     @override
@@ -82,5 +85,6 @@ class Configuration(LlmConfig):
             azure_scope_description={self.azure_scope_description},
             hmac_secret={log_secret(self.hmac_secret)}
             disable_auth={self.disable_auth}
+            environment={self.environment}
         )
         """
