@@ -34,6 +34,8 @@ class Configuration(LlmConfig):
 
     environment: str = Field(description="The application environment", default="development")
 
+    is_prod: bool = Field(description="Flag to indicate if the environment is production", default=False)
+
     @classmethod
     @override
     def from_env(cls) -> "Configuration":
