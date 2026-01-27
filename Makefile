@@ -49,6 +49,11 @@ clean-build: ## Clean build artifacts
 	@echo "🚀 Removing build artifacts"
 	@uv run python -c "import shutil; import os; shutil.rmtree('dist') if os.path.exists('dist') else None"
 
+.PHONY: env-example
+env-example: ## Generate .env.example from Configuration model
+	@echo "📄 Generating .env.example"
+	@uv run -m dcc_backend_common.config.generate_env_example src.text_mate_backend.utils.configuration Configuration
+
 .PHONY: help
 help:
 	@uv run python -c "import re; \

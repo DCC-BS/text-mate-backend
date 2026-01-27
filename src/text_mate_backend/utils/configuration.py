@@ -7,28 +7,32 @@ from pydantic import Field
 
 
 class Configuration(LlmConfig):
-    client_url: str = Field(description="The URL for client application")
-    llm_temperature: float = Field(description="The temperature for LLM API")
-    llm_presence_penalty: float = Field(description="The presence penalty for LLM API")
-    llm_top_p: float = Field(description="The top_p for LLM API")
-    llm_top_k: int = Field(description="The top_k for LLM API")
-    language_tool_api_url: str = Field(description="The URL for Language Tool API")
+    client_url: str = Field(description="The URL for client application", default="http://localhost:3000")
+    language_tool_api_url: str = Field(description="The URL for Language Tool API", default="http://localhost:8010/v2")
 
-    docling_url: str = Field(description="The URL for Docling service")
+    docling_url: str = Field(
+        description="The URL for Docling service", default="http://localhost:5001/v1"
+    )
 
-    llm_health_check_url: str = Field(description="The URL for LLM health check API")
-    language_tool_api_health_check_url: str = Field(description="The URL for Language Tool API health check API")
+    llm_health_check_url: str = Field(
+        description="The URL for LLM health check API", default="http://localhost:8001/health"
+    )
+    language_tool_api_health_check_url: str = Field(
+        description="The URL for Language Tool API health check API",
+        default="http://localhost:8001/health",
+        json_schema_extra={"exclude_from_env": True},
+    )
 
     azure_client_id: str = Field(description="The client ID for Azure AD application")
     azure_tenant_id: str = Field(description="The tenant ID for Azure AD application")
     azure_frontend_client_id: str = Field(description="The client ID for Azure AD frontend application")
 
-    hmac_secret: str = Field(description="The secret key for HMAC authentication")
-    azure_scope_description: str = Field(description="The scope description for Azure AD authentication")
+    hmac_secret: str = Field(description="Used to pseudonymize user id. Create with openssl rand 32 | base64")
+    azure_scope_description: str = Field(description="The scope description for Azure AD authentication", default="user_impersonation")
 
-    disable_auth: bool = Field(description="Flag to disable authentification")
+    disable_auth: bool = Field(description="Flag to disable authentification", default=True)
 
-    environment: str = Field(description="The application environment", default="production")
+    environment: str = Field(description="The application environment", default="development")
 
     @classmethod
     @override
@@ -46,10 +50,6 @@ class Configuration(LlmConfig):
             llm_api_key=llm_api_key,
             llm_url=get_env_or_throw("LLM_URL"),
             llm_model=get_env_or_throw("LLM_MODEL"),
-            llm_temperature=float(os.getenv("LLM_TEMPERATURE", "0.7")),
-            llm_presence_penalty=float(os.getenv("LLM_PRESENCE_PENALTY", "1.5")),
-            llm_top_p=float(os.getenv("LLM_TOP_P", "0.8")),
-            llm_top_k=int(os.getenv("LLM_TOP_K", "20")),
             language_tool_api_url=language_tool_api_url,
             language_tool_api_health_check_url=language_tool_api_health_check_url,
             docling_url=get_env_or_throw("DOCLING_URL"),
@@ -71,10 +71,6 @@ class Configuration(LlmConfig):
             llm_api_key={log_secret(self.llm_api_key)},
             llm_url={self.llm_url},
             llm_model={self.llm_model},
-            llm_temperature={self.llm_temperature},
-            llm_presence_penalty={self.llm_presence_penalty},
-            llm_top_p={self.llm_top_p},
-            llm_top_k={self.llm_top_k},
             language_tool_api_url={self.language_tool_api_url},
             language_tool_api_health_check_url={self.language_tool_api_health_check_url},
             docling_url={self.docling_url},
