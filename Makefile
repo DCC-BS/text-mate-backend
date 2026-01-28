@@ -2,6 +2,7 @@
 install: ## Install the virtual environment and install the pre-commit hooks
 	@echo "🚀 Creating virtual environment using uv"
 	@uv sync
+	@make env-example
 	@uv run pre-commit install
 
 .PHONY: check
@@ -53,6 +54,11 @@ clean-build: ## Clean build artifacts
 env-example: ## Generate .env.example from Configuration model
 	@echo "📄 Generating .env.example"
 	@uv run -m dcc_backend_common.config.generate_env_example src.text_mate_backend.utils.configuration Configuration
+
+.PHONY: sync-env
+sync-env: ## Sync .env with .env.example
+	@echo "🔄 Syncing .env with .env.example"
+	@uvx --from dcc-backend-common sync-env-with-example
 
 .PHONY: help
 help:
