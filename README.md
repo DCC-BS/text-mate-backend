@@ -2,6 +2,18 @@
 
 Text Mate Backend is a powerful Python FastAPI service that provides advanced text analysis, correction, and transformation capabilities. This repository contains the backend services for the Text Mate application; the frontend is built with Nuxt.js and available at [https://github.com/DCC-BS/text-mate-frontend](https://github.com/DCC-BS/text-mate-frontend).
 
+---
+
+<p align="center">
+  <a href="https://dcc-bs.github.io/documentation/">DCC Documentation & Guidelines</a> | <a href="https://www.bs.ch/daten/databs/dcc">DCC Website</a>
+</p>
+
+---
+
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![License](https://img.shields.io/github/license/DCC-BS/transcribo-backend)](https://img.shields.io/github/license/DCC-BS/transcribo-backend)
+
+
 ## Features
 
 - **Text Correction**: Grammar and spelling correction using LanguageTool integration
