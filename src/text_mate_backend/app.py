@@ -18,15 +18,12 @@ from text_mate_backend.routers import (
     quick_action,
     sentence_rewrite,
     text_correction,
-    text_rewrite,
     word_synonym,
 )
-from text_mate_backend.utils.load_env import load_env
 from text_mate_backend.utils.middleware import add_logging_middleware
 
 
 def create_app() -> FastAPI:
-    load_env()
     init_logger()
 
     logger: BoundLogger = get_logger("app")
@@ -35,17 +32,22 @@ def create_app() -> FastAPI:
     # Set up dependency injection container
     logger.debug("Configuring dependency injection container")
     container = Container()
-    container.wire(
-        modules=[text_correction, text_rewrite, advisor, quick_action, word_synonym, sentence_rewrite, convert_route]
-    )
+    container.wire(modules=[text_correction, advisor, quick_action, word_synonym, sentence_rewrite, convert_route])
     container.check_dependencies()
     logger.info("Dependency injection configured")
 
     config = container.config()
     logger.info(f"Running with configuration: {config}")
 
+    # only in development mode, enable pydantic_ai logfire instrumentation
+    if config.environment == "development":
+        import logfire
+
+        logfire.configure()
+        logfire.instrument_pydantic_ai()
+
     service_dependencies: list[ServiceDependency] = [
-        {"name": "llm", "health_check_url": config.llm_health_check_url, "api_key": config.openai_api_key},
+        {"name": "llm", "health_check_url": config.llm_health_check_url, "api_key": config.llm_api_key},
         {
             "name": "language tool",
             "health_check_url": config.language_tool_api_health_check_url,
@@ -61,7 +63,8 @@ def create_app() -> FastAPI:
         This lifecycle context ensures the OpenID discovery/configuration is loaded before the application begins
         serving requests.
         """
-        await container.azure_service().load_config()
+        if not config.disable_auth:
+            await container.azure_service().load_config()
         yield
 
     app = FastAPI(
@@ -96,7 +99,6 @@ def create_app() -> FastAPI:
     # Include routers
     logger.debug("Registering API routers")
     app.include_router(text_correction.create_router())
-    app.include_router(text_rewrite.create_router())
     app.include_router(advisor.create_router())
     app.include_router(quick_action.create_router())
     app.include_router(word_synonym.create_router())

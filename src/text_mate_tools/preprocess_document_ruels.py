@@ -5,9 +5,9 @@ from pathlib import Path
 from llama_index.core.prompts import PromptTemplate
 from llama_index.core.schema import Document
 from llama_index.readers.file import PDFReader  # type: ignore
+from text_mate_backend.customLLMs.qwen3 import QwenVllm
 from tqdm import tqdm
 
-from text_mate_backend.customLLMs.qwen3 import QwenVllm
 from text_mate_backend.models.rule_models import Rule, RulesContainer
 from text_mate_backend.utils.configuration import Configuration
 
