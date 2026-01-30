@@ -17,6 +17,7 @@ class Actions(str, Enum):
     Medium = "medium"
     Custom = "custom"
     Proofread = "proofread"
+    CharacterSpeech = "character_speech"
 
 
 class QuickActionRequest(BaseModel):

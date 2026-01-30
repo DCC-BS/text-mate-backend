@@ -6,6 +6,7 @@ from fastapi.responses import StreamingResponse
 
 from text_mate_backend.agents import QuickActionBaseAgent
 from text_mate_backend.agents.agent_types.quick_actions.bullet_point_agent import BulletPointAgent
+from text_mate_backend.agents.agent_types.quick_actions.character_speech_agent import CharacterSpeechAgent
 from text_mate_backend.agents.agent_types.quick_actions.custom_agent import CustomAgent
 from text_mate_backend.agents.agent_types.quick_actions.formality_agent import FormalityAgent
 from text_mate_backend.agents.agent_types.quick_actions.medium_agent import MediumAgent
@@ -34,6 +35,7 @@ class QuickActionService:
             Actions.SocialMediafy: SocialMediaAgent(config),
             Actions.Summarize: SummarizeAgent(config),
             Actions.Proofread: ProofReadAgent(config),
+            Actions.CharacterSpeech: CharacterSpeechAgent(config),
         }
 
     async def run(self, action: Actions, text: str, options: str, current_user: CurrentUser) -> StreamingResponse:

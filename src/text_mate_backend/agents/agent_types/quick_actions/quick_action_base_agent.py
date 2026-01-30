@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import override
 
-from dcc_backend_common.llm_agent import BaseAgent
+from dcc_backend_common.llm_agent import BaseAgent, Preprocessor
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 
