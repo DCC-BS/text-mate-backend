@@ -9,16 +9,16 @@ to markdown with image extraction capabilities.
 import asyncio
 from typing import Annotated
 
+from dcc_backend_common.logger import get_logger
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request, Security, UploadFile
 from fastapi_azure_auth.user import User
 
 from text_mate_backend.container import Container
 from text_mate_backend.models.conversion_result import ConversionResult
-from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.document_conversion_service import DocumentConversionService
+from text_mate_backend.utils.auth import AuthSchema
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
 
 logger = get_logger("convert_router")
@@ -27,7 +27,7 @@ logger = get_logger("convert_router")
 @inject
 def create_router(
     document_conversion_service: DocumentConversionService = Provide[Container.document_conversion_service],
-    azure_service: AzureService = Provide[Container.azure_service],
+    auth_scheme: AuthSchema = Provide[Container.auth_scheme],
     config: Configuration = Provide[Container.config],
 ) -> APIRouter:
     """
@@ -42,13 +42,11 @@ def create_router(
     logger.info("Creating convert router")
     router: APIRouter = APIRouter(prefix="/convert", tags=["convert"])
 
-    azure_scheme = azure_service.azure_scheme
-
-    @router.post("/doc", summary="Convert document to markdown", dependencies=[Security(azure_scheme)])
+    @router.post("/doc", summary="Convert document to markdown", dependencies=[Security(auth_scheme)])
     async def convert(
         request: Request,
         file: UploadFile,
-        current_user: Annotated[User, Depends(azure_scheme)],
+        current_user: Annotated[User, Depends(auth_scheme)],
     ) -> ConversionResult:
         """
         Convert the content of an uploaded document to markdown with images.

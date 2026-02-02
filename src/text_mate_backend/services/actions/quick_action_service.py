@@ -1,34 +1,46 @@
 import time
 from typing import final
 
+from dcc_backend_common.logger import get_logger
 from fastapi.responses import StreamingResponse
-from returns.result import safe
 
-from text_mate_backend.models.quick_actions_models import Actions, QuickActionContext
-from text_mate_backend.services.actions.bullet_points_action import bullet_points
-from text_mate_backend.services.actions.custom_action import custom_prompt
-from text_mate_backend.services.actions.formality_action import formality
-from text_mate_backend.services.actions.medium_action import medium
-from text_mate_backend.services.actions.plain_language_action import plain_language
-from text_mate_backend.services.actions.social_media_action import social_mediafy
-from text_mate_backend.services.actions.summarize_action import summarize
-from text_mate_backend.services.llm_facade import LLMFacade
+from text_mate_backend.agents import QuickActionBaseAgent
+from text_mate_backend.agents.agent_types.quick_actions.bullet_point_agent import BulletPointAgent
+from text_mate_backend.agents.agent_types.quick_actions.character_speech_agent import CharacterSpeechAgent
+from text_mate_backend.agents.agent_types.quick_actions.custom_agent import CustomAgent
+from text_mate_backend.agents.agent_types.quick_actions.formality_agent import FormalityAgent
+from text_mate_backend.agents.agent_types.quick_actions.medium_agent import MediumAgent
+from text_mate_backend.agents.agent_types.quick_actions.plain_language_agent import PlainLanguageAgent
+from text_mate_backend.agents.agent_types.quick_actions.proof_read_agent import ProofReadAgent
+from text_mate_backend.agents.agent_types.quick_actions.social_media_agent import SocialMediaAgent
+from text_mate_backend.agents.agent_types.quick_actions.summarize_agent import SummarizeAgent
+from text_mate_backend.models.quick_actions_models import Actions, CurrentUser, QuickActionContext
+from text_mate_backend.services.actions.action_utils import create_streaming_response
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("quick_action_service")
 
 
 @final
 class QuickActionService:
-    def __init__(self, llm_facade: LLMFacade, config: Configuration) -> None:
-        self.llm_facade = llm_facade
+    def __init__(self, config: Configuration) -> None:
         self.config = config
 
-    @safe
-    def run(self, action: Actions, text: str, options: str) -> StreamingResponse:
+        self.agent_mapping: dict[Actions, QuickActionBaseAgent] = {
+            Actions.BulletPoints: BulletPointAgent(config),
+            Actions.Custom: CustomAgent(config),
+            Actions.Formality: FormalityAgent(config),
+            Actions.Medium: MediumAgent(config),
+            Actions.PlainLanguage: PlainLanguageAgent(config),
+            Actions.SocialMediafy: SocialMediaAgent(config),
+            Actions.Summarize: SummarizeAgent(config),
+            Actions.Proofread: ProofReadAgent(config),
+            Actions.CharacterSpeech: CharacterSpeechAgent(config),
+        }
+
+    async def run(self, action: Actions, text: str, options: str, current_user: CurrentUser) -> StreamingResponse:
         """
-        Perform the specified quick action on the given text and return a streaming response.
+        Perform the specified quick action on a given text and return a streaming response.
 
         Parameters:
             action (Actions): The quick action to execute.
@@ -41,7 +53,7 @@ class QuickActionService:
             StreamingResponse: A streaming response containing the processed text.
 
         Raises:
-            ValueError: If the action is unknown or the action returned None.
+            ValueError: If action is unknown or action returned None.
         """
         segments = [seg.strip() for seg in options.split(";") if seg.strip()]
         lang_segment = next((s for s in segments if s.startswith("language code:")), None)
@@ -53,27 +65,17 @@ class QuickActionService:
             language=language,
         )
 
+        if action == Actions.Medium:
+            context = QuickActionContext[CurrentUser](
+                text=context.text, options=context.options, extras=current_user, language=context.language
+            )
+
         start_time = time.time()
         try:
-            app_config = self.config
-            response = None
-            match action:
-                case Actions.PlainLanguage:
-                    response = plain_language(context, app_config, self.llm_facade)
-                case Actions.BulletPoints:
-                    response = bullet_points(context, app_config, self.llm_facade)
-                case Actions.Summarize:
-                    response = summarize(context, app_config, self.llm_facade)
-                case Actions.SocialMediafy:
-                    response = social_mediafy(context, app_config, self.llm_facade)
-                case Actions.FORMALITY:
-                    response = formality(context, app_config, self.llm_facade)
-                case Actions.MEDIUM:
-                    response = medium(context, app_config, self.llm_facade)
-                case Actions.CUSTOM:
-                    response = custom_prompt(context, app_config, self.llm_facade)
-                case _:
-                    raise ValueError(f"Unknown quick action: {action}")
+            agent = self.agent_mapping[action]
+
+            generator = agent.run_stream_text(user_prompt=context.text, deps=context)
+            response = await create_streaming_response(generator)
 
             process_time = time.time() - start_time
             if response is None:

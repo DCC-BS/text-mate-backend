@@ -1,6 +1,7 @@
 import time
 from typing import final
 
+from dcc_backend_common.logger import get_logger
 from returns.curry import partial
 from returns.pipeline import flow
 from returns.pointfree import map_
@@ -14,7 +15,6 @@ from text_mate_backend.models.text_corretion_models import (
 )
 from text_mate_backend.services.language_tool_service import LanguageToolService
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("text_correction_service")
 

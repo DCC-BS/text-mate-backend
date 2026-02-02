@@ -1,9 +1,8 @@
 import asyncio
 from types import TracebackType
 
+from dcc_backend_common.logger import get_logger
 from fastapi import Request
-
-from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("cancel_on_disconnect")
 
