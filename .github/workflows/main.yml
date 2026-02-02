@@ -10,8 +10,9 @@ on:
 
 jobs:
     backend-ci:
-        uses: DCC-BS/ci-workflows/.github/workflows/python-backend-ci.yml@v7
+        uses: DCC-BS/ci-workflows/.github/workflows/python-backend-ci.yml@v8
         with:
             python_versions: '["3.14"]'
             quality_python_version: "3.14"
             check_command: "make check"
+            uv_version: 0.9.28
