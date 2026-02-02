@@ -401,14 +401,14 @@ name = "cohere"
 version = "5.20.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "fastavro" },
-    { name = "httpx" },
-    { name = "pydantic" },
-    { name = "pydantic-core" },
-    { name = "requests" },
-    { name = "tokenizers" },
-    { name = "types-requests" },
-    { name = "typing-extensions" },
+    { name = "fastavro", marker = "sys_platform != 'emscripten'" },
+    { name = "httpx", marker = "sys_platform != 'emscripten'" },
+    { name = "pydantic", marker = "sys_platform != 'emscripten'" },
+    { name = "pydantic-core", marker = "sys_platform != 'emscripten'" },
+    { name = "requests", marker = "sys_platform != 'emscripten'" },
+    { name = "tokenizers", marker = "sys_platform != 'emscripten'" },
+    { name = "types-requests", marker = "sys_platform != 'emscripten'" },
+    { name = "typing-extensions", marker = "sys_platform != 'emscripten'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/dd/52/08564d1820970010d30421cd6e36f2e4ca552646504d3fe532eef282c88d/cohere-5.20.2.tar.gz", hash = "sha256:0aa9f3735626b70eedf15c231c61f3a58e7f8bbe5f0509fe7b2e6606c5d420f1", size = 180820, upload-time = "2026-01-23T13:42:51.308Z" }
 wheels = [
@@ -3624,15 +3624,12 @@ dependencies = [
     { name = "dependency-injector" },
     { name = "fastapi", extra = ["standard"] },
     { name = "fastapi-azure-auth" },
-    { name = "python-dotenv" },
     { name = "python-jose", extra = ["cryptography"] },
     { name = "requests" },
     { name = "returns" },
     { name = "structlog" },
-    { name = "tqdm" },
     { name = "types-requests" },
     { name = "types-setuptools" },
-    { name = "types-tqdm" },
 ]
 
 [package.dev-dependencies]
@@ -3647,7 +3644,9 @@ dev = [
     { name = "pytest-mock" },
     { name = "ruff" },
     { name = "tox-uv" },
+    { name = "tqdm" },
     { name = "ty" },
+    { name = "types-tqdm" },
     { name = "version-pioneer" },
 ]
 
@@ -3657,15 +3656,12 @@ requires-dist = [
     { name = "dependency-injector", specifier = ">=4.48.3" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.128.0" },
     { name = "fastapi-azure-auth", specifier = ">=5.2.0" },
-    { name = "python-dotenv", specifier = ">=1.2.1" },
     { name = "python-jose", extras = ["cryptography"], specifier = ">=3.5.0" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "returns", specifier = ">=0.26.0" },
     { name = "structlog", specifier = ">=25.5.0" },
-    { name = "tqdm", specifier = ">=4.67.1" },
     { name = "types-requests", specifier = ">=2.32.4.20260107" },
     { name = "types-setuptools", specifier = ">=80.9.0.20251223" },
-    { name = "types-tqdm", specifier = ">=4.67.0.20250809" },
 ]
 
 [package.metadata.requires-dev]
@@ -3680,7 +3676,9 @@ dev = [
     { name = "pytest-mock", specifier = ">=3.14.0" },
     { name = "ruff", specifier = ">=0.14.13" },
     { name = "tox-uv", specifier = ">=1.11.3" },
+    { name = "tqdm", specifier = ">=4.67.1" },
     { name = "ty", specifier = ">=0.0.12" },
+    { name = "types-tqdm", specifier = ">=4.67.0.20250809" },
     { name = "version-pioneer", specifier = ">=0.0.13" },
 ]
 
