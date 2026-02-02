@@ -4,10 +4,11 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
+ENV UV_HTTP_TIMEOUT=120
 
 WORKDIR /app
 
-RUN apk add --no-cache git
+RUN apk add --no-cache build-base git protoc protobuf-dev rust cargo
 
 COPY pyproject.toml uv.lock ./
 
