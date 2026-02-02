@@ -1,7 +1,7 @@
 import re
-from multiprocessing import get_logger
 from typing import override
 
+from dcc_backend_common.logger import get_logger
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 
