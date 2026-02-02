@@ -5,7 +5,7 @@ from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 
 from text_mate_backend.models.sentence_rewrite_model import SentenceRewriteInput, SentenceRewriteResult
-from text_mate_backend.utils.auth_settings import Configuration
+from text_mate_backend.utils.configuration import Configuration
 
 INSTRUCTION = """
 You are an expert in language and rewriting. Your task is to generate
