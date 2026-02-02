@@ -29,7 +29,7 @@ class QuickActionService:
         self.agent_mapping: dict[Actions, QuickActionBaseAgent] = {
             Actions.BulletPoints: BulletPointAgent(config),
             Actions.Custom: CustomAgent(config),
-            Actions.Formaility: FormalityAgent(config),
+            Actions.Formality: FormalityAgent(config),
             Actions.Medium: MediumAgent(config),
             Actions.PlainLanguage: PlainLanguageAgent(config),
             Actions.SocialMediafy: SocialMediaAgent(config),

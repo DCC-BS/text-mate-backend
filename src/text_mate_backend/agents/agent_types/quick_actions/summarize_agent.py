@@ -39,7 +39,7 @@ def format_options(options: str) -> str:
                 "depending on the length of the text. "
             )
         case _:
-            logger.warning("Unknown summarize option, defaulting to concise manner", extra={options: options})
+            logger.warning("Unknown summarize option, defaulting to concise manner", extra={"options": options})
             return "in a concise manner"
 
 

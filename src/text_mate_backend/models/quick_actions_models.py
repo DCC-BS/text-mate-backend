@@ -13,7 +13,7 @@ class Actions(str, Enum):
     BulletPoints = "bullet_points"
     Summarize = "summarize"
     SocialMediafy = "social_mediafy"
-    Formaility = "formality"
+    Formality = "formality"
     Medium = "medium"
     Custom = "custom"
     Proofread = "proofread"

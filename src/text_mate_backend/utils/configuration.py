@@ -10,9 +10,7 @@ class Configuration(LlmConfig):
     client_url: str = Field(description="The URL for client application", default="http://localhost:3000")
     language_tool_api_url: str = Field(description="The URL for Language Tool API", default="http://localhost:8010/v2")
 
-    docling_url: str = Field(
-        description="The URL for Docling service", default="http://localhost:5001/v1"
-    )
+    docling_url: str = Field(description="The URL for Docling service", default="http://localhost:5001/v1")
 
     llm_health_check_url: str = Field(
         description="The URL for LLM health check API", default="http://localhost:8001/health"
@@ -28,7 +26,9 @@ class Configuration(LlmConfig):
     azure_frontend_client_id: str = Field(description="The client ID for Azure AD frontend application")
 
     hmac_secret: str = Field(description="Used to pseudonymize user id. Create with openssl rand 32 | base64")
-    azure_scope_description: str = Field(description="The scope description for Azure AD authentication", default="user_impersonation")
+    azure_scope_description: str = Field(
+        description="The scope description for Azure AD authentication", default="user_impersonation"
+    )
 
     disable_auth: bool = Field(description="Flag to disable authentification", default=True)
 
