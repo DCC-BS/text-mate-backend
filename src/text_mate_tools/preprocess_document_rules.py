@@ -49,7 +49,7 @@ Rules documentation:
 Your task:
 1. Extract all rules from the document.
 2. Identify the file name and page number of the document json.
-3. Provide an example of the ruel in use.
+3. Provide an example of the rule in use.
 4. Keep the text in the original language.
 5. Ignore Indexes, tables of contents, and other non-relevant content.
 
