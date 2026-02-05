@@ -85,3 +85,5 @@ cython_debug/
 
 # uv
 .uv/
+
+docs/private/

@@ -1,0 +1,228 @@
+{
+  "rules": [
+    {
+      "name": "Vermeidung von Anglizismen bei vorhandenen Entsprechungen",
+      "description": "Englische oder amerikanische Ausdrücke sollten vermieden werden, wenn es deutsche, französische oder italienische Entsprechungen gibt.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 1,
+      "example": "Der Bundesrat wird eingeladen, dafür zu sorgen, dass die Bundesverwaltung und die vom Bund kontrollierten Unternehmen die Verwendung englischer oder amerikanischer Ausdrücke vermeiden, wenn es deutsche, französische oder italienische Entsprechungen gibt."
+    },
+    {
+      "name": "Nomen erhalten Grossbuchstaben und Genus",
+      "description": "Nomen werden in der deutschen Sprache mit einem Grossbuchstaben und einem grammatischen Geschlecht (Genus) integriert. Sie erhalten einen passenden Artikel.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 2,
+      "example": "der Cocktail, die Dashcam, das Layout"
+    },
+    {
+      "name": "Regionale Unterschiede bei Artikeln",
+      "description": "Das gleiche Wort kann in Deutschland und der Schweiz mit unterschiedlichen Artikeln übernommen werden.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 2,
+      "example": "die Mail (Deutschland) vs. das Mail (Schweiz)"
+    },
+    {
+      "name": "Eigenständige Pluralendungen",
+      "description": "Nomen bilden manchmal eigene Pluralformen, die im Englischen nicht existieren.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 2,
+      "example": "die Babys, die Bosse, die Filme, die Sponsoren"
+    },
+    {
+      "name": "Verben im deutschen Konjugationssystem",
+      "description": "Englische Verben werden in das deutsche Konjugationssystem integriert.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 2,
+      "example": "sie joggen, ich habe getwittert, er killte, wir hatten geskypt"
+    },
+    {
+      "name": "Schreibweiseänderungen",
+      "description": "Die Schreibweise von Anglizismen kann sich im Vergleich zum englischen Original ändern.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 2,
+      "example": "E-Banking, Start-up, Lucky Looser (neben Lucky Loser)"
+    },
+    {
+      "name": "Pseudoanglizismen",
+      "description": "Wörter, die so aussehen, als wären sie aus dem Englischen entlehnt, aber in der betreffenden Bedeutung im Englischen nicht existieren.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 2,
+      "example": "das Handy, das Public Viewing, der Smoking, der Oldtimer"
+    },
+    {
+      "name": "Deutsche Wortbildungsmuster",
+      "description": "Anglizismen können durch deutsche Wortbildungsregeln erweitert werden (Zusammensetzung, Endungen, Vorsilben).",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 2,
+      "example": "die Managerin, der Vitaminkick, die Win-win-Situation, anturnen, verlinken"
+    },
+    {
+      "name": "Deutsche Wörter übernehmen neue Bedeutungen aus dem Englischen",
+      "description": "Ein bestehendes deutsches Wort kann von seinem englischen Äquivalent eine neue Bedeutung übernehmen, die es vorher nicht hatte. Das Verb 'realisieren' hatte ursprünglich nur die Bedeutung 'verwirklichen, in die Tat umsetzen', wird heute aber auch mit der Bedeutung des englischen 'to realize' (begreifen, einsehen) verwendet.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 3,
+      "example": "Realisieren in der Bedeutung 'begreifen' (z. B. 'Ich habe es endlich realisiert')"
+    },
+    {
+      "name": "Deutsche Ausdrücke nach englischem Modell gebildet",
+      "description": "Deutsche Ausdrücke werden mit deutschem Wortmaterial, aber nach dem Modell von englischen Ausdrücken gebildet. Klassisches Beispiel ist 'Wolkenkratzer' (nach engl. 'skyscraper').",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 3,
+      "example": "Wolkenkratzer (nach engl. skyscraper) oder 'Sinn machen' (nach engl. to make sense)"
+    },
+    {
+      "name": "Übernahme von sprachlichen Regeln aus dem Englischen",
+      "description": "Selbst sprachliche Regeln können übernommen werden. Beispiel ist der Apostroph beim Genitiv von Namen, der sich im Deutschen immer stärker verbreitet und nicht mehr als falsch gilt.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 3,
+      "example": "Mandy’s Nagelstudio (Genitiv mit Apostroph)"
+    },
+    {
+      "name": "Anglizismen zur Benennung neuer Realitäten",
+      "description": "Anglizismen dienen dazu, neue Gegenstände oder Konzepte zu bezeichnen. Beispiele sind 'Bitcoin', 'Blockchain-Technologie', 'Shitstorm', 'Cybermobbing'.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 3,
+      "example": "Blockchain-Technologie"
+    },
+    {
+      "name": "Anglizismen als Ausdruck von Lebensgefühl",
+      "description": "Anglizismen drücken eine Geisteshaltung oder Lebensgefühl aus, z. B. 'Bro', 'easy', 'crazy', 'Challenge'.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 3,
+      "example": "Verwendung von 'Challenge' im Sinne von 'Herausforderung'"
+    },
+    {
+      "name": "Etablierung von Anglizismen",
+      "description": "Wenn ein Anglizismus im Deutschen etabliert ist und es keine überzeugenden deutschen Alternativen dafür gibt, dann verwenden Sie den Anglizismus. Es bringt nichts, geläufige Wörter wie E-Mail, Film, Pullover, surfen oder Leasing durch fragwürdige deutsche Bildungen zu ersetzen, die niemand kennt.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 4,
+      "example": "E-Mail, Film, Pullover, surfen, Leasing"
+    },
+    {
+      "name": "Zurückhaltung bei neuen Anglizismen",
+      "description": "Neue Anglizismen sollten mit Zurückhaltung eingesetzt werden. Prüfen Sie insbesondere, ob es nicht passende deutsche Alternativen gibt. Steht ein Anglizismus nicht im Wörterbuch, so kann das ein Zeichen dafür sein, dass er noch relativ neu ist.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 4,
+      "example": "Verwenden Sie nicht 'Cybersecurity', sondern 'Netzsicherheit' (falls vorhanden) oder prüfen Sie, ob eine deutsche Alternative existiert."
+    },
+    {
+      "name": "Grundsatz der sachgerechten, klaren und bürgerfreundlichen Sprache",
+      "description": "Anzustreben ist eine sachgerechte, klare und bürgerfreundliche Sprache gemäss Artikel 7 Absatz 1 des Sprachengesetzes. Überlegen Sie bei jedem konkreten Fall, ob die Verwendung des Anglizismus angebracht oder problematisch ist.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 4,
+      "example": "Verwenden Sie in offiziellen Bundesdokumenten 'Informationssystem' statt 'Information System', um die Verständlichkeit für alle Bürger zu gewährleisten."
+    },
+    {
+      "name": "Vermeidung von Anglizismen mit deutschen Alternativen",
+      "description": "In Behördentexten sollten Anglizismen vermieden werden, wenn es eine existierende deutsche Bezeichnung gibt. Beispiele: 'elektronische Stimmabgabe' anstelle von 'E-Voting', 'Sicherheitskopie' anstelle von 'Backup', 'folgen' und 'teilen' anstelle von 'follow' und 'share'.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 5,
+      "example": "Statt 'E-Voting' wird 'elektronische Stimmabgabe' verwendet."
+    },
+    {
+      "name": "Anglizismen für neue Konzepte",
+      "description": "Anglizismen, die auf neue Technologien, Verfahren oder Konzepte verweisen (z. B. 'Computer', 'Bluetooth', 'Crowdfunding'), können angemessen verwendet werden. Es sollte jedoch geprüft werden, ob eine deutsche Bezeichnung geschaffen werden könnte.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 5,
+      "example": "Der Anglizismus 'App' wird verwendet, um eine mobile Anwendung zu bezeichnen."
+    },
+    {
+      "name": "Anglizismen als sprachliche Neuverpackung",
+      "description": "Anglizismen, die lediglich ein bekanntes Konzept sprachlich neu verpacken (z. B. 'Meeting' statt 'Sitzung', 'Event' statt 'Veranstaltung'), haben in Behördentexten keinen Mehrwert und sind zu vermeiden.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 5,
+      "example": "Statt 'Event' wird 'Veranstaltung' verwendet."
+    },
+    {
+      "name": "Passung des Anglizismus zum Text",
+      "description": "Die Entscheidung, einen Anglizismus zu verwenden, hängt vom Texttyp, seinem Stil und seiner Zielgruppe ab. In Behördentexten, deren Absender 'der Staat' ist, sollten Anglizismen besonders kritisch geprüft werden.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 5,
+      "example": "In einem Gesetzestext wird 'Location' nicht verwendet, sondern der deutsche Ausdruck 'Ort'."
+    },
+    {
+      "name": "Etablierter Anglizismus",
+      "description": "Der Anglizismus ist etabliert und steht in den Wörterbüchern. In fachlichen Texten sind solche Anglizismen (z.B. 'Router', 'Hedge-Fund') zu verwenden, da sie von Fachleuten bekannt sind.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 6,
+      "example": "In einem IT-Handbuch: 'Der Router verbindet das Netzwerk.'"
+    },
+    {
+      "name": "Neuer Anglizismus",
+      "description": "Der Anglizismus ist relativ neu und weist Unsicherheiten in Schreibweise oder Grammatik auf. Solche Anglizismen (z.B. 'Write-off-Bonds') sind zu vermeiden, stattdessen deutsche Alternativen zu suchen.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 6,
+      "example": "Anstelle von 'Write-off-Bonds' besser 'Abwicklungsgesellschaften' verwenden."
+    },
+    {
+      "name": "Anglizismus für neue Realität",
+      "description": "Anglizismen, die eine neue Realität bezeichnen (z.B. 'Blockchain'), sind zu bevorzugen, da sie oft keine deutsche Alternative haben.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 6,
+      "example": "In einer Wirtschaftszeitung: 'Blockchain-Technologie verändert die Finanzbranche.'"
+    },
+    {
+      "name": "Anglizismus als Modewort",
+      "description": "Anglizismen, die etwas Bekanntes beschreiben (z.B. 'Crazy' für 'verrückt'), sind zu vermeiden, da sie oft redundant sind.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 6,
+      "example": "Anstelle von 'crazy Angebot' besser 'verrücktes Angebot' schreiben."
+    },
+    {
+      "name": "Fachterminus",
+      "description": "Anglizismen als Fachbegriffe (z.B. 'Hedge-Fund', 'Router') sind in fachlichen Texten zulässig, da sie von Experten verstanden werden.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 6,
+      "example": "In einem Finanzbericht: 'Hedge-Fonds diversifizieren das Portfolio.'"
+    },
+    {
+      "name": "Stilistisch markierter Anglizismus",
+      "description": "Stilistisch auffällige Anglizismen (z.B. 'abchillen', 'cheap') sind in sachlichen Texten zu vermeiden, da sie nicht neutral wirken.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 6,
+      "example": "In einer Behördenanzeige: 'cheap Preise' durch 'günstige Preise' ersetzen."
+    },
+    {
+      "name": "Stellen Sie die Verständlichkeit sicher",
+      "description": "Behördentexte sollten verständlich sein. Anglizismen stellen oft eine besonders grosse Verständnishürde dar, gerade für Menschen, die nicht Englisch können. Bei geläufigen Anglizismen wie E-Mail oder Smartphone können Sie davon ausgehen, dass sie verstanden werden. Nicht allgemein verständliche Anglizismen sollten Sie hingegen erklären, wenn Sie sie verwenden. Je nach Textsorte gibt es dafür unterschiedliche Möglichkeiten. Sie können die Bedeutung des Anglizismus im Text umschreiben, dem englischen Ausdruck ein deutsches Äquivalent hinzufügen (oder umgekehrt) oder auch ein separates Glossar erstellen.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 7,
+      "example": "Immer mehr greift der Staat auf die Taktik des Schubsens zurück, um gewünschte Verhaltensveränderungen bei der Bevölkerung zu erreichen. Der Fachbegriff dafür lautet «Nudging»."
+    },
+    {
+      "name": "Substantiv Grossschreibung",
+      "description": "Substantive aus dem Englischen müssen grossgeschrieben werden (z.B. das Darknet).",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "das Darknet"
+    },
+    {
+      "name": "Komposita-Bildung",
+      "description": "Komposita werden mit Bindestrich oder zusammengeschrieben (z.B. das Smart-Farming, die Cybersicherheit).",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "das Smart-Farming"
+    },
+    {
+      "name": "E-Wörter",
+      "description": "E-Wörter erhalten einen Bindestrich und bei Substantiven ein grosses E (z.B. E-Book).",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "E-Book"
+    },
+    {
+      "name": "Pluralbildung",
+      "description": "Der Plural von Wörtern auf -y wird durch Anhängen von -s gebildet (z.B. Babys).",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "Babys"
+    },
+    {
+      "name": "Geschlechtergerechte Personenbezeichnungen",
+      "description": "Personenbezeichnungen aus dem Englischen müssen geschlechtergerecht formuliert werden (z.B. die Managerinnen und Manager, die Webmasterin oder der Webmaster).",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "die Managerinnen und Manager"
+    }
+  ]
+}

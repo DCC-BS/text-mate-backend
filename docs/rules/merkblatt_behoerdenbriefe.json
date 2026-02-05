@@ -1,0 +1,123 @@
+{
+  "rules": [
+    {
+      "name": "Persönlich, sachgerecht und verständlich",
+      "description": "Der Brief sollte persönlich, sachgerecht und verständlich sein. Stellen Sie sich die drei Fragen: Wem schreibe ich? Was schreibe ich? Wie schreibe ich?",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 2,
+      "example": "Beim Schreiben eines Briefes zu einer Steuererklärung fragen Sie: Wem schreibe ich (Steuerzahlerin XYZ)? Was schreibe ich (Steuerbescheid für 2023)? Wie schreibe ich (klar formuliert mit Erklärungen zu Abzügen)?"
+    },
+    {
+      "name": "Brückenschlag zwischen Staat und Bürger",
+      "description": "Eine gute Kommunikation ist wie ein Brückenschlag. Der Brief sollte der Bürgerin/dem Bürger entgegengehen und sie/ihn zum Reagieren anregen.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 2,
+      "example": "Ein Brief über behördliche Verfahren beginnt mit einer freundlichen Anrede und erklärt, warum das Schreiben wichtig ist, statt nur Formulare zu versenden."
+    },
+    {
+      "name": "Persönlicher Anspruch",
+      "description": "Ihr Brief wird nicht von einer Akte, einer Nummer oder einem Fall gelesen, sondern von einer realen Person in einer bestimmten Lebenssituation. Versetzen Sie sich in deren Lage: Wo steht sie im Leben? Welche Erfahrungen hat sie gemacht? Was erwartet sie? Was könnte Ihr Brief auslösen? Überlegen Sie auch, welches Bild Sie von sich und Ihrer Behörde zeichnen möchten – jeder Brief ist eine Visitenkarte.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 3,
+      "example": "Beginnen Sie den Brief mit einer persönlichen Anrede und einer kurzen Erwähnung der individuellen Lebenssituation der Empfängerin."
+    },
+    {
+      "name": "Sachgerechte Inhaltsgestaltung",
+      "description": "Ihr Brief dient einer Absicht. Sie wollen, dass die Empfängerin, der Empfänger Dinge erfährt und auf bestimmte Weise reagiert, z. B. eine Pflicht erfüllt oder einen Anspruch wahrnehmen kann. Fragen Sie sich: Was ist der Kern der Sache? Was will, was muss diese Person erfahren? Was soll oder kann sie tun? Halten meine Aussagen einer rechtlichen Prüfung stand?",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 3,
+      "example": "Formulieren Sie den Kern der Angelegenheit in klaren, rechtlich präzisen Sätzen und nennen Sie konkrete Handlungsaufforderungen."
+    },
+    {
+      "name": "Verständliche Formulierung",
+      "description": "Ihr Brief wirkt nur dann wie gewünscht, wenn er von der Leserin oder dem Leser verstanden wird. Dabei spielen deren Erfahrungen und Erwartungen, die Einstellung gegenüber Ihnen und Ihrer Behörde eine wichtige Rolle. Diese Voraussetungen sind von Person zu Person verschieden. Ihr Brief wird aber auf jeden Fall leichter verstanden, wenn Sie ihn möglichst einfach formulieren und übersichtlich gliedern.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 3,
+      "example": "Verwenden Sie kurze Sätze, gängige Begriffe und eine klare Gliederung mit Absätzen oder Nummerierungen."
+    },
+    {
+      "name": "Wer ist mein Gegenüber?",
+      "description": "Es spielt eine Rolle, ob Sie einer erfahrenen Juristin, einem jungen Asylbewerber, einer älteren Person mit einer Behinderung schreiben. Bringen Sie in Erfahrung, was Sie über die Person und ihre Lebensumstände wissen müssen. Wägen Sie ab, welche Interessen und Erwartungen sie hat, welche Befürchtungen oder Hoffnungen sie hegt.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 5,
+      "example": "Bevor Sie einen Brief an eine ältere Person mit Behinderung schreiben, recherchieren Sie, welche Unterstützungsbedarfe sie hat und berücksichtigen Sie dies in Ihrer Kommunikation."
+    },
+    {
+      "name": "Von Mensch zu Mensch",
+      "description": "Schreiben Sie in persönlichem Stil – sagen Sie «ich» und «Sie», wo es angebracht ist. Verschanzen Sie sich nicht hinter abstrakten Vorschriften und imaginären Schalterwänden. Befassen Sie in einem Bürgerbrief auch, was «zwischen den Zeilen» steht, Empfindungen wie Ärger oder Hoffnung. Bitten und danken Sie dort, wo es angebracht ist. Und entschuldigen Sie sich, wenn Ihnen ein Fehler unterlaufen ist.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 5,
+      "example": "Wenn ein Bürger eine Beschwerde einreicht, antworten Sie nicht nur mit juristischen Formulierungen, sondern zeigen Sie Empathie und bitten Sie um Klarstellung: «Ich verstehe Ihre Frustration und möchte gerne Ihre Sorge genauer verstehen.»"
+    },
+    {
+      "name": "Ich, meine Behörde und die angeschriebene Person",
+      "description": "Machen Sie sich bewusst, wie Sie sich und Ihre Aufgabe verstehen, wie Sie zur Adressatin oder zum Adressaten stehen. Eine gute Beziehung erleichtert die Kommunikation und die Kooperation. Prüfen Sie immer, ob Adresse, Anrede, Namen und Vornamen sowie weitere Personalien richtig sind!",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 5,
+      "example": "Bevor Sie einen Brief an eine Familie mit Migrationshintergrund schreiben, prüfen Sie, ob die Anrede (z. B. «Herr» vs. «Frau») und die Schreibweise des Namens korrekt sind, um Respekt zu zeigen."
+    },
+    {
+      "name": "Sachgerecht: WAS schreibe ich?",
+      "description": "Überlegen Sie genau, worum es geht. Gehen Sie in Ihrem Schreiben auf die Anliegen und Erwartungen der Bürgerin oder des Bürgers ein. Geben Sie angemessene Antworten und zeigen Sie gangbare Wege auf. Versuchen Sie, das eigentliche Anliegen auch dann zu treffen und anzusprechen, wenn es verhüllt oder nicht ins Zentrum gestellt wurde. Trennen Sie Wichtiges von Unwichtigem und lassen Sie Unnötiges weg!",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 6,
+      "example": "Wenn ein Bürger um einen Rechtsberatungstermin bittet, aber zwischen den Zeilen eine Existenzsorge ausdrückt, erklären Sie nicht nur die Formalia, sondern auch, wie Sie ihm konkret weiterhelfen können."
+    },
+    {
+      "name": "Clarify und Priorisiere Inhalte",
+      "description": "Legen Sie fest, was die angeschriebene Person erfahren soll. Ordnen Sie die Dinge nach ihrer Wichtigkeit. Geben Sie die notwendigen Erklärungen und Begründungen mit – aber nur diese. Vergewissern Sie sich, dass Ihre Aussagen sachlich zutreffen und rechtlich korrekt sind.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 7,
+      "example": "Beispiel: Ein Bürger fragt nach einem Service. Der Brief führt die Schritte in einer klaren Reihenfolge auf, beginnend mit der wichtigsten Information."
+    },
+    {
+      "name": "Antworte auf die Anliegen",
+      "description": "Gehen Sie auf die im Bürgerbrief geäusserten Anliegen ein. Nehmen Sie auch Ausdrücke auf, die der Absender oder die Absenderin verwendet. Machen Sie deutlich, worauf Sie eingehen können und worauf nicht.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 7,
+      "example": "Beispiel: Der Absender schreibt «Ich brauche dringend Hilfe». Der Antwortbrief verwendet den Ausdruck «dringend» und erklärt, welche Massnahmen sofort und welche in der nächsten Woche ergriffen werden."
+    },
+    {
+      "name": "Gib klare Anweisungen",
+      "description": "Geben Sie der Person die Anweisung oder Anleitung in ihrer konkreten Situation: Welche Schritte kann oder muss sie bis wann unternehmen? An welche Stelle kann oder soll sie gelangen?",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 7,
+      "example": "Beispiel: «Senden Sie die Dokumente bis spätestens 15. April an die Abteilung X. Bei Nicht-Einreichen wird der Antrag abgelehnt.»"
+    },
+    {
+      "name": "Verwende verstaändliche Sprache",
+      "description": "Versuchen Sie möglichst verständlich zu sein, und zwar in der Wortwahl wie auch in Satzbau und Textgliederung.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 8,
+      "example": "Beispiel: Statt «Rechtsverordnung gemäss § 12 Abs. 3» schreiben: «Sie müssen die Formulare bis zum 10. Mai einreichen.»"
+    },
+    {
+      "name": "Weg mit Floskeln und Jargon",
+      "description": "Vermeiden Sie Floskeln und Amtsjargon. Ersetzen Sie steife Formulierungen durch direkte Ausdrücke. Beispiel: Statt „Zur Beantwortung aller Fragen steht Ihnen unser Herr XY gerne zur Verfügung“ schreiben Sie „Rufen Sie uns an, wenn Sie Fragen haben“. Lassen Sie Amtsjargon wie „in Kenntnis setzen“ durch einfache Begriffe wie „mitteilen“ ersetzen.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 9,
+      "example": "Statt „Zur Beantwortung aller Fragen steht Ihnen unser Herr XY gerne zur Verfügung“ schreiben Sie „Rufen Sie uns an, wenn Sie Fragen haben.“"
+    },
+    {
+      "name": "Klare Gedanken – klare Sätze",
+      "description": "Verwenden Sie kurze und einfach gebaute Sätze. Entflechten Sie komplexe Sätze schrittweise. Je klarer der Gedanke, desto besser ist die Verständlichkeit.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 9,
+      "example": "Verwenden Sie kurze Sätze wie „Rufen Sie uns an, wenn Sie Fragen haben.“ statt langen, komplexen Satzkonstruktionen."
+    },
+    {
+      "name": "Der rote Faden",
+      "description": "Beginnen Sie mit dem wichtigsten Punkt. Legen Sie einen roten Faden durch schrittweise Gedankengänge. Gliedern Sie den Text übersichtlich.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 9,
+      "example": "Beginnen Sie mit der Hauptinformation, z. B.: „Ihre Anfrage wurde bearbeitet. Der Status ist wie folgt: ...“"
+    },
+    {
+      "name": "e-Mail – ein Sonderfall?",
+      "description": "Für E-Mails gelten dieselben Grundsätze wie für Briefe. Der Betreff muss kurz und klar sein. Halten Sie sich kurz, prüfen Sie Anhänge und setzen Sie Empfänger erst am Schluss ein.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 10,
+      "example": "Betreff: „Status Ihrer Anfrage“. Text: „Guten Tag, Ihre Anfrage wurde bearbeitet. ...“ (Empfänger werden erst vor dem Senden eingetragen)."
+    }
+  ]
+}

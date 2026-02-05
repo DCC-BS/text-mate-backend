@@ -1,0 +1,60 @@
+{
+  "rules": [
+    {
+      "name": "Verbot des generischen Maskulinums",
+      "description": "Die alleinige Verwendung der männlichen Form (generisches Maskulinum) zur Bezeichnung von Personen verschiedenen Geschlechts ist in Texten des Bundes nicht zulässig.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 7,
+      "example": "Nicht: 'Alle Stimmbürger sind aufgerufen...' (wenn alle Geschlechter gemeint sind). Besser: 'Alle Stimmbürgerinnen und Stimmbürger...' oder 'Alle Stimmberechtigten...'."
+    },
+    {
+      "name": "Verwendung von Paarformen",
+      "description": "Um Frauen und Männer sprachlich sichtbar zu machen, sind Paarformen zu verwenden, bei denen die weibliche und die männliche Personenbezeichnung aufgeführt werden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 7,
+      "example": "Korrekt: 'die Bürgerinnen und Bürger' oder 'der Präsident oder die Präsidentin'."
+    },
+    {
+      "name": "Konsistente Reihenfolge bei Paarformen",
+      "description": "Die gewählte Reihenfolge (ob weiblich oder männlich zuerst) sollte über den gesamten Text beibehalten werden, um die Lektüre zu erleichtern.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 8,
+      "example": "Wenn 'Nationalrätinnen und Nationalräte' verwendet wird, sollte diese Reihenfolge im Text beibehalten werden."
+    },
+    {
+      "name": "Keine Paarformen im Erstglied von Komposita",
+      "description": "Im ersten Element von zusammengesetzten Wörtern (Komposita) werden keine Paarformen verwendet.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 8,
+      "example": "Nicht: 'Kundinnen- und Kundendienst', sondern: 'Kundendienst'. Nicht: 'bürgerinnen- und bürgerfreundlich', sondern: 'bürgerfreundlich'."
+    },
+    {
+      "name": "Vermeidung von Komposita mit männlicher Personenbezeichnung",
+      "description": "Zusammengesetzte Wörter, die mit einer männlichen Personenbezeichnung beginnen, sollten vermieden werden, wenn es gute Alternativen gibt.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 9,
+      "example": "Statt: 'Anfängerkurs', besser: 'Grundkurs'. Statt: 'Expertenkommission', besser: 'Fachkommission'."
+    },
+    {
+      "name": "Zulässige Sparschreibung (Schrägstrich)",
+      "description": "In verknapptem Text (z.B. Formularen, Tabellen, Fussnoten) kann die Sparschreibung mit Schrägstrich verwendet werden. Im fortlaufenden Text ist sie nicht zugelassen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 9,
+      "example": "In einer Tabelle zulässig: 'die Richterin / der Richter' oder 'Politikerinnen/Politiker'."
+    },
+    {
+      "name": "Verbot von Klammern, Binnen-I und Genderzeichen",
+      "description": "Sparschreibungen mit Klammern, grossem Binnen-I oder Genderzeichen (Asterisk, Doppelpunkt, Unterstrich etc.) sind in Texten des Bundes nicht zugelassen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 10,
+      "example": "Nicht zulässig: 'Gesuchsteller(innen)', 'BürgerInnen' oder 'Bürger*innen'."
+    },
+    {
+      "name": "Grammatikalische Korrektheit bei Sparschreibungen",
+      "description": "Sparschreibungen mit Schrägstrich dürfen nicht zu grammatisch falschen Formen führen. Insbesondere muss vor dem Schrägstrich eine vollständige Wortform stehen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 10,
+      "example": "Nicht: 'Ärzt/-in', sondern: 'Arzt/Ärztin'. Nicht: 'Kolleg/-innen', sondern: 'Kolleginnen/Kollegen'."
+    }
+  ]
+}

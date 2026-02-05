@@ -1,0 +1,42 @@
+[
+    {
+        "title": "Empfehlungen Anglizismen",
+        "description": "Empfehlungen für den Umgang mit Anglizismen in deutschsprachigen Texten des Bundes",
+        "author": "Bundeskanzlei BK",
+        "edition": "März 2020",
+        "file": "empfehlungen-anglizismen-maerz-2020.pdf",
+        "access": ["all"]
+    },
+    {
+        "title": "Geschlechtergerechte Sprache",
+        "description": "Leitfaden zum geschlechtergerechten Formulieren in deutschsprachigen Texten des Bundes",
+        "author": "Bundeskanzlei BK",
+        "edition": "3., vollständig überarbeitete Auflage 2023",
+        "file": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+        "access": ["all"]
+    },
+    {
+        "title": "Rechtschreibung",
+        "description": "Leitfaden zur deutschen Rechtschreibung",
+        "author": "Bundeskanzlei BK",
+        "edition": "4., aktualisierte Auflage 2017",
+        "file": "rechtschreibleitfaden-2017.pdf",
+        "access": ["all"]
+    },
+    {
+        "title": "Schreibweisungen",
+        "description": "Weisungen der Bundeskanzlei zur Schreibung und zu Formulierungen in den deutschsprachigen amtlichen Texten des Bundes",
+        "author": "Bundeskanzlei BK",
+        "edition": "2., aktualisierte Auflage 2013 (korrigierte Ausgabe 2015)",
+        "file": "schreibweisungen.pdf",
+        "access": ["all"]
+    },
+    {
+        "title": "Behördenbriefe",
+        "description": "Dieses Merkblatt soll Sie dabei unterstützen, diese Briefe so zu verfassen, dass Sie damit zur guten Kommunikation zwischen dem Staat und den Bürgerinnen und Bürgern beitragen.",
+        "author": "Bundeskanzlei BK",
+        "edition": "2025",
+        "file": "merkblatt_behoerdenbriefe.pdf",
+        "access": ["all"]
+    }
+]
