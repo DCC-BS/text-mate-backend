@@ -4090,7 +4090,7 @@ wheels = [
 
 [[package]]
 name = "text-mate-backend"
-version = "0.2.0"
+version = "0.2.1"
 source = { editable = "." }
 dependencies = [
     { name = "dcc-backend-common", extra = ["pydantic-ai"] },
