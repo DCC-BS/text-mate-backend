@@ -1,0 +1,669 @@
+{
+  "rules": [
+    {
+      "name": "Paarformen",
+      "description": "In deutschsprachigen Texten des Bundes kommen Paarformen wie 'Stimmbürgerinnen und Stimmbürger' zum Einsatz.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 3,
+      "example": "Stimmbürgerinnen und Stimmbürger"
+    },
+    {
+      "name": "Substantivierte Adjektive/Partizipien",
+      "description": "Substantivierte Adjektive oder Partizipien wie 'Stimmberechtigte' werden verwendet.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 3,
+      "example": "Stimmberechtigte"
+    },
+    {
+      "name": "Geschlechtsunspezifische Nomen",
+      "description": "Geschlechtsunspezifische Nomen wie 'Personen mit Stimmrecht' sind erlaubt.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 3,
+      "example": "Personen mit Stimmrecht"
+    },
+    {
+      "name": "Kollektivbezeichnungen",
+      "description": "Kollektivbezeichnungen wie 'Stimmbevölkerung' werden eingesetzt.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 3,
+      "example": "Stimmbevölkerung"
+    },
+    {
+      "name": "Umschreibungen ohne Personenbezeichnungen",
+      "description": "Umschreibungen ohne explizite Personenbezeichnungen sind erlaubt.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 3,
+      "example": "Stimmberechtigte"
+    },
+    {
+      "name": "Generisches Maskulinum",
+      "description": "Das generische Maskulinum ist nicht zulässig. Stattdessen werden geschlechtsneutrale Formulierungen verwendet.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 3,
+      "example": "Personen mit Stimmrecht statt 'Stimmbürger'"
+    },
+    {
+      "name": "Sparschreibung mit Schrägstrich",
+      "description": "In verknapptem Text können Kurzformen mit Schrägstrich wie 'Stimmbürger/-innen' verwendet werden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 3,
+      "example": "Stimmbürger/-innen"
+    },
+    {
+      "name": "Kurzformen mit Klammern",
+      "description": "Kurzformen mit Klammern wie 'Stimmbürger(innen)' sind nicht zulässig.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 3,
+      "example": "Stimmbürger(innen)"
+    },
+    {
+      "name": "Kurzformen mit Binnen-I",
+      "description": "Kurzformen mit Binnen-I wie 'StimmbürgerInnen' sind nicht zulässig.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 3,
+      "example": "StimmbürgerInnen"
+    },
+    {
+      "name": "Kurzformen mit Genderzeichen",
+      "description": "Kurzformen mit Genderzeichen wie 'Stimmbürger*innen' oder 'Stimmbürger:innen' sind nicht zulässig.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 3,
+      "example": "Stimmbürger*innen"
+    },
+    {
+      "name": "Paarformen",
+      "description": "Geschlechtsspezifische Formulierungen durch Paarformen (z. B. \"Männer und Frauen\").",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 4,
+      "example": "Die Teilnehmer und Teilnehmerinnen diskutieren."
+    },
+    {
+      "name": "Sparschreibung",
+      "description": "Geschlechtsspezifische Formulierungen durch Sparschreibung (z. B. \"Menschen (alle Geschlechter)\").",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 4,
+      "example": "Der Arbeitnehmer (alle Geschlechter) hat Rechte."
+    },
+    {
+      "name": "Substantivierte Adjektive und Partizipien",
+      "description": "Geschlechtsneutrale Formulierungen durch Substantivierung von Adjektiven und Partizipien (z. B. \"alle Beteiligten\").",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 4,
+      "example": "Alle Beteiligten müssen unterschreiben."
+    },
+    {
+      "name": "Geschlechtsunspezifische Nomen",
+      "description": "Geschlechtsneutrale Formulierungen durch geschlechtsunspezifische Nomen (z. B. \"Personen\").",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 4,
+      "example": "Die Personen erhalten Informationen."
+    },
+    {
+      "name": "Kollektivbezeichnungen",
+      "description": "Geschlechtsneutrale Formulierungen durch Kollektivbezeichnungen (z. B. \"Team\").",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 4,
+      "example": "Das Team arbeitet zusammen."
+    },
+    {
+      "name": "Umschreibungen ohne Personenbezeichnungen",
+      "description": "Geschlechtsneutrale Formulierungen durch Umschreibungen ohne Personenbezeichnungen (z. B. \"wird getan\").",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 4,
+      "example": "Die Arbeit wird getan."
+    },
+    {
+      "name": "Anreden",
+      "description": "Spezialfall: Geschlechtsneutrale Anreden (z. B. \"Sehr geehrte Damen und Herren\").",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 4,
+      "example": "Sehr geehrte Damen und Herren, ..."
+    },
+    {
+      "name": "Genderzeichen",
+      "description": "Spezialfall: Verwendung von Genderzeichen (z. B. \"Menschen*innen\").",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 4,
+      "example": "Alle Menschen*innen sind willkommen."
+    },
+    {
+      "name": "Geschlechtsspezifische Formulierungen",
+      "description": "Geschlechtergerechte Formulierungen, in denen die Geschlechter sprachlich sichtbar gemacht werden (Rz. 9–29).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 6,
+      "example": "Verwendung von „Kolleginnen und Kollegen‟ anstelle von „Kollegen‟."
+    },
+    {
+      "name": "Geschlechtsneutrale Formulierungen",
+      "description": "Geschlechtergerechte Formulierungen, in denen die Geschlechter sprachlich unsichtbar gemacht werden (Rz. 30–58).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 6,
+      "example": "Verwendung von „Kolleg*innen‟ oder „Mitarbeiter*innen‟."
+    },
+    {
+      "name": "Kontextabhängige Wahl der Strategie",
+      "description": "Die Wahl zwischen geschlechtsspezifischen und geschlechtsneutralen Formulierungen hängt vom Kontext ab. Vor- und Nachteile sind abzuwägen (Rz. 7).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 6,
+      "example": "In offiziellen Dokumenten: „Bürgerinnen und Bürger‟; in Werbetexten: „Kunden*innen‟."
+    },
+    {
+      "name": "Sprachengesetzliche Grenzen",
+      "description": "Bundesbehörden müssen Amtssprachen in Standardformen verwenden und Formulierungen achtsam, klar und bürgerfreundlich gestalten (Art. 5 und 7 SpG).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 6,
+      "example": "Verwendung von „Antragsteller‟ anstelle von „Antragstellerin/Antragsteller‟, da Standardformen bevorzugt werden."
+    },
+    {
+      "name": "Gebrauch von Paarformen",
+      "description": "Will man mit geschlechtsspezifischen Personenbezeichnungen auf Personen (potenziell) verschiedenen Geschlechts Bezug nehmen, so sind Paarformen zu verwenden. Es ist sowohl die weibliche als auch die mänliche Personenbezeichnung aufzuführen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 7,
+      "example": "der Präsident oder die Präsidentin\ndie Bürgerinnen und Bürger"
+    },
+    {
+      "name": "Keine generische Verwendung der mänlichen Form",
+      "description": "Die generische Verwendung nur der männlichen Form zur Bezeichnung von Personen verschiedenen Geschlechts ist in den deutschsprachigen Texten des Bundes nicht zulässig.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 7,
+      "example": "Die Verwaltungsratspräsidentin oder der Verwaltungsratspräsident leitet die Sitzungen des Verwaltungsrates."
+    },
+    {
+      "name": "Nachteil: Nichtbinäre Menschen bleiben unsichtbar",
+      "description": "Ein Nachteil von Paarformen ist, dass nichtbinäre Menschen zwar mitgemeint sind, im Gegensatz zu Frauen und Männern aber unsichtbar bleiben.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 8,
+      "example": "Schweizerinnen und Schweizer haben das Recht, sich an jedem Ort des Landes niederzulassen."
+    },
+    {
+      "name": "Häufung von Paarformen erschwert Lesbarkeit",
+      "description": "Eine Häufung von Paarformen kann die Lesbarkeit eines Textes erschweren.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 8,
+      "example": "Die Mieterinnen und Mieter von Genossenschaftswohnungen sollten nach einer gewissen Zeit Eigentümerinnen und Eigentümer oder mindestens Nutzniesserinnen und Nutzniesser ihrer Wohnungen werden können."
+    },
+    {
+      "name": "Reihenfolge der Paarformen sollte konsistent sein",
+      "description": "Es spielt keine Rolle, ob zuerst die weibliche oder die männliche Form genannt wird. Die gewählte Reihenfolge sollte aber über den ganzen Text beibehalten werden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 8,
+      "example": "Schweizerinnen und Schweizer haben das Recht, sich an jedem Ort des Landes niederzulassen."
+    },
+    {
+      "name": "Verbindung von Paarformen mit Konjunktionen",
+      "description": "Die beiden Elemente einer Paarform werden in der Einzahl mit der Konjunktion oder und in der Mehrzahl mit der Konjunktion und verbunden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 8,
+      "example": "Handelt der Täter oder die Täterin gewerbsmässig, so... Die Bundesversammlung wählt die Richterinnen und Richter."
+    },
+    {
+      "name": "Vermeidung umständlicher Formulierungen in der Einzahl",
+      "description": "Die Verwendung von Paarformen in der Einzahl führt bisweilen zu umständlichen Formulierungen, da Artikeln, Adjektiven und Pronomen ebenfalls beide Formen aufgeführt werden müssen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 8,
+      "example": "Eine zuverlässige Mitarbeiterin oder ein zuverlässiger Mitarbeiter, die oder der... Sie oder er hat ihre oder seine Aufgaben vorschriftsgemäss zu erledigen."
+    },
+    {
+      "name": "Keine Paarformen in zusammengesetzten Wörtern",
+      "description": "Im ersten Element von zusammengesetzten und abgeleiteten Wörtern werden keine Paarformen verwendet.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 8,
+      "example": "nicht: Kundinnen- und Kundendienst, sondern: Kundendienst; nicht: bürgerinnen- und bürgerfreundlich, sondern: bürgerfreundlich."
+    },
+    {
+      "name": "Vermeidung von Kombinationsformen",
+      "description": "Kombinationsformen wie 'Lehrerinnen- und Lehrerschaft' sollten vermieden werden. Stattdessen wird die allgemeine Form verwendet (z. B. 'Lehrerschaft'). Wenn spezifisch auf Frauen Bezug genommen wird, sollte die weibliche Form im ersten Element stehen (z. B. 'Rentnerinnenalltag').",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 9,
+      "example": "nicht: Lehrerinnen- und Lehrerschaft, sondern: Lehrerschaft"
+    },
+    {
+      "name": "Alternativen zu Personenbezeichnungen mit männlicher Grundform",
+      "description": "Zusammengesetzte und abgeleitete Wörter mit einer männlichen Personenbezeichnung als erstes Element sollten vermieden werden, wenn es eine geschlechtergerechte Alternative gibt (z. B. statt 'Anfängererkurs' besser 'Grundkurs').",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 9,
+      "example": "statt: Anfängererkurs, besser: Grundkurs"
+    },
+    {
+      "name": "Abwechslung von weiblichen und männlichen Formen in Beispielen",
+      "description": "In beispielhaften Aufzählungen können weibliche und männliche Formen abwechselnd genannt werden (z. B. 'Skifahrerinnen, Schlittenfahrer, Snowboarderinnen und Schlittschuhläufer'), nicht jedoch in Erlassen aus Gründen der Rechtssicherheit.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 9,
+      "example": "Wintersport treibende Personen wie Skifahrerinnen, Schlittenfahrer, Snowboarderinnen und Schlittschuhläufer"
+    },
+    {
+      "name": "Sparschreibung in verknappten Texten",
+      "description": "In Formularen, Fussnoten, Tabellen etc. können Paarformen durch Schrägstriche verkürzt werden (z. B. 'die Richterin / der Richter'). Nach dem Schrägstrich können gemeinsame Wortteile ausgelassen werden (z. B. 'Sachbearbeiter/-in'), wobei diese Kurzformen nur bedingt geschlechtergerecht sind.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 9,
+      "example": "die Richterin / der Richter"
+    },
+    {
+      "name": "Verbot der Sparschreibung in fortlaufendem Text",
+      "description": "Sparschreibungen sind im fortlaufenden Text nicht zugelassen, da sie den Lesefluss stören.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 9,
+      "example": "keine Sparschreibung in Sätzen wie 'die/der Vorgesetzte'"
+    },
+    {
+      "name": "Ableitung von Paarformen mit Schrägstrich",
+      "description": "Beim Schrägstrich wird anstelle von 'und' oder 'oder' ein Schrägstrich gesetzt, der im Lesen zu einer vollen Paarform aufgelöst wird (z. B. 'Politikerinnen/Politiker').",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 9,
+      "example": "Politikerinnen/Politiker"
+    },
+    {
+      "name": "26",
+      "description": "Sparschreibungen sollten nur verwendet werden, wenn sie ohne grossen Aufwand aufgelöst werden können. Insbesondere sollten Wortgruppen nicht durch mehrere Schrägstriche unterbrochen werden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 10,
+      "example": "nicht: ein/-e neue/-r Mitarbeiter/-in\nsondern: eine neue Mitarbeiterin / ein neuer Mitarbeiter"
+    },
+    {
+      "name": "27",
+      "description": "Sparschreibungen dürfen nicht zu grammatisch falschen Formen führen. Insbesondere muss vor dem Schrägstrich immer eine vollständige Wortform stehen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 10,
+      "example": "nicht: Ärzt/-in (Die männliche Form lautet Arzt und nicht Ärzt.)\nsondern: Arzt/Ärztin\nnicht: Kolleg/-innen (Die Endung -en der männlichen Form fehlt.)\nsondern: Kolleginnen/Kollegen"
+    },
+    {
+      "name": "28",
+      "description": "Sparschreibungen mit Klammern, z. B. Gesuchsteller(innen), sind in Texten des Bundes nicht zugelassen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 10,
+      "example": "nicht: Gesuchsteller(innen)"
+    },
+    {
+      "name": "29",
+      "description": "Ebenfalls nicht zugelassen sind die Sparschreibung mit grossem Binnen-I (z. B. BürgerInnen) sowie Schreibweisen mit einem Genderzeichen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 10,
+      "example": "nicht: BürgerInnen"
+    },
+    {
+      "name": "Substantivierte Adjektive und Partizipien",
+      "description": "Substantivierte Adjektive und Partizipien lassen in der Mehrzahl keinen Rückschluss auf das Geschlecht der bezeichneten Personen zu, weil die weibliche und die männliche Form identisch sind. In Texten mit vielen Personenbezeichnungen sind diese Formulierungen einfacher zu lesen als Paarformen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 11,
+      "example": "Statt: 'Die Tagung richtet sich an Studentinnen und Studenten, Assistentinnen und Assistenten...' besser: 'Die Tagung richtet sich an Studierende, Assistierende, Doktorierende und Dozierende.'"
+    },
+    {
+      "name": "Regel 34: Personenbezeichnungen von Adjektiven/Partizipien",
+      "description": "In vielen Fällen gibt es keine Personenbezeichnungen, die von Adjektiven oder Partizipien abgeleitet sind (z. B. der Bundeskanzler oder die Bundeskanzlerin).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 12,
+      "example": "Bundeskanzler/Bundeskanzlerin"
+    },
+    {
+      "name": "Regel 35: Substantivierte Adjektive/Partizipien in Einzahl",
+      "description": "Substantivierte Adjektive und Partizipien lassen in der Einzahl einen Rückschluss auf das Geschlecht der bezeichneten Person zu (z. B. der oder die Gesuchstellende).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 12,
+      "example": "Gesuchstellende (Mehrzahl) vs. der oder die Gesuchstellende (Einzahl)"
+    },
+    {
+      "name": "Regel 36: Etablierte Substantivierungen",
+      "description": "Substantivierte Adjektive und Partizipien sollten nur verwendet werden, wenn sie sprachlich etabliert sind (z. B. Medienschaffende, Mitarbeitende).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 12,
+      "example": "Medienschaffende (etabliert) vs. Geigende (unnatürlich)"
+    },
+    {
+      "name": "Regel 37: Bedeutungsunterschied bei Substantivierungen",
+      "description": "Substantivierte Partizipien haben nicht immer die gleiche Bedeutung wie Personenbezeichnungen auf -er (z. B. Fahrende vs. Fahrerinnen und Fahrern).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 12,
+      "example": "Fahrende (Substantivierung) vs. Fahrerinnen und Fahrern (Paarform)"
+    },
+    {
+      "name": "Regel 38: Geschlechtsunspezifische Nomen",
+      "description": "Manche Personenbezeichnungen sind geschlechtsunspezifisch (z. B. Gast, Fan, Mensch, Star, Zwilling).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 12,
+      "example": "Gast, Fan, Mensch"
+    },
+    {
+      "name": "Regel 39: Geschlechtsunspezifische Zusammensetzungen",
+      "description": "Geschlechtsunspezifische Personenbezeichnungen kommen oft als Zusammensetzungen vor (z. B. Fahrgast, Lehrkraft).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 12,
+      "example": "Fahrgast, Lehrkraft, Teammitglied"
+    },
+    {
+      "name": "Regel 40: Geschlechtsunspezifische Pronomen",
+      "description": "Es gibt geschlechtsunspezifische Pronomen (z. B. jemand, man, niemand, wer).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 12,
+      "example": "jemand, man, niemand"
+    },
+    {
+      "name": "Regel 41: Vorteile geschlechtsunspezifischer Nomen",
+      "description": "Formulierungen mit geschlechtsunspezifischen Nomen sind in Texten mit vielen Personenbezeichnungen einfacher zu lesen als Paarformen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 12,
+      "example": "Verwendung von 'Mitarbeitende' statt 'Mitarbeiter und Mitarbeiterinnen'"
+    },
+    {
+      "name": "Geschlechtsunspezifische Nomen mit maskulinem Genus",
+      "description": "42 Geschlechtsunspezifische Nomen mit maskulinem Genus werden oft nicht als geschlechtsunspezifisch, sondern als männlich wahrgenommen. Deshalb findet man dazu manchmal auch entsprechende weibliche Formen (z. B. Gast/Gästin, Laie/Laiin).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 13,
+      "example": "Gast/Gästin, Laie/Laiin"
+    },
+    {
+      "name": "Wiederaufnahme von geschlechtsunspezifischen Pronomen",
+      "description": "43 Wird ein geschlechtsunspezifisches Pronomen durch ein anderes Pronomen wiederaufgenommen, so wird unter Umständen sein maskulines Genus sichtbar (z.  B. Niemand kann sein Schicksal beeinflussen). Es wird dann manchmal nicht mehr als geschlechtsunspezifisch, sondern als männlich wahrgenommen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 13,
+      "example": "Niemand kann sein Schicksal beeinflussen"
+    },
+    {
+      "name": "Komplexe Personenbezeichnungen mit Adjektiven/Partizipien",
+      "description": "44 Besonders mit dem Nomen Person können mithilfe von Adjektiven, Partizipien, Präpositionalphrasen und Relativsätzen komplexere Personenbezeichnungen gebildet werden: stimmberechtigte Personen, Personen mit Schweizer Bürgerrecht, Personen, die seit mindestens 5 Jahren in der Schweiz wohnhaft sind.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 13,
+      "example": "stimmberechtigte Personen"
+    },
+    {
+      "name": "Verwendung des Relativpronomens wer",
+      "description": "45 Das Relativpronomen wer erlaubt häufig, mit Verben auszudrücken, was sonst mit mehreren Personenbezeichnungen ausgedrückt werden müsste: statt: Der Hersteller, Inverkehrbringer oder Importeur eines Arzneimittels muss nachweisen, dass … besser: Wer ein Arzneimittel herstellt, in Verkehr bringt oder importiert, muss nachweisen, dass ...",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 13,
+      "example": "Wer ein Arzneimittel herstellt, in Verkehr bringt oder importiert, muss nachweisen, dass ..."
+    },
+    {
+      "name": "Paarformen bei geschlechtsunspezifischen Nomen/Pronomen",
+      "description": "45a Geschlechtsunspezifische Nomen und Pronomen können mit Paarformen wiederaufgenommen werden, wenn dadurch nicht der Eindruck entsteht, es werde auf Drittpersonen verwiesen: statt: Jeder Gast erhält einen eigenen Schlüssel. Damit kann er das Hotel auch betreten, wenn die Rezeption unbesetzt ist. besser: Jeder Gast erhält einen eigenen Schlüssel. Damit kann er oder sie das Hotel auch betreten, wenn die Rezeption unbesetzt ist. statt: Niemand kann sein oder ihr Schicksal beeinflussen. besser: Niemand kann das eigene Schicksal beeinflussen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 13,
+      "example": "Jeder Gast erhält einen eigenen Schlüssel. Damit kann er oder sie das Hotel auch betreten, wenn die Rezeption unbesetzt ist"
+    },
+    {
+      "name": "Kollektivbezeichnungen für Gruppen nutzen",
+      "description": "Kollektivbezeichnungen bezeichnen statt einzelner Personen die Gruppe oder Institution, zu der diese Personen gehören (z.B. Abteilung, Bevölkerung, Delegation).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 14,
+      "example": "Der Vorstand setzt die Ziele des Berufsverbandes um und erfüllt die Aufgaben, welche die Statuten, die Delegiertenversammlung und der Zentralvorstand dem Berufsverband übertragen."
+    },
+    {
+      "name": "Ableitungen mit -schaft bilden",
+      "description": "Häufig werden Kollektivbezeichnungen als Ableitungen mit -schaft gebildet (z.B. Belegschaft, Kundschaft, Lehrerschaft).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 14,
+      "example": "Lehrerschaft statt Lehrerinnen und Lehrer"
+    },
+    {
+      "name": "Mehrsprachige Kollektivbezeichnungen verwenden",
+      "description": "Gewisse Kollektivbezeichnungen kommen nur in der Mehrzahl vor, insbesondere Zusammensetzungen mit -leute (z.B. Fachleute, Feuerwehrleute).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 14,
+      "example": "Fachleute statt Einzeldarstellung"
+    },
+    {
+      "name": "Pronomen 'alle' als Kollektivbezeichnung",
+      "description": "Das Pronomen 'alle' gehört zu den Kollektivbezeichnungen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 14,
+      "example": "alle Beteiligten statt jede und jeder Beteiligte"
+    },
+    {
+      "name": "Paarformen vermeiden",
+      "description": "Mit Kollektivbezeichnungen können oft Paarformen vermieden werden (z.B. Publikum statt Zuschauerinnen und Zuschauer).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 14,
+      "example": "Publikum statt Zuschauerinnen und Zuschauer"
+    },
+    {
+      "name": "Distanzierung durch Kollektivbezeichnungen vermeiden",
+      "description": "Kollektivbezeichnungen können distanziert und bürokratisch wirken, wenn sie die Handlungen von Menschen nicht ausdrücken (z.B. 'Lehrerschaft' statt 'Lehrerinnen und Lehrer').",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 14,
+      "example": "Lehrerinnen und Lehrer statt Lehrerschaft"
+    },
+    {
+      "name": "Individuen nicht in den Hintergrund rücken",
+      "description": "Kollektivbezeichnungen eignen sich nicht, wenn es um die einzelnen Personen in der Gruppe geht, nicht um die Gruppe als Kollektiv.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 14,
+      "example": "Einzeldarstellung statt Kollektivbezeichnung"
+    },
+    {
+      "name": "Vermeidung von Kollektivbezeichnungen bei Einzelpersonen",
+      "description": "Kollektivbezeichnungen eignen sich nicht zur Beschreibung von Situationen, an denen nur eine Person beteiligt ist. Stattdessen sollten die spezifischen Personenbezeichnungen (inklusive Geschlechterangaben) verwendet werden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 15,
+      "example": "nicht: Das Ratspräsidium hat den Stichentscheid. / sonder: Die Ratspräsidentin oder der Ratspräsident hat den Stichentscheid."
+    },
+    {
+      "name": "Passivumschreibung ohne Personenbezeichnungen",
+      "description": "Handlungen können im Passiv umschrieben werden, um Personenbezeichnungen zu vermeiden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 15,
+      "example": "nicht: Der Arbeitnehmer erhält die Kinderzulage mit dem Lohn. / sonder: Die Kinderzulage wird mit dem Lohn ausgerichtet."
+    },
+    {
+      "name": "Umschreibung mit Adjektiv statt Personenbezeichnung",
+      "description": "Statt einer Personenbezeichnung kann ein Adjektiv verwendet werden, um die Handlung zu beschreiben.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 15,
+      "example": "nicht: die Hilfe eines Arztes / sonder: ärztliche Hilfe"
+    },
+    {
+      "name": "Umschreibung mit Partizip II statt Personenbezeichnung",
+      "description": "Statt einer Personenbezeichnung kann ein Partizip II verwendet werden, um die Handlung zu beschreiben.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 15,
+      "example": "nicht: Herausgeber: ... / sonder: Herausgegeben von ..."
+    },
+    {
+      "name": "Umschreibung mit substantiviertem Verb statt Personenbezeichnung",
+      "description": "Statt einer Personenbezeichnung kann ein substantiviertes Verb verwendet werden, um die Handlung zu beschreiben.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 15,
+      "example": "nicht: Die Teilnehmer sind berechtigt, gratis Bus zu fahren. / sonder: Die Teilnahme berechtigt dazu, gratis Bus zu fahren."
+    },
+    {
+      "name": "Spezifische Personenbezeichnungen bei relevanter Handlungsverantwortung",
+      "description": "Umschreibungen ohne Personenbezeichnungen sollten nicht verwendet werden, wenn die Information über die ausführende Person relevant ist und sich aus dem Kontext nicht eindeutig erschliesst.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 16,
+      "example": "nicht: Übertragbare Krankheiten sind der zuständigen Behörde zu melden. / sonder: Ärztinnen und Ärzte müssen übertragbare Krankheiten der zuständigen Behörde melden."
+    },
+    {
+      "name": "Vermeidung distanziert-bürokratischer Formulierungen",
+      "description": "Umschreibungen ohne Personenbezeichnungen können distanziert und bürokratisch wirken. In solchen Fällen sollte eine direkte Ansprache bevorzugt werden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 16,
+      "example": "statt: Das Gesuch ist beim Bundesamt für Kultur einzureichen. / besser: Bitte reichen Sie Ihr Gesuch beim Bundesamt für Kultur ein."
+    },
+    {
+      "name": "59 Anreden",
+      "description": "Anreden sollten respektvoll und persönlich formuliert werden. Für Frauen und Männer stehen geschlechtsspezifische Anreden zur Verfügung. Für nichtbinäre Personen oder solche mit geschlechtsneutralen Namen eignet sich 'Guten Tag'.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 17,
+      "example": "Guten Tag Kim Müller"
+    },
+    {
+      "name": "60 Anreden",
+      "description": "Bei unbekannten Einzelpersonen kann die Anrede mit Personenbezeichnungen in Einzahl/Mehrzahl erfolgen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 17,
+      "example": "Liebe Bürgerin, lieber Bürger\nWerte Stimmberechtigte"
+    },
+    {
+      "name": "61 Anreden",
+      "description": "Bei Personengruppen können Kollektivbezeichnungen verwendet werden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 17,
+      "example": "Geschätztes Publikum (statt: Liebe Zuhörerinnen und Zuhörer)"
+    },
+    {
+      "name": "62 Anreden",
+      "description": "Verschiedene Anreden können kombiniert werden, um alle Personen anzusprechen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 17,
+      "example": "Sehr geehrte Damen und Herren, werte Vereinsmitglieder"
+    },
+    {
+      "name": "63 Adressen",
+      "description": "In Adressen ist auf geschlechtsspezifische Anreden (Frau/Herr) zu verzichten.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 17,
+      "example": "Jon Müller\nBirnbaumgasse 24c\n3006 Bern"
+    },
+    {
+      "name": "64 Erlasse",
+      "description": "Neue Erlasse und Totalrevisionen werden geschlechtergerecht formuliert.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 17,
+      "example": "Neue Erlasse werden geschlechtergerecht formuliert, auch bei Ausführungsbestimmungen"
+    },
+    {
+      "name": "Regel 65",
+      "description": "Bei kleineren Teilrevisionen von noch nicht geschlechtergerecht formulierten Erlassen werden auch die neuen Bestimmungen grundsätzlich nicht geschlechtergerecht formuliert, damit Paarformen nicht neben generische Formen zu stehen kommen und so die Frage aufwerfen, ob sich diese Formen nur auf Männer beziehen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 18,
+      "example": "Erlass: Der Fahrzeugführer hat sich vor dem Wegfahren zu vergewissern, dass er keine Kinder oder andere Strassenbenützer gefährdet. Erläuterung: Nach Artikel 17 Absatz 1 der Verkehrsregelnverordnung haben sich die Fahrzeugführerinnen und Fahrzeugführer vor dem Wegfahren zu vergewissern, dass sie keine Kinder oder andere Strassenbenützerinnen und -benützer gefährden."
+    },
+    {
+      "name": "Regel 66",
+      "description": "Bei umfangreicheren Teilrevisionen älterer Erlasse, die in absehbarer Zeit nicht totalrevidiert werden, zentrale Lebensbereiche natürlicher Personen betreffen und entsprechend viele Personenbezeichnungen enthalten, ist zu prüfen, ob eine geschlechtergerechte Umformulierung ohne grössere Probleme möglich ist.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 18,
+      "example": "Nicht anwendbar (kein explizites Beispiel genannt)."
+    },
+    {
+      "name": "Regel 67",
+      "description": "Bei Teilrevisionen grosser Kodexe, die kaum je einer Totalrevision unterzogen werden (z. B. ZGB, OR), sind neue Bestimmungen geschlechtergerecht zu formulieren, wenn ein zusammenhängender grösserer Teil des Erlasses revidiert wird.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 18,
+      "example": "Nicht anwendbar (kein explizites Beispiel genannt)."
+    },
+    {
+      "name": "Regel 68",
+      "description": "In erläuternden Texten (z. B. Botschaften, Berichte) werden Personenbezeichnungen geschlechtergerecht umformuliert, wenn auf einen nicht geschlechtergerecht formulierten Erlass Bezug genommen wird.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 18,
+      "example": "Erlass: Der Fahrzeugführer hat sich vor dem Wegfahren zu vergewissern, dass er keine Kinder oder andere Strassenbenützer gefährdet. Erläuterung: Nach Artikel 17 Absatz 1 der Verkehrsregelnverordnung haben sich die Fahrzeugführerinnen und Fahrzeugführer vor dem Wegfahren zu vergewissern, dass sie keine Kinder oder andere Strassenbenützerinnen und -benützer gefährden."
+    },
+    {
+      "name": "Regel 69",
+      "description": "Juristische Personen (z. B. Gesellschaften, Stiftungen) und Organisationseinheiten (z. B. Ämter) haben kein Geschlecht.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 18,
+      "example": "Nicht anwendbar (kein explizites Beispiel genannt)."
+    },
+    {
+      "name": "Regel 70",
+      "description": "Zur Bezeichnung von juristischen Personen wird entweder die weibliche oder die männliche Form verwendet. Paarformen eignen sich nicht, da sie den Eindruck erwecken, dass von natürlichen Personen die Rede ist.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 18,
+      "example": "Nicht anwendbar (kein explizites Beispiel genannt)."
+    },
+    {
+      "name": "Regel 71: Grammatikgeschlecht von Funktionsbezeichnungen",
+      "description": "Wird konkreten juristischen Personen oder Organisationseinheiten eine bestimmte Funktion zugeordnet, so richtet sich das grammatische Geschlecht der Funktionsbezeichnung nach dem grammatischen Geschlecht der juristischen Person beziehungsweise der Organisationseinheit.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 19,
+      "example": "der Bund als Arbeitgeber, die Post als Auftraggeberin, das Bundesamt als Herausgeber"
+    },
+    {
+      "name": "Regel 72: Funktionsbezeichnungen für Einheiten unterschiedlichen Geschlechts",
+      "description": "Wird eine Funktionsbezeichnung auf juristische Personen oder Organisationseinheiten unterschiedlichen grammatischen Geschlechts angewendet, so kann entweder die männliche oder die weibliche Form gewählt werden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 19,
+      "example": "Hauptakteure (oder: Hauptakteurinnen) des Gesundheitswesens"
+    },
+    {
+      "name": "Regel 73: Geschlechtergerechte Formulierung bei gemischten Gruppen",
+      "description": "Beziehen sich Personenbezeichnungen sowohl auf juristische als auch auf natürliche Personen und machen die natürlichen Personen einen wesentlichen Teil der Gruppe aus, so ist geschlechtergerecht zu formulieren.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 19,
+      "example": "Die Herstellerinnen und Hersteller von Ton- oder Bildaufnahmen haben das ausschliessliche Recht, die Aufnahmen zu vervielfältigen."
+    },
+    {
+      "name": "Regel 74: Benennung neuer Organisationseinheiten",
+      "description": "Neue Organisationseinheiten sollten nicht mit Personenbezeichnungen benannt werden. Stattdessen sind abstrakte Begriffe (z. B. auf -stelle, -schaft, -amt) zu verwenden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 19,
+      "example": "Der Bundesanwalt oder die Bundesanwältin [natürliche Person] leitet die Bundesanwaltschaft [Organisationseinheit]."
+    },
+    {
+      "name": "Keine Genderzeichen in offiziellen Texten",
+      "description": "Schreibweisen mit Genderzeichen (z. B. * oder /) sind in deutschsprachigen Texten des Bundes nicht zugelassen, da sie der amtlichen Rechtschreibung widersprechen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 20,
+      "example": "Die Bezeichnung „Richter*in“ ist nicht erlaubt, da sie grammatisch unsicher und unklar im geschlechtsspezifischen Kontext ist."
+    },
+    {
+      "name": "Unselbständige Genderzeichen",
+      "description": "Genderzeichen sind nicht aus sich selbst heraus verständlich. Ihre Bedeutung ist nur bekannt, wer den zugrundeliegenden Code kennt.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 20,
+      "example": "Das Zeichen * in „Richter*in“ wird nur verstanden, wenn der Leser weiss, dass es nichtbinäre Personen bezeichnet."
+    },
+    {
+      "name": "Keine gesprochene Entsprechung",
+      "description": "Schreibweisen mit Genderzeichen haben keine Entsprechung in der gesprochenen Sprache und lassen sich beim Vorlesen nicht auflösen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 20,
+      "example": "Das Wort „Leiter*in“ kann beim Vorlesen nicht eindeutig als „Leiterin“ oder „Leiter“ gesprochen werden."
+    },
+    {
+      "name": "Lesbarkeit und Barrierefreiheit",
+      "description": "Konsequente Verwendung von Genderzeichen beeinträchtigt Lesbarkeit und Barrierefreiheit.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 20,
+      "example": "Der Ausdruck „Der*die Leiter*in“ ist schwer lesbar und schwer auszusprechen."
+    },
+    {
+      "name": "Grammatikalische Fehler",
+      "description": "Schreibweisen mit Genderzeichen führen zu grammatisch falschen Strukturen, z. B. Verlust der männlichen Geschlechtsmarkierung.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 20,
+      "example": "Die Form „Ärzt*in“ ist grammatikalisch unklar, da die männliche Form „Arzt“ verloren geht."
+    },
+    {
+      "name": "Unklare Bedeutung in Einzelfällen",
+      "description": "Personenbezeichnungen mit Genderzeichen sind im Einzelfall unklar, ob sie geschlechtsspezifisch oder generisch gemeint sind.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 20,
+      "example": "Die Bezeichnung „Richter*in“ ist unklar, ob sie eine nichtbinäre Person oder jede Person unabhängig vom Geschlecht beschreibt."
+    },
+    {
+      "name": "79 Personenbezeichnungen in der Mehrzahl",
+      "description": "Bei Personenbezeichnungen in der Mehrzahl ist abzuklären, ob sich diese auf Personen verschiedenen Geschlechts oder ausschliesslich auf Frauen oder Männer beziehen.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 21,
+      "example": "Les députés au Conseil des États romands ont échangé leurs points de vue lors d’une rencontre en mars. \nDie Ständerätinnen und Ständeräte aus der Romandie trafen sich im März zu einem Meinungsaustausch."
+    },
+    {
+      "name": "80 Unklare Zusammensetzung",
+      "description": "Ist die genaue Zusammensetzung nicht eruierbar, so können im Zieltext Paarformen oder geschlechtsneutrale Formulierungen verwendet werden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 21,
+      "example": "Die Ständerätinnen und Ständeräte aus der Romandie trafen sich im März zu einem Meinungsaustausch."
+    },
+    {
+      "name": "81 Genderzeichen im Ausgangstext",
+      "description": "Enthält ein Ausgangstext Personenbezeichnungen mit Genderzeichen, so werden diese im Zieltext durch Paarformen oder geschlechtsneutrale Formulierungen wiedergegeben.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 21,
+      "example": "Le chef du service juridique de l’Office fédéral de … \nDie Chefin des Rechtsdienstes des Bundesamts für …"
+    },
+    {
+      "name": "82 Anglizismen (englische Personenbezeichnungen)",
+      "description": "Die meisten englischen Personenbezeichnungen sind geschlechtsneutral: Sie können sich auf eine Person irgendeines Geschlechts beziehen (z. B. kann the teacher sowohl einen Mann als auch eine Frau bezeichnen).",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 21,
+      "example": "the teacher → der Teacher oder die Teacherin (besser: der Lehrer oder die Lehrerin)"
+    },
+    {
+      "name": "83 Anglizismen im Deutschen",
+      "description": "Im Deutschen sind Personenbezeichnungen, die aus dem Englischen stammen, geschlechtsspezifisch. Es müssen deshalb Paarformen verwendet werden; in den meisten Fällen wird die weibliche Form auf -in gebildet.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 21,
+      "example": "the user → der User oder die Userin (besser: der Benutzer oder die Benutzerin)"
+    }
+  ]
+}

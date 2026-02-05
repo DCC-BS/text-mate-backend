@@ -1,0 +1,88 @@
+{
+  "rules": [
+    {
+      "name": "Vermeidung von Anglizismen bei existierenden deutschen Begriffen",
+      "description": "Anglizismen, die nichts Neues bezeichnen, sondern nur bereits Bekanntes sprachlich neu verpacken (z.B. Modewörter), sollten in Behördentexten vermieden werden, da sie keinen Mehrwert bieten.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 5,
+      "example": "Nicht 'Meeting' statt 'Sitzung', 'Kids' statt 'Kinder', 'Call' statt 'Anruf', 'Event' statt 'Veranstaltung' oder 'cancelt' statt 'absagt' verwenden."
+    },
+    {
+      "name": "Verwendung von etablierten Anglizismen",
+      "description": "Wenn ein Anglizismus im Deutschen etabliert ist und es keine überzeugenden deutschen Alternativen gibt, sollte er verwendet werden.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 4,
+      "example": "Geläufige Wörter wie 'E-Mail', 'Film', 'Pullover', 'surfen' oder 'Leasing' sollten nicht durch 'fragwürdige deutsche Bildungen' ersetzt werden."
+    },
+    {
+      "name": "Zurückhaltung bei neuen Anglizismen",
+      "description": "Neue Anglizismen sollten mit Zurückhaltung verwendet werden. Es ist insbesondere zu prüfen, ob passende deutsche Alternativen existieren.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 4,
+      "example": "Der Schweizer Gesetzgeber entschied sich für 'elektronische Stimmabgabe' anstelle des englischen 'E-Voting'."
+    },
+    {
+      "name": "Prüfung deutscher Alternativen auch bei neuen Konzepten",
+      "description": "Auch bei Anglizismen für neue Konzepte sollte geprüft werden, ob ein existierendes deutsches Wort oder eine Neuschöpfung verwendet werden kann.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 5,
+      "example": "Statt 'Back-up' kann 'Sicherheitskopie' oder 'Sicherungskopie' verwendet werden. Statt 'followen' und 'sharen' kann man 'folgen' und 'teilen' verwenden."
+    },
+    {
+      "name": "Vermeidung von stilistisch markierten Anglizismen",
+      "description": "Stilistisch markierte Anglizismen (z.B. Jugendsprache, umgangssprachliche Ausdrücke) sind in Behördentexten in der Regel fehl am Platz, da sie nicht zum sachlichen Charakter passen.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 6,
+      "example": "Wörter wie 'heavy', 'crazy', 'cheap', 'abchillen' sind in Behördentexten zu vermeiden."
+    },
+    {
+      "name": "Erklärung von nicht allgemein verständlichen Anglizismen",
+      "description": "Anglizismen, die nicht als allgemein verständlich gelten (z.B. Fachjargon in Texten für Laien), müssen bei der Verwendung erklärt werden, um die Verständlichkeit sicherzustellen.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 7,
+      "example": "Korrekt: 'Die EFK ist Anlaufstelle für Whistleblower (Hinweisgeber) in der Bundesverwaltung.' oder '...Taktik des Schubsens ... Der Fachbegriff dafür lautet Nudging.'"
+    },
+    {
+      "name": "Grossschreibung von substantivierten Anglizismen",
+      "description": "Anglizismen, die als Substantive im Deutschen verwendet werden, müssen den deutschen Regeln entsprechend grossgeschrieben werden.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "Korrekt: 'das Darknet'. (Implizit Falsch: 'das darknet')."
+    },
+    {
+      "name": "Schreibung von Komposita (Zusammensetzungen)",
+      "description": "Zusammengesetzte Anglizismen (Komposita) werden im Deutschen nach deutschen Regeln zusammengeschrieben oder mit Bindestrich verbunden.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "Korrekt: 'das Smart-Farming', 'die Cybersicherheit'."
+    },
+    {
+      "name": "Schreibung von 'E-Wörtern'",
+      "description": "Wörter, die mit 'E-' (für 'electronic') beginnen, erhalten einen Bindestrich. Handelt es sich um ein Substantiv, wird das 'E' grossgeschrieben.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "Korrekt: 'E-Book'."
+    },
+    {
+      "name": "Pluralbildung von Wörtern auf -y",
+      "description": "Der Plural von Anglizismen, die auf -y enden, wird nach deutscher Regel durch das Anhängen von -s gebildet.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "Korrekt: 'Babys'. (Implizit Falsch: 'Babies')."
+    },
+    {
+      "name": "Konsistente Verwendung",
+      "description": "Bei neueren Anglizismen, bei denen der Gebrauch noch schwankt, ist es wichtig, dass sie innerhalb eines Textes immer gleich (konsistent) verwendet werden.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "Wenn man sich für eine Schreibweise entscheidet (z.B. 'outgesourct'), sollte diese im ganzen Text beibehalten werden."
+    },
+    {
+      "name": "Geschlechtergerechte Formulierung von Personenbezeichnungen",
+      "description": "Personenbezeichnungen aus dem Englischen müssen in Texten des Bundes den Vorgaben entsprechend geschlechtergerecht formuliert werden.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "Korrekt: 'die Managerinnen und Manager' oder 'die Webmasterin oder der Webmaster'."
+    }
+  ]
+}

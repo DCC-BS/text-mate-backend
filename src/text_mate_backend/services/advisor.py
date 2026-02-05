@@ -8,7 +8,7 @@ from fastapi_azure_auth.user import User
 from typing_extensions import AsyncIterator
 
 from text_mate_backend.agents.agent_types.advisor_agent import AdvisorAgent
-from text_mate_backend.models.error_codes import CHECK_TEXT_ERROR
+from text_mate_backend.models.error_codes import CHECK_TEXT_ERROR, LOADING_FILES_ERROR
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.rule_models import (
     RuelDocumentDescription,
@@ -29,17 +29,116 @@ class AdvisorService:
         logger.info("Initializing AdvisorService")
 
         self.config = config
-        self.ruel_container = RulesContainer.model_validate_json(Path("docs/rules.json").read_text())
+        self.ruel_container = self._merge_rules_files(Path("docs/rules"))
         self.agent = AdvisorAgent(config)
+
+    def _merge_rules_files(self, directory: Path) -> RulesContainer:
+        """
+        Merge all rules JSON files from the specified directory.
+        Each file must be a valid RulesContainer with a 'rules' key.
+        """
+        if not directory.exists() or not directory.is_dir():
+            logger.error(f"Rules directory not found: {directory}")
+            raise ApiErrorException(
+                {
+                    "status": 500,
+                    "errorId": LOADING_FILES_ERROR,
+                    "debugMessage": f"Rules directory not found: {directory}",
+                }
+            )
+
+        all_rules: list[Rule] = []
+        json_files = sorted(directory.glob("*.json"))
+
+        if not json_files:
+            logger.warn(f"No JSON files found in rules directory: {directory}")
+            return RulesContainer(rules=[])
+
+        logger.info(f"Loading {len(json_files)} rules files from {directory}")
+
+        for json_file in json_files:
+            try:
+                container = RulesContainer.model_validate_json(json_file.read_text())
+                all_rules.extend(container.rules)
+                logger.info(f"Loaded {len(container.rules)} rules from {json_file.name}")
+            except Exception as e:
+                logger.error(f"Error loading rules from {json_file}: {e}")
+                raise ApiErrorException(
+                    {
+                        "status": 500,
+                        "errorId": LOADING_FILES_ERROR,
+                        "debugMessage": f"Error loading rules from {json_file}: {str(e)}",
+                    }
+                ) from e
+
+        logger.info(f"Total rules loaded: {len(all_rules)}")
+        return RulesContainer(rules=all_rules)
+
+    def _merge_meta_files(self, directory: Path) -> list[RuelDocumentDescription]:
+        """
+        Merge all meta JSON files from the specified directory.
+        Each file must be a JSON array of RuelDocumentDescription objects.
+        Raises an error if duplicate file names are found.
+        """
+        if not directory.exists() or not directory.is_dir():
+            logger.error(f"Meta directory not found: {directory}")
+            raise ApiErrorException(
+                {
+                    "status": 500,
+                    "errorId": LOADING_FILES_ERROR,
+                    "debugMessage": f"Meta directory not found: {directory}",
+                }
+            )
+
+        all_descriptions: list[RuelDocumentDescription] = []
+        seen_files: set[str] = set()
+        json_files = sorted(directory.glob("*.json"))
+
+        if not json_files:
+            logger.warn(f"No JSON files found in meta directory: {directory}")
+            return []
+
+        logger.info(f"Loading {len(json_files)} meta files from {directory}")
+
+        for json_file in json_files:
+            try:
+                json_data = cast(list[dict[str, object]], json.loads(json_file.read_text()))
+                descriptions: list[RuelDocumentDescription] = [
+                    RuelDocumentDescription.model_validate(doc) for doc in json_data
+                ]
+
+                for doc in descriptions:
+                    if doc.file in seen_files:
+                        logger.error(f"Duplicate file found: {doc.file} in {json_file.name}")
+                        raise ApiErrorException(
+                            {
+                                "status": 500,
+                                "errorId": LOADING_FILES_ERROR,
+                                "debugMessage": f"Duplicate document file found: {doc.file}",
+                            }
+                        )
+                    seen_files.add(doc.file)
+
+                all_descriptions.extend(descriptions)
+                logger.info(f"Loaded {len(descriptions)} document descriptions from {json_file.name}")
+            except Exception as e:
+                logger.error(f"Error loading meta from {json_file}: {e}")
+                raise ApiErrorException(
+                    {
+                        "status": 500,
+                        "errorId": LOADING_FILES_ERROR,
+                        "debugMessage": f"Error loading meta from {json_file}: {str(e)}",
+                    }
+                ) from e
+
+        logger.info(f"Total document descriptions loaded: {len(all_descriptions)}")
+        return all_descriptions
 
     def get_docs(self, user: User | None) -> list[RuelDocumentDescription]:
         """
         Returns the documentation file names available for the advisor service.
         """
-        json_data = cast(list[dict[str, object]], json.loads(Path("docs/docs.json").read_text()))
-        doc_descriptions: list[RuelDocumentDescription] = [
-            RuelDocumentDescription.model_validate(doc) for doc in json_data
-        ]
+        doc_descriptions = self._merge_meta_files(Path("docs/meta"))
 
         doc_descriptions = list(filter(lambda doc: self._has_access(user, doc), doc_descriptions))
 

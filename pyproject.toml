@@ -15,6 +15,8 @@ dependencies = [
     "structlog>=25.5.0",
     "types-requests>=2.32.4.20260107",
     "types-setuptools>=80.9.0.20251223",
+    "pydantic-ai>=1.47.0",
+    "logfire>=4.19.0",
 ]
 
 [dependency-groups]
@@ -29,10 +31,9 @@ dev = [
     "ruff>=0.14.13",
     "version-pioneer>=0.0.13",
     "ty>=0.0.12",
-    "pydantic-ai>=1.47.0",
-    "logfire>=4.19.0",
     "tqdm>=4.67.1",
     "types-tqdm>=4.67.0.20250809",
+    "llama-index>=0.14.13",
 ]
 
 [build-system]
@@ -59,7 +60,7 @@ select = [
 ]
 
 # Ignore specific rules
-ignore = []
+ignore = ["E501"]
 
 [tool.ruff.format]
 # Use double quotes for strings.
