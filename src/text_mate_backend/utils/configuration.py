@@ -11,7 +11,9 @@ class Configuration(LlmConfig):
     language_tool_api_url: str = Field(description="The URL for Language Tool API", default="http://localhost:8010/v2")
 
     docling_url: str = Field(description="The URL for Docling service", default="http://localhost:5001/v1")
-    docling_api_key: str = Field(description="The API key for Docling service", default="")
+    docling_api_key: str = Field(
+        description="The API key for Docling service, set it to none if none is required", default="none"
+    )
 
     llm_health_check_url: str = Field(
         description="The URL for LLM health check API", default="http://localhost:8001/health"
