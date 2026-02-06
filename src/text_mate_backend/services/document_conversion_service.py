@@ -141,6 +141,7 @@ class DocumentConversionService:
         logger.debug(f"Fetching docling file convert with URL: {self.config.docling_url}/convert/file")
         response = await self.client.post(
             self.config.docling_url + "/convert/file",
+            headers={"Authorization": f"Bearer {self.config.docling_api_key}"},
             files=files,
             data=options,
         )
