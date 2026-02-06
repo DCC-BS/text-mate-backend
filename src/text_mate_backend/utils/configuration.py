@@ -11,6 +11,7 @@ class Configuration(LlmConfig):
     language_tool_api_url: str = Field(description="The URL for Language Tool API", default="http://localhost:8010/v2")
 
     docling_url: str = Field(description="The URL for Docling service", default="http://localhost:5001/v1")
+    docling_api_key: str = Field(description="The API key for Docling service", default="")
 
     llm_health_check_url: str = Field(
         description="The URL for LLM health check API", default="http://localhost:8001/health"
@@ -55,6 +56,7 @@ class Configuration(LlmConfig):
             language_tool_api_url=language_tool_api_url,
             language_tool_api_health_check_url=language_tool_api_health_check_url,
             docling_url=get_env_or_throw("DOCLING_URL"),
+            docling_api_key=get_env_or_throw("DOCLING_API_KEY"),
             llm_health_check_url=get_env_or_throw("LLM_HEALTH_CHECK_URL"),
             azure_client_id=get_env_or_throw("AZURE_CLIENT_ID"),
             azure_tenant_id=get_env_or_throw("AZURE_TENANT_ID"),
@@ -76,6 +78,7 @@ class Configuration(LlmConfig):
             language_tool_api_url={self.language_tool_api_url},
             language_tool_api_health_check_url={self.language_tool_api_health_check_url},
             docling_url={self.docling_url},
+            docling_api_key={log_secret(self.docling_api_key)},
             llm_health_check_url={self.llm_health_check_url},
             azure_client_id={log_secret(self.azure_client_id)},
             azure_tenant_id={log_secret(self.azure_tenant_id)},
