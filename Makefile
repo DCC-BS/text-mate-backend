@@ -14,6 +14,7 @@ check: ## Run code quality tools.
 	@uv run ruff check --fix
 	@echo "🚀 Static type checking: Running ty"
 	@uv run ty check ./src/text_mate_backend
+	@varlock scan
 
 .PHONY: test
 test: ## Test the code with pytest
@@ -38,7 +39,7 @@ run: ## Run the application
 .PHONY: dev
 dev: ## Run the application in development mode
 	@echo "🚀 Running the application in development mode"
-	@uv run --env-file .env fastapi dev ./src/text_mate_backend/app.py --port 8000
+	@varlock run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000
 
 .PHONY: build
 build: clean-build ## Build wheel file
