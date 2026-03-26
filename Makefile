@@ -16,6 +16,12 @@ check: ## Run code quality tools.
 	@uv run ty check ./src/text_mate_backend
 	@varlock scan
 
+.PHONY: env load
+env load: ## Validate the .env file against the Configuration model
+	@echo "🔍 Validating .env file"
+	@pass-cli login
+	./scripts/run-varlock.sh load
+
 .PHONY: test
 test: ## Test the code with pytest
 	@echo "🚀 Testing code: Running pytest"
@@ -39,7 +45,7 @@ run: ## Run the application
 .PHONY: dev
 dev: ## Run the application in development mode
 	@echo "🚀 Running the application in development mode"
-	@varlock run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000
+	@(set -a; source .env; set +a; varlock run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000)
 
 .PHONY: build
 build: clean-build ## Build wheel file
@@ -55,11 +61,6 @@ clean-build: ## Clean build artifacts
 env-example: ## Generate .env.example from Configuration model
 	@echo "📄 Generating .env.example"
 	@uv run -m dcc_backend_common.config.generate_env_example src.text_mate_backend.utils.configuration Configuration
-
-.PHONY: sync-env
-sync-env: ## Sync .env with .env.example
-	@echo "🔄 Syncing .env with .env.example"
-	@uvx --from dcc-backend-common sync-env-with-example
 
 .PHONY: help
 help:
