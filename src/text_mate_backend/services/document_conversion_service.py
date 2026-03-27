@@ -1,9 +1,10 @@
 from collections.abc import Mapping
 from io import BytesIO
 from pathlib import Path
-from typing import Any, BinaryIO, final
+from typing import Any, final
 
 import httpx
+from dcc_backend_common.logger import get_logger
 from fastapi import status
 from starlette.datastructures import UploadFile
 
@@ -14,7 +15,6 @@ from text_mate_backend.models.error_codes import (
 )
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -141,6 +141,7 @@ class DocumentConversionService:
         logger.debug(f"Fetching docling file convert with URL: {self.config.docling_url}/convert/file")
         response = await self.client.post(
             self.config.docling_url + "/convert/file",
+            headers={"Authorization": f"Bearer {self.config.docling_api_key}"},
             files=files,
             data=options,
         )

@@ -1,7 +1,11 @@
 from enum import Enum
-from typing import Annotated
+from typing import Annotated, TypeVar
 
 from pydantic import BaseModel
+
+from text_mate_backend.models.output_models import TypedDict
+
+TExtra = TypeVar("TExtra", bound=dict)
 
 
 class Actions(str, Enum):
@@ -9,9 +13,11 @@ class Actions(str, Enum):
     BulletPoints = "bullet_points"
     Summarize = "summarize"
     SocialMediafy = "social_mediafy"
-    FORMALITY = "formality"
-    MEDIUM = "medium"
-    CUSTOM = "custom"
+    Formality = "formality"
+    Medium = "medium"
+    Custom = "custom"
+    Proofread = "proofread"
+    CharacterSpeech = "character_speech"
 
 
 class QuickActionRequest(BaseModel):
@@ -23,7 +29,14 @@ class QuickActionRequest(BaseModel):
     ] = ""
 
 
-class QuickActionContext(BaseModel):
+class CurrentUser(TypedDict):
+    family_name: str
+    given_name: str
+    email: str
+
+
+class QuickActionContext[TExtra](BaseModel):
     text: str
     options: str
     language: str | None = None
+    extras: TExtra | None = None

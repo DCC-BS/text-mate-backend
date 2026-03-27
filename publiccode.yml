@@ -1,0 +1,36 @@
+publiccodeYmlVersion: 0.5.0
+name: BS-Übersetzer Frontend
+url: https://github.com/DCC-BS/text-mate-backend
+softwareVersion: 0.1.2
+releaseDate: 2025-08-21
+platforms:
+  - web
+developmentStatus: beta
+softwareType: standalone/backend
+organisation:
+  name: DCC Data Competence Center - Statistisches Amt Kanton Basel-Stadt
+description:
+  en:
+    localisedName: TextMate
+    shortDescription: "Text Mate Backend is a powerful Python FastAPI service that provides advanced text analysis, correction, and transformation capabilities."
+    longDescription: Text Mate Backend is a powerful Python FastAPI service that provides advanced text analysis, correction, and transformation capabilities.
+    documentation: https://dcc-bs.github.io/documentation/
+    apiDocumentation: https://dcc-bs.github.io/documentation/
+    features:
+      - LLM
+      - PWA
+    screenshots:
+      - https://github.com/DCC-BS/text-mate-frontend/blob/main/_imgs/preview_problems.png
+legal:
+  license: MIT-0
+maintenance:
+  type: internal
+  contacts:
+    - name: Data Competence Center
+      email: dcc@bs.ch
+      affiliation: Statistisches Amt Kanton Basel-Stadt
+localisation:
+  localisationReady: true
+  availableLanguages:
+    - en
+    - de-CH

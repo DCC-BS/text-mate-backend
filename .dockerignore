@@ -1,0 +1,16 @@
+.github
+.vscode
+examples
+tests
+.env.example
+Makefile
+.git
+.gitignore
+tests
+.mypy_cache
+.venv
+.pytest_cache
+.ruff_cache
+_imgs
+dist
+__pycache__

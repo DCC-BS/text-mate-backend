@@ -1,36 +1,29 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request, Response
+from dcc_backend_common.fastapi_error_handling import inject_api_error_handler
+from dcc_backend_common.fastapi_health_probes import health_probe_router
+from dcc_backend_common.fastapi_health_probes.router import ServiceDependency
+from dcc_backend_common.logger import get_logger, init_logger
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from structlog.stdlib import BoundLogger
 
 from text_mate_backend.container import Container
 
 # Import routers
-from text_mate_backend.models.error_codes import UNEXPECTED_ERROR
-from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.routers import (
     advisor,
     convert_route,
     quick_action,
     sentence_rewrite,
     text_correction,
-    text_rewrite,
     word_synonym,
 )
-from text_mate_backend.utils.load_env import load_env
-from text_mate_backend.utils.logger import get_logger, init_logger
 from text_mate_backend.utils.middleware import add_logging_middleware
 
 
 def create_app() -> FastAPI:
-    """
-    Create and configure the FastAPI application.
-    """
-
-    load_env()
     init_logger()
 
     logger: BoundLogger = get_logger("app")
@@ -39,21 +32,39 @@ def create_app() -> FastAPI:
     # Set up dependency injection container
     logger.debug("Configuring dependency injection container")
     container = Container()
-    container.wire(
-        modules=[text_correction, text_rewrite, advisor, quick_action, word_synonym, sentence_rewrite, convert_route]
-    )
+    container.wire(modules=[text_correction, advisor, quick_action, word_synonym, sentence_rewrite, convert_route])
     container.check_dependencies()
     logger.info("Dependency injection configured")
 
     config = container.config()
     logger.info(f"Running with configuration: {config}")
 
+    # only in development mode, enable pydantic_ai logfire instrumentation
+    if config.environment == "development":
+        import logfire
+
+        logfire.configure()
+        logfire.instrument_pydantic_ai()
+
+    service_dependencies: list[ServiceDependency] = [
+        {"name": "llm", "health_check_url": config.llm_health_check_url, "api_key": config.llm_api_key},
+        {
+            "name": "language tool",
+            "health_check_url": config.language_tool_api_health_check_url,
+            "api_key": None,
+        },
+    ]
+
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncGenerator[None, None]:
         """
-        Load OpenID config on startup.
+        Load OpenID configuration on application startup and yield control for the application's runtime.
+
+        This lifecycle context ensures the OpenID discovery/configuration is loaded before the application begins
+        serving requests.
         """
-        await container.azure_service().load_config()
+        if not config.disable_auth:
+            await container.azure_service().load_config()
         yield
 
     app = FastAPI(
@@ -68,26 +79,13 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    def api_error_handler(request: Request, exc: Exception) -> Response:
-        if isinstance(exc, ApiErrorException):
-            return JSONResponse(
-                status_code=exc.error_response["status"],
-                media_type="application/json",
-                content=exc.error_response,
-            )
-
-        return JSONResponse(
-            status_code=500,
-            media_type="application/json",
-            content={"errorId": UNEXPECTED_ERROR, "status": 500, "debugMessage": str(exc)},
-        )
-
-    app.add_exception_handler(ApiErrorException, api_error_handler)
+    app.include_router(health_probe_router(service_dependencies))
+    inject_api_error_handler(app)
 
     # Configure CORS
     logger.debug("Setting up CORS middleware")
     app.add_middleware(
-        CORSMiddleware,
+        CORSMiddleware,  # ty:ignore[invalid-argument-type]
         allow_origins=[config.client_url],
         allow_credentials=True,
         allow_methods=["*"],
@@ -101,7 +99,6 @@ def create_app() -> FastAPI:
     # Include routers
     logger.debug("Registering API routers")
     app.include_router(text_correction.create_router())
-    app.include_router(text_rewrite.create_router())
     app.include_router(advisor.create_router())
     app.include_router(quick_action.create_router())
     app.include_router(word_synonym.create_router())

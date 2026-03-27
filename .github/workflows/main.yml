@@ -1,66 +1,18 @@
 name: Main
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
 
 jobs:
-  quality:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out
-        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v5
-
-      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v4
+    backend-ci:
+        uses: DCC-BS/ci-workflows/.github/workflows/python-backend-ci.yml@814649735835a84a3d0d6c8d6e6db87dfeb8b348 # v8
         with:
-          path: ~/.cache/pre-commit
-          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
-
-      - name: Set up the environment
-        uses: ./.github/actions/setup-python-env
-
-      - name: Run checks
-        run: uv run mypy src/text_mate_backend
-
-  tests-and-type-check:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [ "3.10", "3.11", "3.12", "3.13"]
-      fail-fast: false
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: Check out
-        uses: actions/checkout@0c366fd6a839edf440554fa01a7085ccba70ac98 # v5
-
-      - name: Set up the environment
-        uses: ./.github/actions/setup-python-env
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Run tests
-        run: |
-            uv run pytest --cov-branch --cov-report=xml --cov --junitxml=junit.xml -o junit_family=legacy
-            uv run coverage xml -o coverage.xml
-
-      - name: Check typing
-        run: uv run mypy src/text_mate_backend
-
-      - name: Upload coverage reports to Codecov with GitHub Action on Python 3.12
-        uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v5
-        if: ${{ matrix.python-version == '3.12' }}
-        with:
-            token: ${{ secrets.CODECOV_TOKEN }}
-            files: coverage.xml
-
-      - name: Upload test results to Codecov
-        if: ${{ !cancelled() }}
-        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3 # v1
-        with:
-
-          token: ${{ secrets.CODECOV_TOKEN }}
+            python_versions: '["3.14"]'
+            quality_python_version: "3.14"
+            check_command: "make check"
+            uv_version: 0.9.28

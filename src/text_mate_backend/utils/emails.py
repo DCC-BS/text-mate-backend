@@ -30,4 +30,4 @@ Die E-Mail muss schnell erfassbar sein, Missverständnisse vermeiden und darf ni
 Gib die E-Mail in folgendem Format aus:
 Betreff: [Optimierter Betreff]
 Inhalt: [Optimierter E-Mail-Text]
-"""
+"""  # noqa: E501

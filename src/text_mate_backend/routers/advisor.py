@@ -1,7 +1,8 @@
-from collections.abc import Generator
+from collections.abc import AsyncGenerator
 from os import path
 from typing import Annotated
 
+from dcc_backend_common.logger import get_logger
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request
 from fastapi.params import Security
@@ -14,9 +15,8 @@ from text_mate_backend.models.error_codes import NO_DOCUMENT
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.rule_models import RuelDocumentDescription
 from text_mate_backend.services.advisor import AdvisorService
-from text_mate_backend.services.azure_service import AzureService
+from text_mate_backend.utils.auth import AuthSchema
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
 
 logger = get_logger("advisor_router")
@@ -30,27 +30,26 @@ class AdvisorInput(BaseModel):
 @inject
 def create_router(
     advisor_service: AdvisorService = Provide[Container.advisor_service],
-    azure_service: AzureService = Provide[Container.azure_service],
+    auth_scheme: AuthSchema = Provide[Container.auth_scheme],
     config: Configuration = Provide[Container.config],
 ) -> APIRouter:
     logger.info("Creating advisor router")
     router: APIRouter = APIRouter(prefix="/advisor", tags=["advisor"])
 
-    azure_scheme = azure_service.azure_scheme
-
-    @router.get("/docs", dependencies=[Security(azure_scheme)])
+    @router.get("/docs", dependencies=[Security(auth_scheme)])
     def get_advisor_docs(
-        current_user: Annotated[User, Depends(azure_service.azure_scheme)],
+        current_user: Annotated[User | None, Depends(auth_scheme)],
     ) -> list[RuelDocumentDescription]:
         return advisor_service.get_docs(current_user)
 
-    @router.post("/validate", dependencies=[Security(azure_scheme)])
+    @router.post("/validate", dependencies=[Security(auth_scheme)])
     async def validate_advisor(
         request: Request,
         data: AdvisorInput,
-        current_user: Annotated[User, Depends(azure_service.azure_scheme)],
+        current_user: Annotated[User, Depends(auth_scheme)],
     ) -> StreamingResponse:
         pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
+
         logger.info(
             "app_event",
             extra={
@@ -60,10 +59,10 @@ def create_router(
             },
         )
 
-        def event_generator() -> Generator[str, None, None]:
+        async def event_generator() -> AsyncGenerator[str, None]:
             # NOTE: CancelOnDisconnect is not used here because StreamingResponse evaluation
-            # happens after this handler returns. Disconnections will be handled by the ASGI server.
-            for validation_result in advisor_service.check_text_stream(
+            # happens after this handler returns. Disconnects will be handled by ASGI server.
+            async for validation_result in advisor_service.check_text_stream(
                 data.text,
                 data.docs,
             ):
@@ -72,7 +71,7 @@ def create_router(
 
         return StreamingResponse(event_generator(), media_type="text/event-stream")
 
-    @router.get("/doc/{name}", dependencies=[Security(azure_scheme)])
+    @router.get("/doc/{name}", dependencies=[Security(auth_scheme)])
     async def get_document(name: str) -> FileResponse:
         """
         Get the document description by name.

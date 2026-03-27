@@ -1,6 +1,7 @@
 import time
 from typing import final
 
+from dcc_backend_common.logger import get_logger
 from returns.curry import partial
 from returns.pipeline import flow
 from returns.pointfree import map_
@@ -14,19 +15,17 @@ from text_mate_backend.models.text_corretion_models import (
 )
 from text_mate_backend.services.language_tool_service import LanguageToolService
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("text_correction_service")
 
 
 def _create_blocks(response: LanguageToolResponse) -> list[CorrectionBlock]:
-    """Create correction blocks from the response."""
     blocks: list[CorrectionBlock] = []
     for match in response.matches:
         blocks.append(
             CorrectionBlock(
                 original=match.context.text[match.context.offset : match.context.offset + match.context.length],
-                corrected=list(map(lambda replacement: replacement.value, match.replacements)),
+                corrected=[replacement.value for replacement in match.replacements],
                 explanation=match.message,
                 offset=match.offset,
                 length=match.length,
@@ -45,10 +44,14 @@ class TextCorrectionService:
         logger.debug(f"Using language tool API URL: {self.config.language_tool_api_url}")
 
     def correct_text(self, text: str, options: TextCorrectionOptions) -> ResultE[CorrectionResult]:
-        """Corrects the input text based on given options.
-        Returns Either[str, str] where:
-        - Left(str) contains error message
-        - Right(str) contains corrected text
+        """
+        Produce a CorrectionResult with suggested correction blocks for the provided text according to the given
+        options.
+
+        Returns:
+            ResultE[CorrectionResult]: `Success` contains a CorrectionResult whose `blocks` are the suggested
+            CorrectionBlock entries and whose `original` is the input text; `Failure` contains an error describing why
+            the correction request failed.
         """
         text_snippet = text[:50] + ("..." if len(text) > 50 else "")
         logger.debug("Processing text correction request", text_length=len(text), text_snippet=text_snippet)
@@ -58,6 +61,7 @@ class TextCorrectionService:
         blocks: ResultE[list[CorrectionBlock]] = flow(
             text,
             partial(self.language_tool.check_text, options.language),
+            # pyrefly: ignore
             map_(_create_blocks),
         )
         processing_time = time.time() - start_time

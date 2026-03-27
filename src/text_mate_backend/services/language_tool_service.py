@@ -2,13 +2,13 @@ import time
 from urllib.parse import urlparse
 
 import requests
+from dcc_backend_common.logger import get_logger
 from returns.result import safe
 
 from text_mate_backend.models.error_codes import LANGUAGE_TOOL_ERROR
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.language_tool_models import LanguageToolResponse
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("language_tool_service")
 

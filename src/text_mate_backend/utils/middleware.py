@@ -1,12 +1,11 @@
 import time
 from typing import Awaitable, Callable
 
+from dcc_backend_common.logger import get_logger
 from fastapi import FastAPI
 from starlette.middleware.base import BaseHTTPMiddleware, _StreamingResponse
 from starlette.requests import Request
 from starlette.responses import JSONResponse, PlainTextResponse, Response, StreamingResponse
-
-from text_mate_backend.utils.logger import get_logger
 
 logger = get_logger("middleware")
 
@@ -85,5 +84,5 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 
 def add_logging_middleware(app: FastAPI) -> None:
     """Add the logging middleware to a FastAPI application."""
-    app.add_middleware(LoggingMiddleware)
+    app.add_middleware(LoggingMiddleware)  # ty:ignore[invalid-argument-type]
     logger.info("Logging middleware configured")
