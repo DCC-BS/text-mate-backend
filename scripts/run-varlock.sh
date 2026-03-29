@@ -1,3 +1,6 @@
 #!/bin/bash
 
-(set -a; source ./.env; set +a; varlock "$@")
+source ./.env
+varlock run -- "$@"
+
+# (set -a; source ./.env; set +a; varlock run -- "$@")

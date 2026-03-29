@@ -45,7 +45,8 @@ run: ## Run the application
 .PHONY: dev
 dev: ## Run the application in development mode
 	@echo "🚀 Running the application in development mode"
-	@(set -a; source .env; set +a; varlock run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000)
+	./scripts/run-varlock.sh varlock run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000
+	# @(set -a; source ./.env; set +a; varlock run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000)
 
 .PHONY: build
 build: clean-build ## Build wheel file
