@@ -33,11 +33,9 @@ class Configuration(LlmConfig):
         description="The scope description for Azure AD authentication", default="user_impersonation"
     )
 
-    disable_auth: bool = Field(description="Flag to disable authentification", default=True)
+    disable_auth: bool = Field(description="Flag to disable authentication", default=True)
 
     environment: str = Field(description="The application environment", default="development")
-
-    is_prod: bool = Field(description="Flag to indicate if the environment is production", default=False)
 
     @classmethod
     @override
@@ -46,8 +44,7 @@ class Configuration(LlmConfig):
         language_tool_api_health_check_url = f"{language_tool_api_url.rstrip('/')}/languages"
 
         llm_api_key = os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY")
-
-        disable_auth = os.getenv("DISABLE_AUTH", "false").lower().strip() == "true"
+        disable_auth = os.getenv("AUTH_MODE", "none").lower().strip() == "none"
 
         if not llm_api_key:
             raise ValueError("LLM_API_KEY environment variable must be set")

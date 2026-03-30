@@ -2,7 +2,6 @@
 install: ## Install the virtual environment and install the pre-commit hooks
 	@echo "🚀 Creating virtual environment using uv"
 	@uv sync
-	@make env-example
 	@uv run pre-commit install
 
 .PHONY: check
@@ -40,13 +39,12 @@ docker down: ## Stop and remove the Docker container
 .PHONY: run
 run: ## Run the application
 	@echo "🚀 Running the application"
-	@uv run --env-file .env fastapi run ./src/text_mate_backend/app.py --port 8000
+	./scripts/run-varlock.sh uv run fastapi run ./src/text_mate_backend/app.py --port 8000
 
 .PHONY: dev
 dev: ## Run the application in development mode
 	@echo "🚀 Running the application in development mode"
-	./scripts/run-varlock.sh varlock run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000
-	# @(set -a; source ./.env; set +a; varlock run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000)
+	./scripts/run-varlock.sh uv run fastapi dev ./src/text_mate_backend/app.py --port 8000
 
 .PHONY: build
 build: clean-build ## Build wheel file

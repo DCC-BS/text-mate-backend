@@ -45,22 +45,67 @@ Text Mate Backend is a powerful Python FastAPI service that provides advanced te
 Create a `.env` file in the project root with the required environment variables:
 
 ```
+AUTH_MODE=none # or azure
+LOG_LEVEL=debug
+HMAC_SECRET=... # create a new secret with openssl rand 32 | base64
+
+IS_PROD=false # this will be calculated from the ENVIRONMENT when varlock is used else this needs to be set for the logger
+
+# optional else defaults will be used
+# ---
+
+ENVIRONMENT=development # defaults to development when varlock is used else production
+
+## Ports
+
+# The port of the fastapi backend app
+PORT=8000
 LLM_API_PORT=8001
 CLIENT_PORT=3000
-CLIENT_URL=http://localhost:${CLIENT_PORT}
-OPENAI_API_BASE_URL=http://vllm_qwen3_32B:${LLM_API_PORT}/v1
-OPENAI_API_KEY=none
-LLM_MODEL=Qwen/Qwen3-32B-AWQ
-
+DOCLING_API_PORT=5001
 LANGUAGE_TOOL_PORT=8010
-LANGUAGE_TOOL_API_URL=http://languagetool:${LANGUAGE_TOOL_PORT}/v2
-LANGUAGE_TOOL_CACHE_DIR=~/.cache/languagetool
 
-HUGGING_FACE_HUB_TOKEN=your_hugging_face_token
-HUGGING_FACE_CACHE_DIR=~/.cache/huggingface
+## Urls
+
+# The URL for client application
+CLIENT_URL=http://localhost:${CLIENT_PORT}
+
+# The URL for Language Tool API
+LANGUAGE_TOOL_API_URL=http://localhost:${LANGUAGE_TOOL_PORT}/v2
+
+# The URL for Docling service
+DOCLING_URL=http://localhost:${DOCLING_API_PORT}/v1
+
+# The URL for LLM API
+LLM_URL=http://localhost:${LLM_API_PORT}
+
+# The URL for LLM health check API
+LLM_HEALTH_CHECK_URL=${LLM_URL}/health
+
+## LLM
+
+# The model for LLM API
+LLM_MODEL='Qwen/Qwen3-32B-AWQ'
+
+# The API key for authenticating with OpenAI
+LLM_API_KEY=none
+
+# For the docker compose also set these variables
+# ---
+HUGGING_FACE_HUB_TOKEN=your_huggingface_token
+
+## Caching dirs for docker
+CACHE_DIR="~/.cache"
+LANGUAGE_TOOL_CACHE_DIR=${CACHE_DIR}/languagetool
+HUGGING_FACE_CACHE_DIR=${CACHE_DIR}/huggingface
 ```
-
 > **Note:** The `HUGGING_FACE_HUB_TOKEN` is required for Hugging Face API access. You can create a token [here](https://huggingface.co/settings/tokens).
+
+Use [varlock](https://varlock.dev/) to validate the env variables:
+
+```bash
+varlock load
+```
 
 ### Install Dependencies
 

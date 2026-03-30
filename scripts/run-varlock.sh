@@ -1,6 +1,5 @@
 #!/bin/bash
 
+FORCE_COLOR=1
 source ./.env
 varlock run -- "$@"
-
-# (set -a; source ./.env; set +a; varlock run -- "$@")
