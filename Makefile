@@ -29,22 +29,22 @@ test: ## Test the code with pytest
 .PHONY: docker up
 docker up: ## Build and run the Docker container
 	@echo "🐳 Running docker compose"
-	@docker compose up -d
+	./scripts/run-varlock.sh run -- docker compose up -d
 
 .PHONY: docker down
 docker down: ## Stop and remove the Docker container
 	@echo "🐳 Stopping docker compose"
-	@docker compose down
+	./scripts/run-varlock.sh run -- docker compose down
 
 .PHONY: run
 run: ## Run the application
 	@echo "🚀 Running the application"
-	./scripts/run-varlock.sh uv run fastapi run ./src/text_mate_backend/app.py --port 8000
+	./scripts/run-varlock.sh run -- uv run fastapi run ./src/text_mate_backend/app.py --port 8000
 
 .PHONY: dev
 dev: ## Run the application in development mode
 	@echo "🚀 Running the application in development mode"
-	./scripts/run-varlock.sh uv run fastapi dev ./src/text_mate_backend/app.py --port 8000
+	./scripts/run-varlock.sh run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000
 
 .PHONY: build
 build: clean-build ## Build wheel file
