@@ -8,6 +8,7 @@ install: ## Install the virtual environment and install the pre-commit hooks
 check: ## Run code quality tools.
 	@echo "🚀 Checking lock file consistency with 'pyproject.toml'"
 	@uv lock --locked
+
 	@echo "🚀 Linting code: Running pre-commit"
 	@uv run ruff format
 	@uv run ruff check --fix
@@ -26,15 +27,19 @@ test: ## Test the code with pytest
 	@echo "🚀 Testing code: Running pytest"
 	@uv run python -m pytest --doctest-modules
 
-.PHONY: docker up
-docker up: ## Build and run the Docker container
+.PHONY: docker-up
+docker-up: ## Build and run the Docker container
 	@echo "🐳 Running docker compose"
-	./scripts/run-varlock.sh run -- docker compose up -d
+	@./scripts/run-varlock.sh run -- docker compose up -d
 
-.PHONY: docker down
-docker down: ## Stop and remove the Docker container
+.PHONY: docker-down
+docker-down: ## Stop and remove the Docker container
 	@echo "🐳 Stopping docker compose"
-	./scripts/run-varlock.sh run -- docker compose down
+	@./scripts/run-varlock.sh run -- docker compose down
+
+.PHONY: docker-logs
+docker-logs:
+	@./scripts/run-varlock.sh run -- docker compose logs
 
 .PHONY: run
 run: ## Run the application
