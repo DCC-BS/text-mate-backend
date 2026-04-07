@@ -8,7 +8,6 @@ install: ## Install the virtual environment and install the pre-commit hooks
 check: ## Run code quality tools.
 	@echo "🚀 Checking lock file consistency with 'pyproject.toml'"
 	@uv lock --locked
-
 	@echo "🚀 Linting code: Running pre-commit"
 	@uv run ruff format
 	@uv run ruff check --fix
@@ -55,16 +54,6 @@ dev: ## Run the application in development mode
 build: clean-build ## Build wheel file
 	@echo "🚀 Creating wheel file"
 	@uvx --from build pyproject-build --installer uv
-
-.PHONY: clean-build
-clean-build: ## Clean build artifacts
-	@echo "🚀 Removing build artifacts"
-	@uv run python -c "import shutil; import os; shutil.rmtree('dist') if os.path.exists('dist') else None"
-
-.PHONY: env-example
-env-example: ## Generate .env.example from Configuration model
-	@echo "📄 Generating .env.example"
-	@uv run -m dcc_backend_common.config.generate_env_example src.text_mate_backend.utils.configuration Configuration
 
 .PHONY: help
 help:
