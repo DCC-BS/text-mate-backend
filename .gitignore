@@ -87,3 +87,5 @@ cython_debug/
 .uv/
 
 docs/private/
+!.env.schema
+!.env.*.schema

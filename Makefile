@@ -2,7 +2,6 @@
 install: ## Install the virtual environment and install the pre-commit hooks
 	@echo "🚀 Creating virtual environment using uv"
 	@uv sync
-	@make env-example
 	@uv run pre-commit install
 
 .PHONY: check
@@ -14,51 +13,42 @@ check: ## Run code quality tools.
 	@uv run ruff check --fix
 	@echo "🚀 Static type checking: Running ty"
 	@uv run ty check ./src/text_mate_backend
+	@varlock scan
+
+.PHONY: env-load
+env-load: ## Validate the .env file against the Configuration model
+	@echo "🔍 Validating .env file"
+	@pass-cli login
+	./scripts/run-varlock.sh load
 
 .PHONY: test
 test: ## Test the code with pytest
 	@echo "🚀 Testing code: Running pytest"
 	@uv run python -m pytest --doctest-modules
 
-.PHONY: docker up
-docker up: ## Build and run the Docker container
+.PHONY: docker-up
+docker-up: ## Build and run the Docker container
 	@echo "🐳 Running docker compose"
-	@docker compose up -d
+	@./scripts/run-varlock.sh run -- docker compose up -d
 
-.PHONY: docker down
-docker down: ## Stop and remove the Docker container
+.PHONY: docker-down
+docker-down: ## Stop and remove the Docker container
 	@echo "🐳 Stopping docker compose"
-	@docker compose down
+	@./scripts/run-varlock.sh run -- docker compose down
+
+.PHONY: docker-logs
+docker-logs: ## Show docker compose logs
+	@./scripts/run-varlock.sh run -- docker compose logs
 
 .PHONY: run
 run: ## Run the application
 	@echo "🚀 Running the application"
-	@uv run --env-file .env fastapi run ./src/text_mate_backend/app.py --port 8000
+	./scripts/run-varlock.sh run -- uv run fastapi run ./src/text_mate_backend/app.py --port 8000
 
 .PHONY: dev
 dev: ## Run the application in development mode
 	@echo "🚀 Running the application in development mode"
-	@uv run --env-file .env fastapi dev ./src/text_mate_backend/app.py --port 8000
-
-.PHONY: build
-build: clean-build ## Build wheel file
-	@echo "🚀 Creating wheel file"
-	@uvx --from build pyproject-build --installer uv
-
-.PHONY: clean-build
-clean-build: ## Clean build artifacts
-	@echo "🚀 Removing build artifacts"
-	@uv run python -c "import shutil; import os; shutil.rmtree('dist') if os.path.exists('dist') else None"
-
-.PHONY: env-example
-env-example: ## Generate .env.example from Configuration model
-	@echo "📄 Generating .env.example"
-	@uv run -m dcc_backend_common.config.generate_env_example src.text_mate_backend.utils.configuration Configuration
-
-.PHONY: sync-env
-sync-env: ## Sync .env with .env.example
-	@echo "🔄 Syncing .env with .env.example"
-	@uvx --from dcc-backend-common sync-env-with-example
+	./scripts/run-varlock.sh run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000
 
 .PHONY: help
 help:

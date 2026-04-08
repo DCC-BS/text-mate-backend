@@ -28,7 +28,7 @@ services:
                 reservations:
                     devices:
                         - driver: nvidia
-                          count: 1
+                          device_ids: ["0"]
                           capabilities: [gpu]
         ipc: host
         volumes:
@@ -36,8 +36,8 @@ services:
         command: >
             --port 8000
             --model Qwen/Qwen3-32B-AWQ
-            --max-model-len 8000
-            --gpu-memory-utilization 0.95
+            --max-model-len 6000
+            --gpu-memory-utilization 0.90
             --enable-auto-tool-choice
             --tool-call-parser hermes
             --tensor-parallel-size 1

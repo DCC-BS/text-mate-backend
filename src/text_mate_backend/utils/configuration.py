@@ -33,11 +33,9 @@ class Configuration(LlmConfig):
         description="The scope description for Azure AD authentication", default="user_impersonation"
     )
 
-    disable_auth: bool = Field(description="Flag to disable authentification", default=True)
+    disable_auth: bool = Field(description="Flag to disable authentication", default=True)
 
     environment: str = Field(description="The application environment", default="development")
-
-    is_prod: bool = Field(description="Flag to indicate if the environment is production", default=False)
 
     @classmethod
     @override
@@ -46,6 +44,7 @@ class Configuration(LlmConfig):
         language_tool_api_health_check_url = f"{language_tool_api_url.rstrip('/')}/languages"
 
         llm_api_key = os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY")
+        disable_auth = os.getenv("AUTH_MODE", "none").lower().strip() == "none"
 
         if not llm_api_key:
             raise ValueError("LLM_API_KEY environment variable must be set")
@@ -60,13 +59,13 @@ class Configuration(LlmConfig):
             docling_url=get_env_or_throw("DOCLING_URL"),
             docling_api_key=get_env_or_throw("DOCLING_API_KEY"),
             llm_health_check_url=get_env_or_throw("LLM_HEALTH_CHECK_URL"),
-            azure_client_id=get_env_or_throw("AZURE_CLIENT_ID"),
-            azure_tenant_id=get_env_or_throw("AZURE_TENANT_ID"),
-            azure_frontend_client_id=get_env_or_throw("AZURE_FRONTEND_CLIENT_ID"),
-            azure_scope_description=get_env_or_throw("AZURE_SCOPE_DESCRIPTION"),
+            azure_client_id="" if disable_auth else get_env_or_throw("AZURE_CLIENT_ID"),
+            azure_tenant_id="" if disable_auth else get_env_or_throw("AZURE_TENANT_ID"),
+            azure_frontend_client_id="" if disable_auth else get_env_or_throw("AZURE_FRONTEND_CLIENT_ID"),
+            azure_scope_description="" if disable_auth else get_env_or_throw("AZURE_SCOPE_DESCRIPTION"),
             hmac_secret=get_env_or_throw("HMAC_SECRET"),
-            disable_auth=os.getenv("DISABLE_AUTH", "false").lower().strip() == "true",
-            environment=os.getenv("ENVIRONMENT", "production"),
+            disable_auth=disable_auth,
+            environment="production" if os.getenv("APP_MODE", "prod") == "prod" else "development",
         )
 
     @override
