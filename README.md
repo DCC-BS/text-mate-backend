@@ -24,7 +24,7 @@ Text Mate Backend is a powerful Python FastAPI service that provides advanced te
 - **Document Conversion**: Convert documents using Docling service (PDF, DOCX, etc.)
 
 ### Quick Actions
-Eight specialized AI-powered text transformations:
+Many specialized AI-powered text transformations:
 - **Summarize**: Generate concise summaries of long texts
 - **Bullet Points**: Convert paragraphs into structured bullet points
 - **Formality**: Adjust text formality level (formal/informal)
