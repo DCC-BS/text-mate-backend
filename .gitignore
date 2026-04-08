@@ -88,4 +88,4 @@ cython_debug/
 
 docs/private/
 !.env.schema
-!.env.*
+!.env.*.schema
