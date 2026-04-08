@@ -9,8 +9,8 @@ on:
             - main
 
 env:
-    APP_MODE=ci
-    AUTH_MODE=none
+    APP_MODE: "ci"
+    AUTH_MODE: "none"
 
 jobs:
     backend-ci:
