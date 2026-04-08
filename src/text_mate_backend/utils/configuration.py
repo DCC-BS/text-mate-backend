@@ -65,7 +65,7 @@ class Configuration(LlmConfig):
             azure_scope_description="" if disable_auth else get_env_or_throw("AZURE_SCOPE_DESCRIPTION"),
             hmac_secret=get_env_or_throw("HMAC_SECRET"),
             disable_auth=disable_auth,
-            environment=os.getenv("ENVIRONMENT", "production"),
+            environment="production" if os.getenv("APP_MODE", "prod") == "pro" else "development",
         )
 
     @override

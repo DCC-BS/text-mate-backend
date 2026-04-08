@@ -84,8 +84,8 @@ The following environment variables have defaults and can be overridden as neede
 | Variable | Description | Default | Type |
 |----------|-------------|---------|------|
 | **Environment Settings** |
-| `ENVIRONMENT` | Application environment | `development` | enum: development, production |
-| `IS_PROD` | Flag for production mode (used by logger) | Auto-calculated from ENVIRONMENT | boolean |
+| `APP_MODE` | Application mode (controls varlock validation) | `dev` | enum: dev, ci, build, prod |
+| `IS_PROD` | Flag for production mode (used by logger) | Auto-calculated from APP_MODE | boolean |
 | **Ports** |
 | `PORT` | FastAPI backend app port | `8000` | port |
 | `LLM_API_PORT` | LLM API port | `8001` | port |
@@ -109,7 +109,7 @@ The following environment variables have defaults and can be overridden as neede
 | `LANGUAGE_TOOL_CACHE_DIR` | LanguageTool cache directory | `${CACHE_DIR}/languagetool` | path |
 | `HUGGING_FACE_CACHE_DIR` | Hugging Face cache directory | `${CACHE_DIR}/huggingface` | path |
 
-> **Note:** URLs are automatically set based on the `ENVIRONMENT`. In production, these must be configured explicitly.
+> **Note:** URLs are automatically set based on the `APP_MODE`. In production, these must be configured explicitly.
 
 #### Azure Environment Variables
 

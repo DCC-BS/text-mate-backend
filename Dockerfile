@@ -28,6 +28,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Stage 2: Runtime
 FROM python:3.14-alpine
 
+ENV APP_MODE=build
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
@@ -49,6 +50,6 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 USER app
 
-ENV ENVIRONMENT=production
+ENV APP_MODE=prod
 
 ENTRYPOINT ["/app/entrypoint.sh"]
