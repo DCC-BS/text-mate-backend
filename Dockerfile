@@ -2,6 +2,7 @@
 FROM python:3.14-alpine AS builder
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
+ENV APP_MODE=build
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 ENV UV_HTTP_TIMEOUT=120
@@ -28,7 +29,6 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Stage 2: Runtime
 FROM python:3.14-alpine
 
-ENV APP_MODE=build
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
@@ -43,7 +43,7 @@ RUN addgroup -S app && adduser -S app -G app
 # Copy the environment, but not the source code
 COPY --from=builder --chown=app:app /app /app
 COPY --chown=app:app --chmod=755 entrypoint.sh /app/entrypoint.sh
-COPY --from=ghcr.io/dmno-dev/varlock:latest --chown=node:node /usr/local/bin/varlock /usr/local/bin/varlock
+COPY --from=ghcr.io/dmno-dev/varlock:latest --chown=app:app /usr/local/bin/varlock /usr/local/bin/varlock
 
 # Enable virtual environment
 ENV PATH="/app/.venv/bin:$PATH"
