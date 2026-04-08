@@ -15,8 +15,8 @@ check: ## Run code quality tools.
 	@uv run ty check ./src/text_mate_backend
 	@varlock scan
 
-.PHONY: env load
-env load: ## Validate the .env file against the Configuration model
+.PHONY: env-load
+env-load: ## Validate the .env file against the Configuration model
 	@echo "🔍 Validating .env file"
 	@pass-cli login
 	./scripts/run-varlock.sh load
@@ -49,11 +49,6 @@ run: ## Run the application
 dev: ## Run the application in development mode
 	@echo "🚀 Running the application in development mode"
 	./scripts/run-varlock.sh run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000
-
-.PHONY: build
-build: clean-build ## Build wheel file
-	@echo "🚀 Creating wheel file"
-	@uvx --from build pyproject-build --installer uv
 
 .PHONY: help
 help:

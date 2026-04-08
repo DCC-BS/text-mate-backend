@@ -222,7 +222,7 @@ make run
 Or manually:
 
 ```bash
-uv run fastapi run ./src/text_mate_backend/app.py --port 8000
+FORCE_COLOR=1 varlock run -- uv run fastapi run ./src/text_mate_backend/app.py --port 8000
 ```
 
 ## Docker Deployment
