@@ -8,7 +8,6 @@ from pydantic import Field
 
 class Configuration(LlmConfig):
     client_url: str = Field(description="The URL for client application", default="http://localhost:3000")
-    language_tool_api_url: str = Field(description="The URL for Language Tool API", default="http://localhost:8010/v2")
 
     docling_url: str = Field(description="The URL for Docling service", default="http://localhost:5001/v1")
     docling_api_key: str = Field(
@@ -17,11 +16,6 @@ class Configuration(LlmConfig):
 
     llm_health_check_url: str = Field(
         description="The URL for LLM health check API", default="http://localhost:8001/health"
-    )
-    language_tool_api_health_check_url: str = Field(
-        description="The URL for Language Tool API health check API",
-        default="http://localhost:8001/health",
-        json_schema_extra={"exclude_from_env": True},
     )
 
     azure_client_id: str = Field(description="The client ID for Azure AD application")
@@ -40,9 +34,6 @@ class Configuration(LlmConfig):
     @classmethod
     @override
     def from_env(cls) -> "Configuration":
-        language_tool_api_url = get_env_or_throw("LANGUAGE_TOOL_API_URL")
-        language_tool_api_health_check_url = f"{language_tool_api_url.rstrip('/')}/languages"
-
         llm_api_key = os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY")
         disable_auth = os.getenv("AUTH_MODE", "none").lower().strip() == "none"
 
@@ -54,8 +45,6 @@ class Configuration(LlmConfig):
             llm_api_key=llm_api_key,
             llm_url=get_env_or_throw("LLM_URL"),
             llm_model=get_env_or_throw("LLM_MODEL"),
-            language_tool_api_url=language_tool_api_url,
-            language_tool_api_health_check_url=language_tool_api_health_check_url,
             docling_url=get_env_or_throw("DOCLING_URL"),
             docling_api_key=get_env_or_throw("DOCLING_API_KEY"),
             llm_health_check_url=get_env_or_throw("LLM_HEALTH_CHECK_URL"),
@@ -76,8 +65,6 @@ class Configuration(LlmConfig):
             llm_api_key={log_secret(self.llm_api_key)},
             llm_url={self.llm_url},
             llm_model={self.llm_model},
-            language_tool_api_url={self.language_tool_api_url},
-            language_tool_api_health_check_url={self.language_tool_api_health_check_url},
             docling_url={self.docling_url},
             docling_api_key={log_secret(self.docling_api_key)},
             llm_health_check_url={self.llm_health_check_url},

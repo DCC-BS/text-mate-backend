@@ -16,7 +16,7 @@ Text Mate Backend is a powerful Python FastAPI service that provides advanced te
 ## Features
 
 ### Core Capabilities
-- **Text Correction**: Grammar and spelling correction using LanguageTool integration
+- **Text Correction**: Grammar and spelling correction using a quick Action
 - **Text Rewriting**: Advanced text transformation with customizable parameters
 - **Document Advisor**: Validates text against reference documents and style guides
 - **Word Synonyms**: Intelligent synonym suggestions based on context
@@ -48,7 +48,6 @@ Many specialized AI-powered text transformations:
 - **Dependency Injection**: Dependency-Injector
 - **LLM Integration**: pydantic-ai for AI model integration
 - **AI Model**: Qwen3 32B served via vLLM
-- **Grammar Checking**: LanguageTool
 - **Document Processing**: Docling
 - **Containerization**: Docker and Docker Compose
 - **Monitoring**: Logfire for observability
@@ -90,11 +89,9 @@ The following environment variables have defaults and can be overridden as neede
 | `PORT` | FastAPI backend app port | `8000` | port |
 | `LLM_API_PORT` | LLM API port | `8001` | port |
 | `CLIENT_PORT` | Client application port | `3000` | port |
-| `LANGUAGE_TOOL_PORT` | LanguageTool API port | `8010` | port |
 | `DOCLING_API_PORT` | Docling API port | `5001` | port |
 | **URLs** |
 | `CLIENT_URL` | Client application URL | `http://localhost:3000` (dev) | URL |
-| `LANGUAGE_TOOL_API_URL` | LanguageTool API URL | `http://localhost:8010/v2` (dev) | URL |
 | `DOCLING_URL` | Docling service URL | `http://localhost:5001/v1` (dev) | URL |
 | `LLM_URL` | LLM API URL | `http://localhost:8001/v1` (dev) | URL |
 | `LLM_HEALTH_CHECK_URL` | LLM health check URL | `http://localhost:8001/health` (dev) | URL |
@@ -106,7 +103,6 @@ The following environment variables have defaults and can be overridden as neede
 | `HUGGING_FACE_HUB_TOKEN` | Hugging Face API token | - | string (optional, sensitive) |
 | **Docker Cache Directories** |
 | `CACHE_DIR` | Base cache directory | `~/.cache` | path |
-| `LANGUAGE_TOOL_CACHE_DIR` | LanguageTool cache directory | `${CACHE_DIR}/languagetool` | path |
 | `HUGGING_FACE_CACHE_DIR` | Hugging Face cache directory | `${CACHE_DIR}/huggingface` | path |
 
 > **Note:** URLs are automatically set based on the `APP_MODE`. In production, these must be configured explicitly.
@@ -153,7 +149,6 @@ The application consists of four main services:
 |---------|------|-------------|
 | **FastAPI Backend** | 8000 | Main application API |
 | **vLLM Service** | 8001 | Qwen3-32B-AWQ model inference (v0.17.1) |
-| **LanguageTool** | 8010 | Grammar and spelling checking |
 | **Docling** | 5001 | Document conversion service |
 
 ### GPU Allocation
@@ -265,9 +260,7 @@ src/text_mate_backend/
 │   └── word_synonym.py            # Word synonym endpoint
 ├── services/                       # Business logic services
 │   ├── actions/                   # Quick action service
-│   ├── document_conversion_service.py
-│   ├── language_tool_service.py
-│   └── text_correction_language_tool.py
+│   └── document_conversion_service.py
 └── utils/                          # Utility functions and helpers
     ├── auth.py                    # Authentication utilities
     ├── configuration.py           # Configuration management
@@ -278,8 +271,6 @@ text_mate_tools/                    # Utility scripts
 ├── count_rules_per_file.py        # Rule counting utility
 └── analyse_ruels.py               # Rule analysis utility
 
-docker/                             # Docker configurations
-├── languagetool/                  # LanguageTool Docker setup
 docs/                               # Reference documents and style guides
 tests/                              # Unit and integration tests
 ```

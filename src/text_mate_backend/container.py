@@ -5,7 +5,6 @@ from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.document_conversion_service import DocumentConversionService
 from text_mate_backend.services.language_tool_service import LanguageToolService
-from text_mate_backend.services.text_correction_language_tool import TextCorrectionService
 from text_mate_backend.utils.auth import AuthSchema, create_auth_scheme
 from text_mate_backend.utils.auth_settings import AuthSettings
 from text_mate_backend.utils.configuration import Configuration
@@ -17,9 +16,6 @@ class Container(containers.DeclarativeContainer):
 
     language_tool_service: providers.Singleton[LanguageToolService] = providers.Singleton(
         LanguageToolService, config=config
-    )
-    text_correction_service: providers.Singleton[TextCorrectionService] = providers.Singleton(
-        TextCorrectionService, config=config, language_tool_Service=language_tool_service
     )
 
     advisor_service: providers.Singleton[AdvisorService] = providers.Singleton(
