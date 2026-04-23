@@ -17,7 +17,6 @@ from text_mate_backend.routers import (
     convert_route,
     quick_action,
     sentence_rewrite,
-    text_correction,
     word_synonym,
 )
 from text_mate_backend.utils.middleware import add_logging_middleware
@@ -32,7 +31,7 @@ def create_app() -> FastAPI:
     # Set up dependency injection container
     logger.debug("Configuring dependency injection container")
     container = Container()
-    container.wire(modules=[text_correction, advisor, quick_action, word_synonym, sentence_rewrite, convert_route])
+    container.wire(modules=[advisor, quick_action, word_synonym, sentence_rewrite, convert_route])
     container.check_dependencies()
     logger.info("Dependency injection configured")
 
@@ -48,11 +47,6 @@ def create_app() -> FastAPI:
 
     service_dependencies: list[ServiceDependency] = [
         {"name": "llm", "health_check_url": config.llm_health_check_url, "api_key": config.llm_api_key},
-        {
-            "name": "language tool",
-            "health_check_url": config.language_tool_api_health_check_url,
-            "api_key": None,
-        },
     ]
 
     @asynccontextmanager
@@ -72,7 +66,7 @@ def create_app() -> FastAPI:
 
     app = FastAPI(
         title="Text Mate API",
-        description="API for text correction, rewriting, and other text-related services",
+        description="API for text rewriting, quick actions, and other text-related services",
         version="0.1.0",
         swagger_ui_oauth2_redirect_url="/oauth2-redirect",
         swagger_ui_init_oauth={
@@ -101,7 +95,6 @@ def create_app() -> FastAPI:
 
     # Include routers
     logger.debug("Registering API routers")
-    app.include_router(text_correction.create_router())
     app.include_router(advisor.create_router())
     app.include_router(quick_action.create_router())
     app.include_router(word_synonym.create_router())
