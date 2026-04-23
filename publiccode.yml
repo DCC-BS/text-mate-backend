@@ -12,8 +12,8 @@ organisation:
 description:
   en:
     localisedName: TextMate
-    shortDescription: "Text Mate Backend is a powerful Python FastAPI service that provides advanced text analysis, correction, and transformation capabilities."
-    longDescription: Text Mate Backend is a powerful Python FastAPI service that provides advanced text analysis, correction, and transformation capabilities.
+    shortDescription: "Text Mate Backend is a powerful Python FastAPI service that provides advanced text analysis and transformation capabilities."
+    longDescription: Text Mate Backend is a powerful Python FastAPI service that provides advanced text analysis and transformation capabilities.
     documentation: https://dcc-bs.github.io/documentation/
     apiDocumentation: https://dcc-bs.github.io/documentation/
     features:

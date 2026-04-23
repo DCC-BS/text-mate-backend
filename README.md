@@ -1,6 +1,6 @@
 # Text Mate (Backend)
 
-Text Mate Backend is a powerful Python FastAPI service that provides advanced text analysis, correction, and transformation capabilities powered by AI. This repository contains the backend services for the Text Mate application; the frontend is built with Nuxt.js and available at [https://github.com/DCC-BS/text-mate-frontend](https://github.com/DCC-BS/text-mate-frontend).
+Text Mate Backend is a powerful Python FastAPI service that provides advanced text analysis and transformation capabilities powered by AI. This repository contains the backend services for the Text Mate application; the frontend is built with Nuxt.js and available at [https://github.com/DCC-BS/text-mate-frontend](https://github.com/DCC-BS/text-mate-frontend).
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![License](https://img.shields.io/github/license/DCC-BS/text-mate-backend)](https://img.shields.io/github/license/DCC-BS/text-mate-backend)
@@ -16,7 +16,6 @@ Text Mate Backend is a powerful Python FastAPI service that provides advanced te
 ## Features
 
 ### Core Capabilities
-- **Text Correction**: Grammar and spelling correction using a quick Action
 - **Text Rewriting**: Advanced text transformation with customizable parameters
 - **Document Advisor**: Validates text against reference documents and style guides
 - **Word Synonyms**: Intelligent synonym suggestions based on context
@@ -189,7 +188,7 @@ make test
 uv run pytest --cov=src/text_mate_backend tests/
 
 # Run specific test file
-uv run pytest tests/test_text_correction_service.py
+uv run pytest tests/test_example.py
 ```
 
 ### Makefile Commands
@@ -256,7 +255,6 @@ src/text_mate_backend/
 │   ├── convert_route.py           # Document conversion endpoint
 │   ├── quick_action.py            # Quick actions endpoint
 │   ├── sentence_rewrite.py        # Sentence rewrite endpoint
-│   ├── text_correction.py         # Text correction endpoint
 │   └── word_synonym.py            # Word synonym endpoint
 ├── services/                       # Business logic services
 │   ├── actions/                   # Quick action service

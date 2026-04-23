@@ -66,7 +66,7 @@ def create_app() -> FastAPI:
 
     app = FastAPI(
         title="Text Mate API",
-        description="API for text correction, rewriting, and other text-related services",
+        description="API for text rewriting, quick actions, and other text-related services",
         version="0.1.0",
         swagger_ui_oauth2_redirect_url="/oauth2-redirect",
         swagger_ui_init_oauth={
