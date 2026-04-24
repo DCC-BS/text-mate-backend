@@ -11,11 +11,11 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "2026-04-01T15:02:26.923503878Z"
+exclude-newer = "2026-04-17T07:31:56.966104438Z"
 exclude-newer-span = "P1W"
 
 [options.exclude-newer-package]
-dcc-backend-common = { timestamp = "2026-04-07T15:02:26.923511853Z", span = "P1D" }
+dcc-backend-common = { timestamp = "2026-04-23T07:31:56.966116737Z", span = "P1D" }
 
 [[package]]
 name = "ag-ui-protocol"
@@ -3698,7 +3698,7 @@ wheels = [
 
 [[package]]
 name = "text-mate-backend"
-version = "0.2.3"
+version = "0.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "dcc-backend-common", extra = ["pydantic-ai"] },
