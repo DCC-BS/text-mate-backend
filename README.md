@@ -269,7 +269,7 @@ text_mate_tools/                    # Utility scripts
 ├── count_rules_per_file.py        # Rule counting utility
 └── analyse_ruels.py               # Rule analysis utility
 
-docs/                               # Reference documents and style guides
+assets/docs/                        # Reference documents and style guides
 tests/                              # Unit and integration tests
 ```
 

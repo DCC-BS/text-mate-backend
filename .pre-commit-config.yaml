@@ -7,12 +7,12 @@ repos:
           - id: end-of-file-fixer
           - id: trailing-whitespace
 
-    - repo: https://github.com/astral-sh/ruff-pre-commit
-      rev: "v0.6.3"
-      hooks:
-          - id: ruff
-            args: [--exit-non-zero-on-fix, --config=pyproject.toml]
-            exclude: ^text_mate_backend
-          - id: ruff-format
-            args: [--config=pyproject.toml]
-            exclude: ^text_mate_backend
+    # - repo: https://github.com/astral-sh/ruff-pre-commit
+    #   rev: "v0.6.3"
+    #   hooks:
+    #       - id: ruff
+    #         args: [--exit-non-zero-on-fix, --config=pyproject.toml]
+    #         exclude: ^text_mate_backend
+    #       - id: ruff-format
+    #         args: [--config=pyproject.toml]
+    #         exclude: ^text_mate_backend

@@ -11,11 +11,11 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "2026-04-17T07:31:56.966104438Z"
+exclude-newer = "2026-05-12T12:35:40.98760983Z"
 exclude-newer-span = "P1W"
 
 [options.exclude-newer-package]
-dcc-backend-common = { timestamp = "2026-04-23T07:31:56.966116737Z", span = "P1D" }
+dcc-backend-common = { timestamp = "2026-05-18T12:35:40.98761918Z", span = "P1D" }
 
 [[package]]
 name = "ag-ui-protocol"
@@ -3708,6 +3708,7 @@ dependencies = [
     { name = "logfire" },
     { name = "pydantic-ai" },
     { name = "python-jose", extra = ["cryptography"] },
+    { name = "pyyaml" },
     { name = "requests" },
     { name = "returns" },
     { name = "structlog" },
@@ -3741,6 +3742,7 @@ requires-dist = [
     { name = "logfire", specifier = ">=4.22.0" },
     { name = "pydantic-ai", specifier = ">=1.55.0" },
     { name = "python-jose", extras = ["cryptography"], specifier = ">=3.5.0" },
+    { name = "pyyaml", specifier = ">=6.0.2" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "returns", specifier = ">=0.26.0" },
     { name = "structlog", specifier = ">=25.5.0" },

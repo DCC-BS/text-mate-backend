@@ -17,6 +17,7 @@ from text_mate_backend.routers import (
     convert_route,
     quick_action,
     sentence_rewrite,
+    user_action_route,
     word_synonym,
 )
 from text_mate_backend.utils.middleware import add_logging_middleware
@@ -31,7 +32,7 @@ def create_app() -> FastAPI:
     # Set up dependency injection container
     logger.debug("Configuring dependency injection container")
     container = Container()
-    container.wire(modules=[advisor, quick_action, word_synonym, sentence_rewrite, convert_route])
+    container.wire(modules=[advisor, quick_action, word_synonym, sentence_rewrite, convert_route, user_action_route])
     container.check_dependencies()
     logger.info("Dependency injection configured")
 
@@ -100,6 +101,7 @@ def create_app() -> FastAPI:
     app.include_router(word_synonym.create_router())
     app.include_router(sentence_rewrite.create_router())
     app.include_router(convert_route.create_router())
+    app.include_router(user_action_route.create_router())
     logger.info("All routers registered")
 
     logger.info("API setup complete")

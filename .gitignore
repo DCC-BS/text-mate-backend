@@ -86,6 +86,6 @@ cython_debug/
 # uv
 .uv/
 
-docs/private/
+assets/docs/private/
 !.env.schema
 !.env.*.schema

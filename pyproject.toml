@@ -17,6 +17,7 @@ dependencies = [
     "types-setuptools>=80.10.0.20260124",
     "pydantic-ai>=1.55.0",
     "logfire>=4.22.0",
+    "pyyaml>=6.0.2",
 ]
 
 [dependency-groups]

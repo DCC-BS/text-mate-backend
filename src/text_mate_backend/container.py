@@ -4,6 +4,7 @@ from text_mate_backend.services.actions.quick_action_service import QuickActionS
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.document_conversion_service import DocumentConversionService
+from text_mate_backend.services.user_actions_service import UserActionService
 from text_mate_backend.utils.auth import AuthSchema, create_auth_scheme
 from text_mate_backend.utils.auth_settings import AuthSettings
 from text_mate_backend.utils.configuration import Configuration
@@ -31,3 +32,5 @@ class Container(containers.DeclarativeContainer):
     auth_scheme: providers.Singleton[AuthSchema] = providers.Singleton(
         create_auth_scheme, azure_scheme=azure_service.provided.azure_scheme, disable_auth=config.provided.disable_auth
     )
+
+    user_actions_service: providers.Singleton[UserActionService] = providers.Singleton(UserActionService, config=config)
