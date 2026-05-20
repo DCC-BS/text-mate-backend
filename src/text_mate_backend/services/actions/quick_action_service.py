@@ -75,7 +75,8 @@ class QuickActionService:
                 text=context.text, options=context.options, extras=current_user, language=context.language
             )
 
-        if not isinstance(action, Actions):
+        if action not in [member.value for member in Actions]:
+            logger.info(f"{action} is not of type {[member.value for member in Actions]}")
             user_action = self.user_action_service.get_action(action)
             context = QuickActionContext(
                 text=text, options=";".join(filtered_segments), language=language, extras=user_action
@@ -103,7 +104,7 @@ class QuickActionService:
             raise
 
     def get_agent(self, id: str | Actions):
-        if isinstance(id, Actions):
-            return self.agent_mapping[id]
+        if id in [member.value for member in Actions]:
+            return self.agent_mapping[Actions(id)]
 
         return self.user_agent
