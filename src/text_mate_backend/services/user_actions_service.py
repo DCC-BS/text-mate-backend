@@ -58,8 +58,6 @@ class UserActionService:
         return actions
 
     def get_actions(self, user: User) -> list[UserAction]:
-        logger.info(f"Getting user actions for user {user.name} with the roles {user.roles}")
-
         return list(
             filter(
                 lambda x: len(x.groups) == 0 or len(set(x.groups).intersection(user.roles)) > 0,
