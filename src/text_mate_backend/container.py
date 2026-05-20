@@ -4,6 +4,7 @@ from text_mate_backend.services.actions.quick_action_service import QuickActionS
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.document_conversion_service import DocumentConversionService
+from text_mate_backend.services.user_actions_service import UserActionService
 from text_mate_backend.utils.auth import AuthSchema, create_auth_scheme
 from text_mate_backend.utils.auth_settings import AuthSettings
 from text_mate_backend.utils.configuration import Configuration
@@ -22,8 +23,10 @@ class Container(containers.DeclarativeContainer):
         DocumentConversionService, config=config
     )
 
+    user_actions_service: providers.Singleton[UserActionService] = providers.Singleton(UserActionService, config=config)
+
     quick_action_service: providers.Singleton[QuickActionService] = providers.Singleton(
-        QuickActionService, config=config
+        QuickActionService, user_action_service=user_actions_service, config=config
     )
 
     azure_service: providers.Singleton[AzureService] = providers.Singleton(AzureService, auth_settings=auth_settings)

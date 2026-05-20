@@ -14,8 +14,10 @@ from text_mate_backend.agents.agent_types.quick_actions.plain_language_agent imp
 from text_mate_backend.agents.agent_types.quick_actions.proof_read_agent import ProofReadAgent
 from text_mate_backend.agents.agent_types.quick_actions.social_media_agent import SocialMediaAgent
 from text_mate_backend.agents.agent_types.quick_actions.summarize_agent import SummarizeAgent
+from text_mate_backend.agents.agent_types.quick_actions.user_action_agent import UserActionAgent
 from text_mate_backend.models.quick_actions_models import Actions, CurrentUser, QuickActionContext
 from text_mate_backend.services.actions.action_utils import create_streaming_response
+from text_mate_backend.services.user_actions_service import UserActionService
 from text_mate_backend.utils.configuration import Configuration
 
 logger = get_logger("quick_action_service")
@@ -23,8 +25,9 @@ logger = get_logger("quick_action_service")
 
 @final
 class QuickActionService:
-    def __init__(self, config: Configuration) -> None:
+    def __init__(self, user_action_service: UserActionService, config: Configuration) -> None:
         self.config = config
+        self.user_action_service = user_action_service
 
         self.agent_mapping: dict[Actions, QuickActionBaseAgent] = {
             Actions.BulletPoints: BulletPointAgent(config),
@@ -38,7 +41,9 @@ class QuickActionService:
             Actions.CharacterSpeech: CharacterSpeechAgent(config),
         }
 
-    async def run(self, action: Actions, text: str, options: str, current_user: CurrentUser) -> StreamingResponse:
+        self.user_agent = UserActionAgent(config)
+
+    async def run(self, action: Actions | str, text: str, options: str, current_user: CurrentUser) -> StreamingResponse:
         """
         Perform the specified quick action on a given text and return a streaming response.
 
@@ -70,9 +75,16 @@ class QuickActionService:
                 text=context.text, options=context.options, extras=current_user, language=context.language
             )
 
+        if action not in [member.value for member in Actions]:
+            logger.info(f"{action} is not of type {[member.value for member in Actions]}")
+            user_action = self.user_action_service.get_action(action)
+            context = QuickActionContext(
+                text=text, options=";".join(filtered_segments), language=language, extras=user_action
+            )
+
         start_time = time.time()
         try:
-            agent = self.agent_mapping[action]
+            agent = self.get_agent(action)
 
             generator = agent.run_stream_text(user_prompt=context.text, deps=context)
             response = await create_streaming_response(generator)
@@ -90,3 +102,9 @@ class QuickActionService:
                 processing_time_ms=round(process_time * 1000),
             )
             raise
+
+    def get_agent(self, id: str | Actions):
+        if id in [member.value for member in Actions]:
+            return self.agent_mapping[Actions(id)]
+
+        return self.user_agent

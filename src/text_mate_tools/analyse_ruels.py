@@ -2,7 +2,7 @@ from pathlib import Path
 
 from text_mate_backend.models.rule_models import RulesContainer
 
-rules_file = Path("./docs/rules.json")
+rules_file = Path("./assets/docs/rules.json")
 
 rules_container = RulesContainer.model_validate_json(
     rules_file.read_text(),

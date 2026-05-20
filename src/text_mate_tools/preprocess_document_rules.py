@@ -5,7 +5,7 @@ Usage:
     uv run --env-file .env src/text_mate_tools/preprocess_document_rules.py <pdf_file> [<pdf_file> ...] [--output OUTPUT_DIR]
 
 Example:
-    uv run --env-file .env src/text_mate_tools/preprocess_document_rules.py docs/*.pdf --output ./output/rules
+    uv run --env-file .env src/text_mate_tools/preprocess_document_rules.py assets/docs/*.pdf --output ./output/rules
 
 The script will:
 1. Load and parse PDF documents
@@ -20,7 +20,7 @@ Output:
 Requirements:
     - PDF documents to process must exist and be readable
     - Environment must be configured with proper API keys (loaded from .env)
-    - Output directory will be created if it doesn't exist (default: ./docs/rules/)
+    - Output directory will be created if it doesn't exist (default: ./assets/docs/rules/)
 """  # noqa: E501
 
 import argparse
@@ -206,7 +206,7 @@ async def get_rules(path: Path) -> RulesContainer:
 
 async def main():
     parser = argparse.ArgumentParser(
-        description="Extract rules from PDF documents and save to JSON files in docs/rules/"
+        description="Extract rules from PDF documents and save to JSON files in assets/docs/rules/"
     )
     parser.add_argument(
         "documents",
@@ -217,8 +217,8 @@ async def main():
     parser.add_argument(
         "--output",
         type=str,
-        default="./docs/rules",
-        help="Output directory for extracted rules JSON files (default: ./docs/rules)",
+        default="./assets/docs/rules",
+        help="Output directory for extracted rules JSON files (default: ./assets/docs/rules)",
     )
     args = parser.parse_args()
 

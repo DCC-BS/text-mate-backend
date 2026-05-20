@@ -6,15 +6,15 @@ from pathlib import Path
 
 def get_default_rules_path() -> Path:
     """
-    Returns the default path to docs/rules.json assuming the following layout:
+    Returns the default path to assets/docs/rules.json assuming the following layout:
 
     text-mate-backend/
-      docs/rules.json
+      assets/docs/rules.json
       src/...
     """
     # This file is expected at: <repo_root>/src/text_mate_tools/count_rules_per_file.py
     # So repo_root is two levels up.
-    return Path(__file__).resolve().parents[2] / "docs" / "rules.json"
+    return Path(__file__).resolve().parents[2] / "assets" / "docs" / "rules.json"
 
 
 def count_rules_per_file(rules_path: Path) -> Counter[str]:
@@ -33,12 +33,12 @@ def count_rules_per_file(rules_path: Path) -> Counter[str]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Count how many rules each file_name has in docs/rules.json.")
+    parser = argparse.ArgumentParser(description="Count how many rules each file_name has in assets/docs/rules.json.")
     parser.add_argument(
         "--rules-path",
         type=str,
         default=str(get_default_rules_path()),
-        help="Path to rules.json (default: <repo_root>/docs/rules.json)",
+        help="Path to rules.json (default: <repo_root>/assets/docs/rules.json)",
     )
     args = parser.parse_args()
 

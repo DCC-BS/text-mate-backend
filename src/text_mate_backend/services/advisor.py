@@ -29,7 +29,7 @@ class AdvisorService:
         logger.info("Initializing AdvisorService")
 
         self.config = config
-        self.ruel_container = self._merge_rules_files(Path("docs/rules"))
+        self.ruel_container = self._merge_rules_files(Path("assets/docs/rules"))
         self.agent = AdvisorAgent(config)
 
     def _merge_rules_files(self, directory: Path) -> RulesContainer:
@@ -138,7 +138,7 @@ class AdvisorService:
         """
         Returns the documentation file names available for the advisor service.
         """
-        doc_descriptions = self._merge_meta_files(Path("docs/meta"))
+        doc_descriptions = self._merge_meta_files(Path("assets/docs/meta"))
 
         doc_descriptions = list(filter(lambda doc: self._has_access(user, doc), doc_descriptions))
 

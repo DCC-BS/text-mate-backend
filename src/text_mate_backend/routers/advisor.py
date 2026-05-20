@@ -77,7 +77,7 @@ def create_router(
         Get the document description by name.
         """
 
-        file_path = path.join("docs", name)
+        file_path = path.join("assets/docs", name)
 
         if not path.exists(file_path):
             raise ApiErrorException({"status": 404, "errorId": NO_DOCUMENT, "debugMessage": "Document not found"})
