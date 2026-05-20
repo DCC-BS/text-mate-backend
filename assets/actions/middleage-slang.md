@@ -1,7 +1,7 @@
 ---
 id: middle-age-slang
 name: Middleage Slang
-groups: ["stata"]
+groups: ["admin"]
 ---
 Rewrite the given text so it looks like a test written in the middle age make it so the text rymes and is easy to remember:
 

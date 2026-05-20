@@ -21,7 +21,7 @@ class Actions(str, Enum):
 
 
 class QuickActionRequest(BaseModel):
-    action: Annotated["Actions", "The quick action to perform"]
+    action: Annotated[Actions | str, "The quick action to perform"]
     text: Annotated[str, "The text to apply the action to"]
     options: Annotated[
         str,

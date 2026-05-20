@@ -23,8 +23,10 @@ class Container(containers.DeclarativeContainer):
         DocumentConversionService, config=config
     )
 
+    user_actions_service: providers.Singleton[UserActionService] = providers.Singleton(UserActionService, config=config)
+
     quick_action_service: providers.Singleton[QuickActionService] = providers.Singleton(
-        QuickActionService, config=config
+        QuickActionService, user_action_service=user_actions_service, config=config
     )
 
     azure_service: providers.Singleton[AzureService] = providers.Singleton(AzureService, auth_settings=auth_settings)
@@ -32,5 +34,3 @@ class Container(containers.DeclarativeContainer):
     auth_scheme: providers.Singleton[AuthSchema] = providers.Singleton(
         create_auth_scheme, azure_scheme=azure_service.provided.azure_scheme, disable_auth=config.provided.disable_auth
     )
-
-    user_actions_service: providers.Singleton[UserActionService] = providers.Singleton(UserActionService, config=config)

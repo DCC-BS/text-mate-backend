@@ -1,6 +1,6 @@
 ---
 id: goblin
 name: goblin
-groups: ["stata"]
+groups: ["admin"]
 ---
-Rewrite a text glike you are a goblin.
+Rewrite a text like you are a goblin.
