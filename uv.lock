@@ -3722,7 +3722,7 @@ wheels = [
 
 [[package]]
 name = "text-mate-backend"
-version = "0.3.1"
+version = "0.3.2"
 source = { editable = "." }
 dependencies = [
     { name = "dcc-backend-common", extra = ["fastapi"] },
