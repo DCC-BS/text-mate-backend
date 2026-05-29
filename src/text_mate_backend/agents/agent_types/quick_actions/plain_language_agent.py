@@ -45,7 +45,7 @@ class PlainLanguageAgent(QuickActionBaseAgent):
         return SYSTEM_MESSAGE_ES
 
     @override
-    def process_prompt(self, prompt: UserPrompt, deps: QuickActionContext):
+    def process_prompt(self, prompt: UserPrompt, deps: QuickActionContext | None):
         usr_prompt = CLAUDE_TEMPLATE_ES.format(prompt=prompt, completeness=REWRITE_COMPLETE, rules=RULES_ES)
 
         return super().process_prompt(usr_prompt, deps)
