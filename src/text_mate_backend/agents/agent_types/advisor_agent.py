@@ -25,7 +25,7 @@ INSTRUCTION = """ Du bist ein Experte für Redaktionsrichtlinien. Prüfe ausschl
 
 class AdvisorAgent(BaseAgent[RulesContainer, RulesValidationContainer]):
     def __init__(self, config: Configuration):
-        super().__init__(config, deps_type=RulesContainer, output_type=RulesValidationContainer, enable_thinking=True)
+        super().__init__(config, deps_type=RulesContainer, output_type=RulesValidationContainer, enable_thinking=False)
 
     def create_agent(self, model: Model):
         agent = Agent(model=model, deps_type=RulesContainer, output_type=RulesValidationContainer)

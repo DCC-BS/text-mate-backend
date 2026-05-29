@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.params import Security
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi_azure_auth.user import User
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from text_mate_backend.container import Container
 from text_mate_backend.models.error_codes import NO_DOCUMENT
@@ -24,7 +24,7 @@ logger = get_logger("advisor_router")
 
 class AdvisorInput(BaseModel):
     text: Annotated[str, "The text to analyze and provide advice for"]
-    docs: Annotated[set[str], "The documents to use for the analysis"]
+    docs: Annotated[set[str], Field(max_length=5, description="The documents to use for the analysis")]
 
 
 @inject

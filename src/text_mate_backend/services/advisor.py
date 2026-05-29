@@ -152,13 +152,26 @@ class AdvisorService:
         )
 
     def filter_rules(self, docs: set[str]) -> list[Rule]:
-        return [rule for rule in self.ruel_container.rules if rule.file_name in docs]
+        filtered_rules: list[Rule] = []
+        for doc in docs:
+            doc_rules = [rule for rule in self.ruel_container.rules if rule.file_name == doc]
+            filtered_rules.extend(doc_rules[:30])
+        return filtered_rules
 
     async def check_text_stream(self, text: str, docs: set[str]) -> AsyncIterator[RulesValidationContainer]:
         """
         Checks the text for any violations of the rules and yields validation results
         batch-by-batch. This is intended for streaming (SSE) responses.
         """
+
+        if len(docs) > 5:
+            raise ApiErrorException(
+                {
+                    "status": 400,
+                    "errorId": CHECK_TEXT_ERROR,
+                    "debugMessage": "A maximum of 5 documents can be selected",
+                }
+            )
 
         try:
             async for result in self._check_text_stream(text, docs):
@@ -199,7 +212,7 @@ class AdvisorService:
             yield RulesValidationContainer(rules=[])
             return
 
-        for rule_batch in self._batched_rules(rules, MAX_RULES_PER_REQUEST):
+        for rule_batch in self._batched_rules(rules, MAX_RULES_PER_REQUEST, max_rules=len(rules)):
             validation_result = await self.agent.run(text, deps=RulesContainer(rules=rule_batch))
             yield validation_result
 
