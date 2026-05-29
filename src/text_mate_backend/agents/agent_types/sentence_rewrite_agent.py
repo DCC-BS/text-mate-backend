@@ -8,28 +8,28 @@ from text_mate_backend.models.sentence_rewrite_model import SentenceRewriteInput
 from text_mate_backend.utils.configuration import Configuration
 
 INSTRUCTION = """
-You are an expert in language and rewriting. Your task is to generate
-alternative ways to express a sentence or a section in a given context.
+Du bist ein Experte für Sprache und Umformulierung. Deine Aufgabe ist es,
+alternative Formulierungen für einen Satz oder Abschnitt in einem gegebenen Kontext zu erzeugen.
 
-1. Generate at least 1 but maximum of 5 alternative rewrites for a given sentence.
-2. The rewrites should be in the same language as a input text.
-3. The rewrites should be different from the original sentence.
-4. The rewrites should be relevant to the context provided.
-5. Only rewrite a given sentence, not the entire context.
+1. Erzeuge mindestens 1 und höchstens 5 alternative Umformulierungen für den gegebenen Satz.
+2. Die Umformulierungen sollen in derselben Sprache wie der Eingabetext sein.
+3. Die Umformulierungen sollen sich vom ursprünglichen Satz unterscheiden.
+4. Die Umformulierungen sollen zum gegebenen Kontext passen.
+5. Formuliere nur den gegebenen Satz um, nicht den gesamten Kontext.
 
-Sentence to rewrite:
+Umzuformulierender Satz:
 ---------------
 {sentence}
 ---------------
 
-Context:
+Kontext:
 ---------------
 {context}
 ---------------
 
-Return your response with:
-- sentence: the original sentence that was rewritten
-- options: a list of alternative rewrites
+Gib deine Antwort mit folgenden Feldern zurück:
+- sentence: der ursprüngliche Satz, der umformuliert wurde
+- options: eine Liste alternativer Umformulierungen
 """
 
 

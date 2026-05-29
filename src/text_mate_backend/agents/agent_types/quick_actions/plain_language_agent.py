@@ -9,7 +9,7 @@ from pydantic_ai.models import Model
 from text_mate_backend.agents.agent_types.quick_actions.quick_action_base_agent import QuickActionBaseAgent
 from text_mate_backend.models.quick_actions_models import QuickActionContext
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.easy_language import CLAUDE_TEMPLATE_LS, REWRITE_COMPLETE, RULES_LS, SYSTEM_MESSAGE_LS
+from text_mate_backend.utils.easy_language import CLAUDE_TEMPLATE_ES, REWRITE_COMPLETE, RULES_ES, SYSTEM_MESSAGE_ES
 
 
 @final
@@ -17,7 +17,7 @@ class PlainLanguageAgent(QuickActionBaseAgent):
     """Agent for converting text to plain language (Leichte Sprache)."""
 
     def __init__(self, config: Configuration):
-        super().__init__(config)
+        super().__init__(config, enable_thinking=False)
 
     @override
     def create_agent(self, model: Model) -> Agent[QuickActionContext, str]:
@@ -42,10 +42,10 @@ class PlainLanguageAgent(QuickActionBaseAgent):
 
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext]) -> str:
-        return SYSTEM_MESSAGE_LS
+        return SYSTEM_MESSAGE_ES
 
     @override
-    def process_prompt(self, prompt: UserPrompt, deps: QuickActionContext):
-        usr_prompt = CLAUDE_TEMPLATE_LS.format(prompt=prompt, completeness=REWRITE_COMPLETE, rules=RULES_LS)
+    def process_prompt(self, prompt: UserPrompt, deps: QuickActionContext | None):
+        usr_prompt = CLAUDE_TEMPLATE_ES.format(prompt=prompt, completeness=REWRITE_COMPLETE, rules=RULES_ES)
 
         return super().process_prompt(usr_prompt, deps)

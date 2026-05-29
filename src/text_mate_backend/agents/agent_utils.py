@@ -1,5 +1,5 @@
 def get_language_instruction(langauge: str | None):
     if langauge is None or langauge == "auto":
-        return "The text should be written in a same language as a input text."
+        return "Schreibe das Ergebnis in derselben Sprache wie der Eingabetext."
     else:
-        return f"the text should be written in {langauge}"
+        return f"Schreibe das Ergebnis in folgender Sprache: {langauge}."

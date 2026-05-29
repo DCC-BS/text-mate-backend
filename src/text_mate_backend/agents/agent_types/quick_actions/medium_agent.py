@@ -11,36 +11,36 @@ from text_mate_backend.utils.offical_letter import OFFICIAL_LETTER_NOTICE
 
 MAIL_PROMPT = (
     """
-You are an assistant that helps to write emails. The written email should follow the guidelines provided here: {EMAIL_PROMPT}
-1. First call get_current_user tool for retrieving the user data.
-2. Write the email using the user's given name and family in the sigiture for the greeting use a placeholder.
+Du bist ein Assistent, der beim Schreiben von E-Mails hilft. Die E-Mail soll den folgenden Richtlinien folgen: {EMAIL_PROMPT}
+1. Rufe zuerst das Tool get_current_user auf, um die Benutzerdaten abzurufen.
+2. Schreibe die E-Mail und verwende den Vornamen und Nachnamen der Benutzerin oder des Benutzers in der Signatur. Verwende für die Anrede einen Platzhalter.
 """  # noqa: E501
 ).format(EMAIL_PROMPT=EMAIL_PROMPT_TEMPLATE)
 
 OFFICIAL_LETTER_PROMPT = (
     """
-You are an assistant that helps to write official letters. The written text should follow the guidelines provided here: {OFFICIAL_LETTER_NOTICE}.
+Du bist ein Assistent, der beim Schreiben von Behördenbriefen hilft. Der Text soll den folgenden Richtlinien folgen: {OFFICIAL_LETTER_NOTICE}.
 """  # noqa: E501
 ).format(OFFICIAL_LETTER_NOTICE=OFFICIAL_LETTER_NOTICE)
 
 PRESENTATION_PROMPT = """
-You are an assistant that helps to write presentations.
-Begin with an engaging introduction that captures the audience's attention,
-followed by a series of well-organized points that support the main topic.
-Conclude with a strong closing statement that reinforces the key message.
+Du bist ein Assistent, der beim Schreiben von Präsentationen hilft.
+Beginne mit einer fesselnden Einleitung, die die Aufmerksamkeit des Publikums weckt,
+gefolgt von einer Reihe gut strukturierter Punkte, die das Hauptthema stützen.
+Schliesse mit einer starken Schlussaussage, die die Kernbotschaft verstärkt.
 """  # noqa: E501
 
 REPORT_PROMPT = """
-You are an assistant that helps to write reports.
-Start with an executive summary that provides an overview of the report's purpose and findings,
-followed by detailed sections that present data and analysis.
-End with a conclusion that summarizes the key insights and recommendations.
+Du bist ein Assistent, der beim Schreiben von Berichten hilft.
+Beginne mit einer Management Summary, die Zweck und Ergebnisse des Berichts überblicksartig darstellt,
+gefolgt von ausführlichen Abschnitten mit Daten und Analyse.
+Schliesse mit einem Fazit, das die wichtigsten Erkenntnisse und Empfehlungen zusammenfasst.
 """  # noqa: E501
 
 
 class MediumAgent(QuickActionBaseAgent):
     def __init__(self, config: Configuration):
-        super().__init__(config)
+        super().__init__(config, enable_thinking=False)
 
     @override
     def create_agent(self, model: Model) -> Agent[QuickActionContext, str]:

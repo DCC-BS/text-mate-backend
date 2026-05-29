@@ -1,8 +1,8 @@
 services:
-    vllm_qwen3_32B:
+    vllm_gemma4:
         platform: linux/amd64
-        image: vllm/vllm-openai:v0.20.1
-        container_name: vllm_qwen3_32B
+        image: vllm/vllm-openai:v0.21.0
+        container_name: vllm_gemma4
         ports:
             - ${LLM_API_PORT}:8000
         environment:
@@ -20,17 +20,22 @@ services:
             - ${HUGGING_FACE_CACHE_DIR}:/root/.cache/huggingface
         command: >
             --port 8000
-            --model Qwen/Qwen3-32B-AWQ
-            --max-model-len 6000
+            --model nvidia/Gemma-4-26B-A4B-NVFP4
+            --served-model-name Gemma/Gemma-4-31B
+            --max-model-len auto
+            --max-num-batched-tokens 4096
             --gpu-memory-utilization 0.90
             --enable-auto-tool-choice
-            --tool-call-parser hermes
+            --tool-call-parser gemma4
+            --chat-template examples/tool_chat_template_gemma4.jinja
+            --mm-processor-kwargs '{"max_soft_tokens": 280}'
+            --async-scheduling
             --tensor-parallel-size 1
             --max-num-seqs 1
-            --reasoning-parser deepseek_r1
+            --reasoning-parser gemma4
 
     docling-serve:
-        image: quay.io/docling-project/docling-serve-cu124:latest
+        image: ghcr.io/docling-project/docling-serve-cu130:main
         container_name: docling-serve-text-mate
         deploy:
             resources:

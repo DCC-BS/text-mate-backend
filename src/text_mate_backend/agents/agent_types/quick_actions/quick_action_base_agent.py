@@ -11,8 +11,8 @@ from text_mate_backend.utils.configuration import Configuration
 
 
 class QuickActionBaseAgent(BaseAgent):
-    def __init__(self, config: Configuration):
-        super().__init__(config, deps_type=QuickActionContext, output_type=str)
+    def __init__(self, config: Configuration, enable_thinking: bool = False):
+        super().__init__(config, deps_type=QuickActionContext, output_type=str, enable_thinking=enable_thinking)
 
     @abstractmethod
     def create_instruction(self, ctx: RunContext[QuickActionContext]) -> str: ...
@@ -25,14 +25,14 @@ class QuickActionBaseAgent(BaseAgent):
         def create_instruction(ctx: RunContext[QuickActionContext]):
             return f"""
                 {self.create_instruction(ctx)}
+
                 {get_language_instruction(ctx.deps.language)}
 
-                - Format the text as raw text, don't use any html tags, dont use markdown.
-                - Don't include any introductory or closing remarks.
-                - Answer in the same language as the input text.
-                - Only respond with the answer, do not add any other text.
-                - Don't add any extra information or context.
-                - Don't add any whitespaces.
+                Halte dich strikt an diese Ausgaberegeln:
+                - Gib nur reinen Text aus, keine HTML-Tags und kein Markdown.
+                - Gib keine Einleitung und keinen Schlusskommentar aus.
+                - Gib ausschliesslich das Ergebnis aus, keinen weiteren Text.
+                - Füge keine zusätzlichen Informationen oder Erklärungen hinzu.
                 """
 
         return agent
