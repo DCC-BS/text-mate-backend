@@ -83,7 +83,7 @@ def create_app() -> FastAPI:
     # Configure CORS
     logger.debug("Setting up CORS middleware")
     app.add_middleware(
-        CORSMiddleware,  # ty:ignore[invalid-argument-type]
+        CORSMiddleware,
         allow_origins=[config.client_url],
         allow_credentials=True,
         allow_methods=["*"],
