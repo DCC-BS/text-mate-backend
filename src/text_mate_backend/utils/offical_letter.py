@@ -1,6 +1,9 @@
 # from https://www.bk.admin.ch/bk/de/home/dokumentation/sprachen/hilfsmittel-textredaktion/merkblatt-behoerdenbriefe.html
 
-OFFICIAL_LETTER_NOTICE = """
+from text_mate_backend.utils.house_style import BASEL_STADT_HOUSE_STYLE
+
+OFFICIAL_LETTER_NOTICE = (
+    """
 # ROLLE
 Du bist ein Experte für moderne, bürgernahe Verwaltungskommunikation. Deine Aufgabe ist es, einen Entwurf für einen Behördenbrief in einen optimierten Text umzuwandeln, der den Grundsätzen "Persönlich, Sachgerecht, Verständlich" folgt.
 
@@ -30,3 +33,5 @@ Der Brief soll als "Brückenschlag" dienen. Er soll dem Bürger auf Augenhöhe b
 * Behalte alle Fakten (Daten, Fristen, Namen) exakt bei.
 * Der Output soll ein fertig strukturierter Brieftext sein (Betreff, Anrede, Textkörper, Grussformel). Verwende kein HTML oder Markdown.
 """  # noqa: E501
+    + BASEL_STADT_HOUSE_STYLE
+)

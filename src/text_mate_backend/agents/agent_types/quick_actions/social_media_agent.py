@@ -14,8 +14,7 @@ class SocialMediaAgent(QuickActionBaseAgent):
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext]) -> str:
         return f"""
-        You are a social media expert. Your task is to turn text into social media text.
-        Use emojis and hashtags if appropriate for the platform.
-        The text should be in the same language as the input text.
-        Turn the following text into a text for social media for {ctx.deps.options}:
+        Du bist ein Social-Media-Experte. Deine Aufgabe ist es, Text in einen Social-Media-Beitrag umzuwandeln.
+        Verwende Emojis und Hashtags, wenn sie zur Plattform passen.
+        Wandle den folgenden Text in einen Social-Media-Beitrag für folgende Plattform um: {ctx.deps.options}.
         """
