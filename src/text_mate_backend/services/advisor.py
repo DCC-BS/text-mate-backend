@@ -20,7 +20,7 @@ from text_mate_backend.utils.configuration import Configuration
 
 logger = get_logger("advisor_service")
 MAX_RULES_PER_REQUEST = 3
-MAX_RULES = 20
+MAX_RULES = 30
 
 
 @final

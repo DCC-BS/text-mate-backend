@@ -1,123 +1,102 @@
 {
   "rules": [
     {
-      "name": "Persönlich, sachgerecht und verständlich",
-      "description": "Der Brief sollte persönlich, sachgerecht und verständlich sein. Stellen Sie sich die drei Fragen: Wem schreibe ich? Was schreibe ich? Wie schreibe ich?",
-      "file_name": "merkblatt_behoerdenbriefe.pdf",
-      "page_number": 2,
-      "example": "Beim Schreiben eines Briefes zu einer Steuererklärung fragen Sie: Wem schreibe ich (Steuerzahlerin XYZ)? Was schreibe ich (Steuerbescheid für 2023)? Wie schreibe ich (klar formuliert mit Erklärungen zu Abzügen)?"
-    },
-    {
-      "name": "Brückenschlag zwischen Staat und Bürger",
-      "description": "Eine gute Kommunikation ist wie ein Brückenschlag. Der Brief sollte der Bürgerin/dem Bürger entgegengehen und sie/ihn zum Reagieren anregen.",
-      "file_name": "merkblatt_behoerdenbriefe.pdf",
-      "page_number": 2,
-      "example": "Ein Brief über behördliche Verfahren beginnt mit einer freundlichen Anrede und erklärt, warum das Schreiben wichtig ist, statt nur Formulare zu versenden."
-    },
-    {
-      "name": "Persönlicher Anspruch",
-      "description": "Ihr Brief wird nicht von einer Akte, einer Nummer oder einem Fall gelesen, sondern von einer realen Person in einer bestimmten Lebenssituation. Versetzen Sie sich in deren Lage: Wo steht sie im Leben? Welche Erfahrungen hat sie gemacht? Was erwartet sie? Was könnte Ihr Brief auslösen? Überlegen Sie auch, welches Bild Sie von sich und Ihrer Behörde zeichnen möchten – jeder Brief ist eine Visitenkarte.",
-      "file_name": "merkblatt_behoerdenbriefe.pdf",
-      "page_number": 3,
-      "example": "Beginnen Sie den Brief mit einer persönlichen Anrede und einer kurzen Erwähnung der individuellen Lebenssituation der Empfängerin."
-    },
-    {
-      "name": "Sachgerechte Inhaltsgestaltung",
-      "description": "Ihr Brief dient einer Absicht. Sie wollen, dass die Empfängerin, der Empfänger Dinge erfährt und auf bestimmte Weise reagiert, z. B. eine Pflicht erfüllt oder einen Anspruch wahrnehmen kann. Fragen Sie sich: Was ist der Kern der Sache? Was will, was muss diese Person erfahren? Was soll oder kann sie tun? Halten meine Aussagen einer rechtlichen Prüfung stand?",
-      "file_name": "merkblatt_behoerdenbriefe.pdf",
-      "page_number": 3,
-      "example": "Formulieren Sie den Kern der Angelegenheit in klaren, rechtlich präzisen Sätzen und nennen Sie konkrete Handlungsaufforderungen."
-    },
-    {
-      "name": "Verständliche Formulierung",
-      "description": "Ihr Brief wirkt nur dann wie gewünscht, wenn er von der Leserin oder dem Leser verstanden wird. Dabei spielen deren Erfahrungen und Erwartungen, die Einstellung gegenüber Ihnen und Ihrer Behörde eine wichtige Rolle. Diese Voraussetungen sind von Person zu Person verschieden. Ihr Brief wird aber auf jeden Fall leichter verstanden, wenn Sie ihn möglichst einfach formulieren und übersichtlich gliedern.",
-      "file_name": "merkblatt_behoerdenbriefe.pdf",
-      "page_number": 3,
-      "example": "Verwenden Sie kurze Sätze, gängige Begriffe und eine klare Gliederung mit Absätzen oder Nummerierungen."
-    },
-    {
-      "name": "Wer ist mein Gegenüber?",
-      "description": "Es spielt eine Rolle, ob Sie einer erfahrenen Juristin, einem jungen Asylbewerber, einer älteren Person mit einer Behinderung schreiben. Bringen Sie in Erfahrung, was Sie über die Person und ihre Lebensumstände wissen müssen. Wägen Sie ab, welche Interessen und Erwartungen sie hat, welche Befürchtungen oder Hoffnungen sie hegt.",
+      "name": "Persönliche Anrede mit «Sie»",
+      "description": "Der Brief muss die empfangende Person direkt und persönlich mit «Sie» ansprechen. Ein Verstoss liegt vor, wenn der Text die Person nur als Akte, Nummer oder Fall behandelt oder unpersönlich in der dritten Person über sie schreibt, statt sie direkt anzureden.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 5,
-      "example": "Bevor Sie einen Brief an eine ältere Person mit Behinderung schreiben, recherchieren Sie, welche Unterstützungsbedarfe sie hat und berücksichtigen Sie dies in Ihrer Kommunikation."
+      "example": "Falsch: Dem Gesuchsteller wird mitgeteilt, dass das Gesuch geprüft wurde. | Richtig: Wir haben Ihr Gesuch geprüft und teilen Ihnen das Ergebnis mit."
     },
     {
-      "name": "Von Mensch zu Mensch",
-      "description": "Schreiben Sie in persönlichem Stil – sagen Sie «ich» und «Sie», wo es angebracht ist. Verschanzen Sie sich nicht hinter abstrakten Vorschriften und imaginären Schalterwänden. Befassen Sie in einem Bürgerbrief auch, was «zwischen den Zeilen» steht, Empfindungen wie Ärger oder Hoffnung. Bitten und danken Sie dort, wo es angebracht ist. Und entschuldigen Sie sich, wenn Ihnen ein Fehler unterlaufen ist.",
+      "name": "Persönlicher Stil mit «ich» und «wir»",
+      "description": "Der Schreibende soll sich in persönlichem Stil zeigen und «ich» beziehungsweise «wir» verwenden, wo es angebracht ist. Ein Verstoss liegt vor, wenn sich der Text durchgehend hinter abstrakten Vorschriften, Passivkonstruktionen oder anonymen Formulierungen wie «die Behörde» oder «es wird» verschanzt.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 5,
-      "example": "Wenn ein Bürger eine Beschwerde einreicht, antworten Sie nicht nur mit juristischen Formulierungen, sondern zeigen Sie Empathie und bitten Sie um Klarstellung: «Ich verstehe Ihre Frustration und möchte gerne Ihre Sorge genauer verstehen.»"
+      "example": "Falsch: Es wird darauf hingewiesen, dass die Frist einzuhalten ist. | Richtig: Wir weisen Sie darauf hin, dass Sie die Frist einhalten müssen."
     },
     {
-      "name": "Ich, meine Behörde und die angeschriebene Person",
-      "description": "Machen Sie sich bewusst, wie Sie sich und Ihre Aufgabe verstehen, wie Sie zur Adressatin oder zum Adressaten stehen. Eine gute Beziehung erleichtert die Kommunikation und die Kooperation. Prüfen Sie immer, ob Adresse, Anrede, Namen und Vornamen sowie weitere Personalien richtig sind!",
+      "name": "Bitten, danken und entschuldigen",
+      "description": "Der Brief soll dort bitten und danken, wo es angebracht ist, und sich entschuldigen, wenn der Behörde ein Fehler unterlaufen ist. Ein Verstoss liegt vor, wenn Aufforderungen rein befehlend formuliert sind oder ein eigener Fehler nicht eingestanden wird.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 5,
-      "example": "Bevor Sie einen Brief an eine Familie mit Migrationshintergrund schreiben, prüfen Sie, ob die Anrede (z. B. «Herr» vs. «Frau») und die Schreibweise des Namens korrekt sind, um Respekt zu zeigen."
+      "example": "Falsch: Reichen Sie die Unterlagen umgehend nach. | Richtig: Bitte reichen Sie die fehlenden Unterlagen bis zum 30. Juni nach. Vielen Dank."
     },
     {
-      "name": "Sachgerecht: WAS schreibe ich?",
-      "description": "Überlegen Sie genau, worum es geht. Gehen Sie in Ihrem Schreiben auf die Anliegen und Erwartungen der Bürgerin oder des Bürgers ein. Geben Sie angemessene Antworten und zeigen Sie gangbare Wege auf. Versuchen Sie, das eigentliche Anliegen auch dann zu treffen und anzusprechen, wenn es verhüllt oder nicht ins Zentrum gestellt wurde. Trennen Sie Wichtiges von Unwichtigem und lassen Sie Unnötiges weg!",
+      "name": "Respektvoller Ton auf Augenhöhe",
+      "description": "Der Tonfall muss die empfangende Person respektvoll und auf Augenhöhe behandeln. Ein Verstoss liegt vor, wenn der Text Macht oder Wissensvorsprung ausspielt, herablassend, drohend oder misstrauisch klingt.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 4,
+      "example": "Falsch: Es dürfte Ihnen wohl klar sein, dass solche Versäumnisse nicht geduldet werden. | Richtig: Damit wir Ihr Anliegen bearbeiten können, benötigen wir noch folgende Angaben von Ihnen."
+    },
+    {
+      "name": "Auf das konkrete Anliegen eingehen",
+      "description": "Bei der Beantwortung eines Bürgerbriefs muss der Text auf die geäusserten Anliegen und Fragen der Person konkret eingehen und das eigentliche Anliegen ansprechen, auch wenn es verhüllt formuliert war. Ein Verstoss liegt vor, wenn das Schreiben an der Sache vorbeigeht oder gestellte Fragen unbeantwortet lässt.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 7,
+      "example": "Falsch: Ihr Schreiben haben wir erhalten. Die gesetzlichen Grundlagen entnehmen Sie bitte unserer Website. | Richtig: Sie fragen, bis wann Sie Einsprache erheben können. Die Frist beträgt 30 Tage ab Erhalt dieses Briefs."
+    },
+    {
+      "name": "Wichtiges von Unwichtigem trennen",
+      "description": "Der Brief soll Wichtiges von Unwichtigem trennen und Unnötiges weglassen; nur die notwendigen Erklärungen und Begründungen gehören hinein. Ein Verstoss liegt vor, wenn der Text mit überflüssigen Details, Wiederholungen oder nebensächlichen Informationen überladen ist.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 6,
-      "example": "Wenn ein Bürger um einen Rechtsberatungstermin bittet, aber zwischen den Zeilen eine Existenzsorge ausdrückt, erklären Sie nicht nur die Formalia, sondern auch, wie Sie ihm konkret weiterhelfen können."
+      "example": "Falsch: Wie Ihnen bekannt sein dürfte und wie bereits mehrfach erwähnt, möchten wir der Vollständigkeit halber nochmals festhalten, dass ... | Richtig: Ihr Antrag ist bewilligt. Den Betrag erhalten Sie bis Ende Monat."
     },
     {
-      "name": "Clarify und Priorisiere Inhalte",
-      "description": "Legen Sie fest, was die angeschriebene Person erfahren soll. Ordnen Sie die Dinge nach ihrer Wichtigkeit. Geben Sie die notwendigen Erklärungen und Begründungen mit – aber nur diese. Vergewissern Sie sich, dass Ihre Aussagen sachlich zutreffen und rechtlich korrekt sind.",
+      "name": "Konkrete Handlungsaufforderung mit Frist",
+      "description": "Wenn die Person etwas tun muss, soll der Brief klar angeben, welche Schritte sie bis wann unternehmen muss, an welche Stelle sie gelangen kann und was geschieht, wenn sie etwas tut oder unterlässt. Ein Verstoss liegt vor, wenn eine erwartete Handlung ohne konkrete Anleitung, ohne Frist oder ohne Angabe der Folgen bleibt.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 7,
-      "example": "Beispiel: Ein Bürger fragt nach einem Service. Der Brief führt die Schritte in einer klaren Reihenfolge auf, beginnend mit der wichtigsten Information."
+      "example": "Falsch: Bitte werden Sie zeitnah tätig. | Richtig: Bitte überweisen Sie den Betrag bis zum 15. Juli. Bei verspäteter Zahlung fallen Mahngebühren an."
     },
     {
-      "name": "Antworte auf die Anliegen",
-      "description": "Gehen Sie auf die im Bürgerbrief geäusserten Anliegen ein. Nehmen Sie auch Ausdrücke auf, die der Absender oder die Absenderin verwendet. Machen Sie deutlich, worauf Sie eingehen können und worauf nicht.",
+      "name": "Keine Floskeln",
+      "description": "Steife Floskeln müssen vermieden und durch direkt ansprechende Formulierungen ersetzt werden. Ein Verstoss liegt vor, wenn der Text leere Höflichkeitsformeln wie «Zur Beantwortung allfälliger Fragen steht Ihnen unser Herr XY gerne zur Verfügung» enthält, statt einladend und direkt zu formulieren.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 9,
+      "example": "Falsch: Zur Beantwortung allfälliger Fragen steht Ihnen unser Herr XY gerne zur Verfügung. | Richtig: Rufen Sie uns an, wenn Sie Fragen haben."
+    },
+    {
+      "name": "Kein Amtsjargon",
+      "description": "Amtsjargon und gestelzte Verwaltungsausdrücke müssen durch alltagssprachliche Wörter ersetzt werden. Ein Verstoss liegt vor, wenn der Text Amtsdeutsch wie «in Kenntnis setzen», «zur Anzeige bringen» oder «in Abzug bringen» verwendet, statt einfache Verben wie «mitteilen», «anzeigen» oder «abziehen».",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 9,
+      "example": "Falsch: Wir setzen Sie hiermit in Kenntnis, dass die Zahlung in Abzug gebracht wird. | Richtig: Wir teilen Ihnen mit, dass wir den Betrag abziehen."
+    },
+    {
+      "name": "Kurze, einfach gebaute Sätze",
+      "description": "Sätze sollen wenn möglich kurz und einfach gebaut sein; Komplexes ist Satz für Satz zu entflechten. Ein Verstoss liegt vor, wenn der Text lange Schachtelsätze mit mehreren ineinander verschachtelten Nebensätzen enthält.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 9,
+      "example": "Falsch: Da die von Ihnen eingereichten Unterlagen, welche wir am Montag erhalten haben, unvollständig waren, weshalb eine Prüfung, die wir gerne vorgenommen hätten, nicht möglich war, bitten wir um Ergänzung. | Richtig: Ihre Unterlagen sind unvollständig. Deshalb konnten wir sie noch nicht prüfen. Bitte ergänzen Sie die fehlenden Angaben."
+    },
+    {
+      "name": "Ein Gedanke pro Satz",
+      "description": "Jeder Satz soll möglichst nur einen Gedanken enthalten. Ein Verstoss liegt vor, wenn mehrere voneinander unabhängige Aussagen oder Handlungsaufforderungen in einen einzigen Satz gepackt werden.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 9,
+      "example": "Falsch: Bitte füllen Sie das Formular aus und legen Sie eine Kopie Ihres Ausweises bei, wobei zu beachten ist, dass die Frist am 30. Juni endet und Sie bei Fragen die Hotline anrufen können. | Richtig: Bitte füllen Sie das Formular aus und legen Sie eine Ausweiskopie bei. Die Frist endet am 30. Juni. Bei Fragen rufen Sie uns an."
+    },
+    {
+      "name": "Roter Faden im Aufbau",
+      "description": "Der Brief soll mit dem beginnen, was die empfangende Person unbedingt wissen muss oder am meisten interessiert, und den Gedankengang schrittweise und übersichtlich gegliedert abbilden. Ein Verstoss liegt vor, wenn die Kernbotschaft erst spät kommt oder der Text ungeordnet zwischen Themen springt.",
+      "file_name": "merkblatt_behoerdenbriefe.pdf",
+      "page_number": 9,
+      "example": "Falsch: Gestützt auf die einschlägigen Bestimmungen und nach Prüfung diverser Aktenstücke sowie unter Berücksichtigung der Vorgeschichte können wir Ihnen schliesslich mitteilen, dass Ihr Gesuch bewilligt ist. | Richtig: Ihr Gesuch ist bewilligt. Im Folgenden erklären wir Ihnen die nächsten Schritte."
+    },
+    {
+      "name": "Begründungen sachlich und korrekt",
+      "description": "Die im Brief gemachten Aussagen müssen sachlich zutreffen und rechtlich korrekt sein, und nötige Erklärungen sowie Begründungen sind mitzugeben. Ein Verstoss liegt vor, wenn eine Entscheidung oder Aufforderung ohne nachvollziehbare Begründung bleibt.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 7,
-      "example": "Beispiel: Der Absender schreibt «Ich brauche dringend Hilfe». Der Antwortbrief verwendet den Ausdruck «dringend» und erklärt, welche Massnahmen sofort und welche in der nächsten Woche ergriffen werden."
+      "example": "Falsch: Ihr Antrag wird abgelehnt. | Richtig: Wir können Ihren Antrag nicht bewilligen, weil die Einkommensgrenze von 50 000 Franken überschritten ist."
     },
     {
-      "name": "Gib klare Anweisungen",
-      "description": "Geben Sie der Person die Anweisung oder Anleitung in ihrer konkreten Situation: Welche Schritte kann oder muss sie bis wann unternehmen? An welche Stelle kann oder soll sie gelangen?",
+      "name": "Ausdrücke der Person aufnehmen",
+      "description": "Bei der Beantwortung soll der Brief Ausdrücke und Formulierungen aufnehmen, die die absendende Person selbst verwendet hat, um zu signalisieren, dass das Anliegen verstanden wurde. Ein Verstoss liegt vor, wenn die Antwort das Anliegen vollständig in eigene, davon losgelöste Begriffe umdeutet.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 7,
-      "example": "Beispiel: «Senden Sie die Dokumente bis spätestens 15. April an die Abteilung X. Bei Nicht-Einreichen wird der Antrag abgelehnt.»"
-    },
-    {
-      "name": "Verwende verstaändliche Sprache",
-      "description": "Versuchen Sie möglichst verständlich zu sein, und zwar in der Wortwahl wie auch in Satzbau und Textgliederung.",
-      "file_name": "merkblatt_behoerdenbriefe.pdf",
-      "page_number": 8,
-      "example": "Beispiel: Statt «Rechtsverordnung gemäss § 12 Abs. 3» schreiben: «Sie müssen die Formulare bis zum 10. Mai einreichen.»"
-    },
-    {
-      "name": "Weg mit Floskeln und Jargon",
-      "description": "Vermeiden Sie Floskeln und Amtsjargon. Ersetzen Sie steife Formulierungen durch direkte Ausdrücke. Beispiel: Statt „Zur Beantwortung aller Fragen steht Ihnen unser Herr XY gerne zur Verfügung“ schreiben Sie „Rufen Sie uns an, wenn Sie Fragen haben“. Lassen Sie Amtsjargon wie „in Kenntnis setzen“ durch einfache Begriffe wie „mitteilen“ ersetzen.",
-      "file_name": "merkblatt_behoerdenbriefe.pdf",
-      "page_number": 9,
-      "example": "Statt „Zur Beantwortung aller Fragen steht Ihnen unser Herr XY gerne zur Verfügung“ schreiben Sie „Rufen Sie uns an, wenn Sie Fragen haben.“"
-    },
-    {
-      "name": "Klare Gedanken – klare Sätze",
-      "description": "Verwenden Sie kurze und einfach gebaute Sätze. Entflechten Sie komplexe Sätze schrittweise. Je klarer der Gedanke, desto besser ist die Verständlichkeit.",
-      "file_name": "merkblatt_behoerdenbriefe.pdf",
-      "page_number": 9,
-      "example": "Verwenden Sie kurze Sätze wie „Rufen Sie uns an, wenn Sie Fragen haben.“ statt langen, komplexen Satzkonstruktionen."
-    },
-    {
-      "name": "Der rote Faden",
-      "description": "Beginnen Sie mit dem wichtigsten Punkt. Legen Sie einen roten Faden durch schrittweise Gedankengänge. Gliedern Sie den Text übersichtlich.",
-      "file_name": "merkblatt_behoerdenbriefe.pdf",
-      "page_number": 9,
-      "example": "Beginnen Sie mit der Hauptinformation, z. B.: „Ihre Anfrage wurde bearbeitet. Der Status ist wie folgt: ...“"
-    },
-    {
-      "name": "e-Mail – ein Sonderfall?",
-      "description": "Für E-Mails gelten dieselben Grundsätze wie für Briefe. Der Betreff muss kurz und klar sein. Halten Sie sich kurz, prüfen Sie Anhänge und setzen Sie Empfänger erst am Schluss ein.",
-      "file_name": "merkblatt_behoerdenbriefe.pdf",
-      "page_number": 10,
-      "example": "Betreff: „Status Ihrer Anfrage“. Text: „Guten Tag, Ihre Anfrage wurde bearbeitet. ...“ (Empfänger werden erst vor dem Senden eingetragen)."
+      "example": "Falsch: Bezugnehmend auf Ihre Eingabe halten wir die Sachlage wie folgt fest. | Richtig: Sie schreiben, dass der Lärm der Baustelle Sie nachts stört. Diesem Lärmproblem gehen wir nach."
     }
   ]
 }
