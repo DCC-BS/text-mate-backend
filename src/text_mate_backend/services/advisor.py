@@ -209,12 +209,20 @@ class AdvisorService:
         if not rules:
             logger.warn(f"No rules found for the documents {docs}")
             # Maintain parity with the non-streaming API by yielding a single empty container
-            yield RulesValidationContainer(rules=[])
+            yield RulesValidationContainer(rules=[], checked=0, total=0)
             return
+
+        total_rules = len(rules)
+        checked_rules = 0
 
         for rule_batch in self._batched_rules(rules, MAX_RULES_PER_REQUEST, max_rules=len(rules)):
             validation_result = await self.agent.run(text, deps=RulesContainer(rules=rule_batch))
-            yield validation_result
+            checked_rules += len(rule_batch)
+            yield RulesValidationContainer(
+                rules=validation_result.rules,
+                checked=checked_rules,
+                total=total_rules,
+            )
 
     def _batched_rules(self, rules: list[Rule], batch_size: int, max_rules: int = MAX_RULES) -> Iterator[list[Rule]]:
         for i in range(0, min(len(rules), max_rules), batch_size):

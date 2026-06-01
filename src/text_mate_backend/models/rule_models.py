@@ -33,6 +33,8 @@ class RulesContainer(BaseModel):
 
 class RulesValidationContainer(BaseModel):
     rules: list[RuelValidation] = Field(description="All violations of the rules")
+    checked: int = Field(default=0, description="Number of rules checked so far")
+    total: int = Field(default=0, description="Total number of rules to check")
 
 
 class RuelDocumentDescription(BaseModel):

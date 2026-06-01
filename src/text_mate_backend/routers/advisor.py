@@ -68,8 +68,17 @@ def create_router(
             ):
                 # Each SSE event contains a single RulesValidationContainer as JSON
                 yield f"data: {validation_result.model_dump_json()}\n\n"
+            # Explicit done event so proxies that buffer SSE don't suppress the EOF signal
+            yield "event: done\ndata: {}\n\n"
 
-        return StreamingResponse(event_generator(), media_type="text/event-stream")
+        return StreamingResponse(
+            event_generator(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+            },
+        )
 
     @router.get("/doc/{name}", dependencies=[Security(auth_scheme)])
     async def get_document(name: str) -> FileResponse:
