@@ -276,8 +276,72 @@ assets/docs/
 ├── meta/
 │   └── bund_dokumente.json        # Collection metadata shown to API consumers
 └── *.pdf                          # Source PDF documents
+
+assets/actions/                     # Role-gated custom quick actions (Markdown)
+├── goblin.md                      # Example: admin-only action
+└── middleage-slang.md             # Example: admin-only action
+
 tests/                              # Unit and integration tests
 ```
+
+## Custom Quick Actions
+
+Custom quick actions let you add role-gated LLM instructions without touching Python code. They appear alongside the built-in quick actions (Summarize, Plain Language, etc.) in the frontend and are executed by the same `POST /quick-action` endpoint.
+
+### How it works
+
+1. At startup the backend scans `assets/actions/*.md` and loads every file as a `UserAction`.
+2. `GET /user-action` returns only the actions the current user may see, filtered by their Azure Entra ID roles.
+3. The frontend calls `POST /quick-action` with `{ "action": "<id>", "text": "..." }`.
+4. If the `action` value is not a built-in action ID, the service looks it up in the loaded user actions and uses its Markdown body as the LLM system prompt.
+
+### File format
+
+Each action is a single Markdown file in `assets/actions/` with a YAML frontmatter block:
+
+```markdown
+---
+id: my-action-id
+name: Display Name
+groups: ["role-name-in-azure"]
+---
+Write the LLM instruction here. This becomes the system prompt.
+
+You can use full Markdown — headings, lists, code blocks — to structure the prompt.
+```
+
+| Field | Required | Description |
+|---|---|---|
+| `id` | yes | Unique identifier. Used as the `action` value in `POST /quick-action`. Must not clash with built-in action IDs (`plain_language`, `bullet_points`, `summarize`, `social_mediafy`, `formality`, `medium`, `custom`, `proofread`, `character_speech`). |
+| `name` | yes | Display name shown to the user in the frontend. |
+| `groups` | no | List of Azure Entra ID role names that may see and run this action. Empty list (`[]` or omitted) makes it visible to **all** authenticated users. |
+
+The body (everything after the closing `---`) is sent verbatim as the LLM instruction. It has access to the user's input text.
+
+### Access control
+
+`groups` values are matched against the roles on the authenticated user's Azure Entra ID token. A user must have **at least one** of the listed roles to see the action. When `AUTH_MODE=none` (dev), the `/user-action` endpoint returns an empty list (no user context available).
+
+### Example
+
+```markdown
+---
+id: goblin
+name: Goblin Rewrite
+groups: ["admin"]
+---
+Rewrite a text like you are a goblin.
+```
+
+This action is only visible to users with the `admin` role in Azure Entra ID. Any other user will not see it in `GET /user-action` and cannot trigger it.
+
+### Adding a new action
+
+1. Create a `.md` file in `assets/actions/` following the format above.
+2. Restart the backend — actions are loaded once at startup.
+3. Verify the action appears for the right users via `GET /user-action`.
+
+> **No code change required.** The file name does not matter; only the `id` field is used.
 
 ## Advisor Rule Collections
 
