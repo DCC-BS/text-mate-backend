@@ -5,98 +5,112 @@
       "description": "Der Brief muss die empfangende Person direkt und persönlich mit «Sie» ansprechen. Ein Verstoss liegt vor, wenn der Text die Person nur als Akte, Nummer oder Fall behandelt oder unpersönlich in der dritten Person über sie schreibt, statt sie direkt anzureden.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 5,
-      "example": "Falsch: Dem Gesuchsteller wird mitgeteilt, dass das Gesuch geprüft wurde. | Richtig: Wir haben Ihr Gesuch geprüft und teilen Ihnen das Ergebnis mit."
+      "example": "Falsch: Dem Gesuchsteller wird mitgeteilt, dass das Gesuch geprüft wurde. | Richtig: Wir haben Ihr Gesuch geprüft und teilen Ihnen das Ergebnis mit.",
+      "collection": "merkblatt_behoerdenbriefe"
     },
     {
       "name": "Persönlicher Stil mit «ich» und «wir»",
       "description": "Der Schreibende soll sich in persönlichem Stil zeigen und «ich» beziehungsweise «wir» verwenden, wo es angebracht ist. Ein Verstoss liegt vor, wenn sich der Text durchgehend hinter abstrakten Vorschriften, Passivkonstruktionen oder anonymen Formulierungen wie «die Behörde» oder «es wird» verschanzt.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 5,
-      "example": "Falsch: Es wird darauf hingewiesen, dass die Frist einzuhalten ist. | Richtig: Wir weisen Sie darauf hin, dass Sie die Frist einhalten müssen."
+      "example": "Falsch: Es wird darauf hingewiesen, dass die Frist einzuhalten ist. | Richtig: Wir weisen Sie darauf hin, dass Sie die Frist einhalten müssen.",
+      "collection": "merkblatt_behoerdenbriefe"
     },
     {
       "name": "Bitten, danken und entschuldigen",
       "description": "Der Brief soll dort bitten und danken, wo es angebracht ist, und sich entschuldigen, wenn der Behörde ein Fehler unterlaufen ist. Ein Verstoss liegt vor, wenn Aufforderungen rein befehlend formuliert sind oder ein eigener Fehler nicht eingestanden wird.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 5,
-      "example": "Falsch: Reichen Sie die Unterlagen umgehend nach. | Richtig: Bitte reichen Sie die fehlenden Unterlagen bis zum 30. Juni nach. Vielen Dank."
+      "example": "Falsch: Reichen Sie die Unterlagen umgehend nach. | Richtig: Bitte reichen Sie die fehlenden Unterlagen bis zum 30. Juni nach. Vielen Dank.",
+      "collection": "merkblatt_behoerdenbriefe"
     },
     {
       "name": "Respektvoller Ton auf Augenhöhe",
       "description": "Der Tonfall muss die empfangende Person respektvoll und auf Augenhöhe behandeln. Ein Verstoss liegt vor, wenn der Text Macht oder Wissensvorsprung ausspielt, herablassend, drohend oder misstrauisch klingt.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 4,
-      "example": "Falsch: Es dürfte Ihnen wohl klar sein, dass solche Versäumnisse nicht geduldet werden. | Richtig: Damit wir Ihr Anliegen bearbeiten können, benötigen wir noch folgende Angaben von Ihnen."
+      "example": "Falsch: Es dürfte Ihnen wohl klar sein, dass solche Versäumnisse nicht geduldet werden. | Richtig: Damit wir Ihr Anliegen bearbeiten können, benötigen wir noch folgende Angaben von Ihnen.",
+      "collection": "merkblatt_behoerdenbriefe"
     },
     {
       "name": "Auf das konkrete Anliegen eingehen",
       "description": "Bei der Beantwortung eines Bürgerbriefs muss der Text auf die geäusserten Anliegen und Fragen der Person konkret eingehen und das eigentliche Anliegen ansprechen, auch wenn es verhüllt formuliert war. Ein Verstoss liegt vor, wenn das Schreiben an der Sache vorbeigeht oder gestellte Fragen unbeantwortet lässt.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 7,
-      "example": "Falsch: Ihr Schreiben haben wir erhalten. Die gesetzlichen Grundlagen entnehmen Sie bitte unserer Website. | Richtig: Sie fragen, bis wann Sie Einsprache erheben können. Die Frist beträgt 30 Tage ab Erhalt dieses Briefs."
+      "example": "Falsch: Ihr Schreiben haben wir erhalten. Die gesetzlichen Grundlagen entnehmen Sie bitte unserer Website. | Richtig: Sie fragen, bis wann Sie Einsprache erheben können. Die Frist beträgt 30 Tage ab Erhalt dieses Briefs.",
+      "collection": "merkblatt_behoerdenbriefe"
     },
     {
       "name": "Wichtiges von Unwichtigem trennen",
       "description": "Der Brief soll Wichtiges von Unwichtigem trennen und Unnötiges weglassen; nur die notwendigen Erklärungen und Begründungen gehören hinein. Ein Verstoss liegt vor, wenn der Text mit überflüssigen Details, Wiederholungen oder nebensächlichen Informationen überladen ist.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 6,
-      "example": "Falsch: Wie Ihnen bekannt sein dürfte und wie bereits mehrfach erwähnt, möchten wir der Vollständigkeit halber nochmals festhalten, dass ... | Richtig: Ihr Antrag ist bewilligt. Den Betrag erhalten Sie bis Ende Monat."
+      "example": "Falsch: Wie Ihnen bekannt sein dürfte und wie bereits mehrfach erwähnt, möchten wir der Vollständigkeit halber nochmals festhalten, dass ... | Richtig: Ihr Antrag ist bewilligt. Den Betrag erhalten Sie bis Ende Monat.",
+      "collection": "merkblatt_behoerdenbriefe"
     },
     {
       "name": "Konkrete Handlungsaufforderung mit Frist",
       "description": "Wenn die Person etwas tun muss, soll der Brief klar angeben, welche Schritte sie bis wann unternehmen muss, an welche Stelle sie gelangen kann und was geschieht, wenn sie etwas tut oder unterlässt. Ein Verstoss liegt vor, wenn eine erwartete Handlung ohne konkrete Anleitung, ohne Frist oder ohne Angabe der Folgen bleibt.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 7,
-      "example": "Falsch: Bitte werden Sie zeitnah tätig. | Richtig: Bitte überweisen Sie den Betrag bis zum 15. Juli. Bei verspäteter Zahlung fallen Mahngebühren an."
+      "example": "Falsch: Bitte werden Sie zeitnah tätig. | Richtig: Bitte überweisen Sie den Betrag bis zum 15. Juli. Bei verspäteter Zahlung fallen Mahngebühren an.",
+      "collection": "merkblatt_behoerdenbriefe"
     },
     {
       "name": "Keine Floskeln",
       "description": "Steife Floskeln müssen vermieden und durch direkt ansprechende Formulierungen ersetzt werden. Ein Verstoss liegt vor, wenn der Text leere Höflichkeitsformeln wie «Zur Beantwortung allfälliger Fragen steht Ihnen unser Herr XY gerne zur Verfügung» enthält, statt einladend und direkt zu formulieren.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 9,
-      "example": "Falsch: Zur Beantwortung allfälliger Fragen steht Ihnen unser Herr XY gerne zur Verfügung. | Richtig: Rufen Sie uns an, wenn Sie Fragen haben."
+      "example": "Falsch: Zur Beantwortung allfälliger Fragen steht Ihnen unser Herr XY gerne zur Verfügung. | Richtig: Rufen Sie uns an, wenn Sie Fragen haben.",
+      "collection": "merkblatt_behoerdenbriefe"
     },
     {
       "name": "Kein Amtsjargon",
       "description": "Amtsjargon und gestelzte Verwaltungsausdrücke müssen durch alltagssprachliche Wörter ersetzt werden. Ein Verstoss liegt vor, wenn der Text Amtsdeutsch wie «in Kenntnis setzen», «zur Anzeige bringen» oder «in Abzug bringen» verwendet, statt einfache Verben wie «mitteilen», «anzeigen» oder «abziehen».",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 9,
-      "example": "Falsch: Wir setzen Sie hiermit in Kenntnis, dass die Zahlung in Abzug gebracht wird. | Richtig: Wir teilen Ihnen mit, dass wir den Betrag abziehen."
+      "example": "Falsch: Wir setzen Sie hiermit in Kenntnis, dass die Zahlung in Abzug gebracht wird. | Richtig: Wir teilen Ihnen mit, dass wir den Betrag abziehen.",
+      "collection": "merkblatt_behoerdenbriefe"
     },
     {
       "name": "Kurze, einfach gebaute Sätze",
       "description": "Sätze sollen wenn möglich kurz und einfach gebaut sein; Komplexes ist Satz für Satz zu entflechten. Ein Verstoss liegt vor, wenn der Text lange Schachtelsätze mit mehreren ineinander verschachtelten Nebensätzen enthält.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 9,
-      "example": "Falsch: Da die von Ihnen eingereichten Unterlagen, welche wir am Montag erhalten haben, unvollständig waren, weshalb eine Prüfung, die wir gerne vorgenommen hätten, nicht möglich war, bitten wir um Ergänzung. | Richtig: Ihre Unterlagen sind unvollständig. Deshalb konnten wir sie noch nicht prüfen. Bitte ergänzen Sie die fehlenden Angaben."
+      "example": "Falsch: Da die von Ihnen eingereichten Unterlagen, welche wir am Montag erhalten haben, unvollständig waren, weshalb eine Prüfung, die wir gerne vorgenommen hätten, nicht möglich war, bitten wir um Ergänzung. | Richtig: Ihre Unterlagen sind unvollständig. Deshalb konnten wir sie noch nicht prüfen. Bitte ergänzen Sie die fehlenden Angaben.",
+      "collection": "merkblatt_behoerdenbriefe"
     },
     {
       "name": "Ein Gedanke pro Satz",
       "description": "Jeder Satz soll möglichst nur einen Gedanken enthalten. Ein Verstoss liegt vor, wenn mehrere voneinander unabhängige Aussagen oder Handlungsaufforderungen in einen einzigen Satz gepackt werden.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 9,
-      "example": "Falsch: Bitte füllen Sie das Formular aus und legen Sie eine Kopie Ihres Ausweises bei, wobei zu beachten ist, dass die Frist am 30. Juni endet und Sie bei Fragen die Hotline anrufen können. | Richtig: Bitte füllen Sie das Formular aus und legen Sie eine Ausweiskopie bei. Die Frist endet am 30. Juni. Bei Fragen rufen Sie uns an."
+      "example": "Falsch: Bitte füllen Sie das Formular aus und legen Sie eine Kopie Ihres Ausweises bei, wobei zu beachten ist, dass die Frist am 30. Juni endet und Sie bei Fragen die Hotline anrufen können. | Richtig: Bitte füllen Sie das Formular aus und legen Sie eine Ausweiskopie bei. Die Frist endet am 30. Juni. Bei Fragen rufen Sie uns an.",
+      "collection": "merkblatt_behoerdenbriefe"
     },
     {
       "name": "Roter Faden im Aufbau",
       "description": "Der Brief soll mit dem beginnen, was die empfangende Person unbedingt wissen muss oder am meisten interessiert, und den Gedankengang schrittweise und übersichtlich gegliedert abbilden. Ein Verstoss liegt vor, wenn die Kernbotschaft erst spät kommt oder der Text ungeordnet zwischen Themen springt.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 9,
-      "example": "Falsch: Gestützt auf die einschlägigen Bestimmungen und nach Prüfung diverser Aktenstücke sowie unter Berücksichtigung der Vorgeschichte können wir Ihnen schliesslich mitteilen, dass Ihr Gesuch bewilligt ist. | Richtig: Ihr Gesuch ist bewilligt. Im Folgenden erklären wir Ihnen die nächsten Schritte."
+      "example": "Falsch: Gestützt auf die einschlägigen Bestimmungen und nach Prüfung diverser Aktenstücke sowie unter Berücksichtigung der Vorgeschichte können wir Ihnen schliesslich mitteilen, dass Ihr Gesuch bewilligt ist. | Richtig: Ihr Gesuch ist bewilligt. Im Folgenden erklären wir Ihnen die nächsten Schritte.",
+      "collection": "merkblatt_behoerdenbriefe"
     },
     {
       "name": "Begründungen sachlich und korrekt",
       "description": "Die im Brief gemachten Aussagen müssen sachlich zutreffen und rechtlich korrekt sein, und nötige Erklärungen sowie Begründungen sind mitzugeben. Ein Verstoss liegt vor, wenn eine Entscheidung oder Aufforderung ohne nachvollziehbare Begründung bleibt.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 7,
-      "example": "Falsch: Ihr Antrag wird abgelehnt. | Richtig: Wir können Ihren Antrag nicht bewilligen, weil die Einkommensgrenze von 50 000 Franken überschritten ist."
+      "example": "Falsch: Ihr Antrag wird abgelehnt. | Richtig: Wir können Ihren Antrag nicht bewilligen, weil die Einkommensgrenze von 50 000 Franken überschritten ist.",
+      "collection": "merkblatt_behoerdenbriefe"
     },
     {
       "name": "Ausdrücke der Person aufnehmen",
       "description": "Bei der Beantwortung soll der Brief Ausdrücke und Formulierungen aufnehmen, die die absendende Person selbst verwendet hat, um zu signalisieren, dass das Anliegen verstanden wurde. Ein Verstoss liegt vor, wenn die Antwort das Anliegen vollständig in eigene, davon losgelöste Begriffe umdeutet.",
       "file_name": "merkblatt_behoerdenbriefe.pdf",
       "page_number": 7,
-      "example": "Falsch: Bezugnehmend auf Ihre Eingabe halten wir die Sachlage wie folgt fest. | Richtig: Sie schreiben, dass der Lärm der Baustelle Sie nachts stört. Diesem Lärmproblem gehen wir nach."
+      "example": "Falsch: Bezugnehmend auf Ihre Eingabe halten wir die Sachlage wie folgt fest. | Richtig: Sie schreiben, dass der Lärm der Baustelle Sie nachts stört. Diesem Lärmproblem gehen wir nach.",
+      "collection": "merkblatt_behoerdenbriefe"
     }
   ]
 }
