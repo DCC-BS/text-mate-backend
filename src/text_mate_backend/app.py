@@ -33,7 +33,9 @@ def create_app() -> FastAPI:
     # Set up dependency injection container
     logger.debug("Configuring dependency injection container")
     container = Container()
-    container.wire(modules=[advisor, quick_action, word_synonym, sentence_rewrite, convert_route, user_action_route, text_analysis])
+    container.wire(
+        modules=[advisor, quick_action, word_synonym, sentence_rewrite, convert_route, user_action_route, text_analysis]
+    )
     container.check_dependencies()
     logger.info("Dependency injection configured")
 
