@@ -34,8 +34,8 @@ ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Install runtime dependencies for varlock
-RUN apk add --no-cache libstdc++
+# Install runtime dependencies for varlock (libstdc++) and sklearn/OpenMP (libgomp)
+RUN apk add --no-cache libstdc++ libgomp
 
 # Create non-root user (Alpine syntax)
 RUN addgroup -S app && adduser -S app -G app
