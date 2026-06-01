@@ -4164,7 +4164,7 @@ wheels = [
 
 [[package]]
 name = "text-mate-backend"
-version = "0.3.3"
+version = "1.5.0"
 source = { editable = "." }
 dependencies = [
     { name = "dcc-backend-common", extra = ["fastapi"] },
