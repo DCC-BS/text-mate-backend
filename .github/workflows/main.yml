@@ -16,7 +16,7 @@ jobs:
     backend-ci:
         uses: DCC-BS/ci-workflows/.github/workflows/python-backend-ci.yml@d56b755ec3877da25146ac5f34a2b4003ff6339d # v8
         with:
-            python_versions: '["3.14"]'
-            quality_python_version: "3.14"
+            python_versions: '["3.13"]'
+            quality_python_version: "3.13"
             check_command: "make check"
-            uv_version: 0.9.28
+            uv_version: 0.11.16
