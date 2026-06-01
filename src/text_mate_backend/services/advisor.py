@@ -1,3 +1,4 @@
+import asyncio
 import json
 from collections.abc import Iterator
 from pathlib import Path
@@ -21,6 +22,7 @@ from text_mate_backend.utils.configuration import Configuration
 logger = get_logger("advisor_service")
 MAX_RULES_PER_REQUEST = 5
 MAX_RULES = 60
+AGENT_TIMEOUT_SECONDS = 60
 
 
 @final
@@ -216,7 +218,10 @@ class AdvisorService:
         checked_rules = 0
 
         for rule_batch in self._batched_rules(rules, MAX_RULES_PER_REQUEST, max_rules=len(rules)):
-            validation_result = await self.agent.run(text, deps=RulesContainer(rules=rule_batch))
+            validation_result = await asyncio.wait_for(
+                self.agent.run(text, deps=RulesContainer(rules=rule_batch)),
+                timeout=AGENT_TIMEOUT_SECONDS,
+            )
             checked_rules += len(rule_batch)
             yield RulesValidationContainer(
                 rules=validation_result.rules,
