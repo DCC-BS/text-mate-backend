@@ -67,9 +67,7 @@ def create_router(
                     data.text,
                     data.docs,
                 ):
-                    # Each SSE event contains a single RulesValidationContainer as JSON
                     yield f"data: {validation_result.model_dump_json()}\n\n"
-                # Explicit done event so proxies that buffer SSE don't suppress the EOF signal
                 yield "event: done\ndata: {}\n\n"
             except Exception:
                 logger.exception("Unhandled error during advisor SSE stream")
