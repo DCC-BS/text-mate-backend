@@ -4,10 +4,7 @@ from text_mate_backend.models.rule_models import RulesContainer
 
 rules_dir = Path("./assets/docs/rules")
 
-all_rules_containers = [
-    RulesContainer.model_validate_json(f.read_text())
-    for f in sorted(rules_dir.glob("*.json"))
-]
+all_rules_containers = [RulesContainer.model_validate_json(f.read_text()) for f in sorted(rules_dir.glob("*.json"))]
 
 all_rules = [rule for container in all_rules_containers for rule in container.rules]
 

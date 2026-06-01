@@ -178,9 +178,7 @@ async def get_rules(path: Path, agent: PreprocessAgent) -> RulesContainer:
 
 
 async def main():
-    parser = argparse.ArgumentParser(
-        description="Extract rules from PDF documents and save to staging JSON files."
-    )
+    parser = argparse.ArgumentParser(description="Extract rules from PDF documents and save to staging JSON files.")
     parser.add_argument(
         "documents",
         nargs="+",
@@ -255,11 +253,11 @@ async def main():
     print(f"📊 Total rules extracted: {total_rules_saved}")
     print(f"⏱️ Total processing time: {total_time:.2f}s")
     print(f"💾 Staging directory: {rules_dir.absolute()}")
-    print(f"\n👉 Next steps:")
+    print("\n👉 Next steps:")
     print(f"   1. Review the extracted rules in {rules_dir.absolute()}")
-    print(f"   2. Remove duplicates and refine rule descriptions")
+    print("   2. Remove duplicates and refine rule descriptions")
     print(f"   3. Merge rules into assets/docs/rules/{args.collection}.json")
-    print(f"   4. Run 'make check' to verify the changes")
+    print("   4. Run 'make check' to verify the changes")
 
     if failed_documents:
         print(f"\n⚠️ Warning: Failed to process {len(failed_documents)} documents:")
