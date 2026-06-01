@@ -1,58 +1,57 @@
 import argparse
-import json
 from collections import Counter
 from pathlib import Path
 
 
-def get_default_rules_path() -> Path:
-    """
-    Returns the default path to assets/docs/rules.json assuming the following layout:
-
-    text-mate-backend/
-      assets/docs/rules.json
-      src/...
-    """
-    # This file is expected at: <repo_root>/src/text_mate_tools/count_rules_per_file.py
-    # So repo_root is two levels up.
-    return Path(__file__).resolve().parents[2] / "assets" / "docs" / "rules.json"
+def get_default_rules_dir() -> Path:
+    return Path(__file__).resolve().parents[2] / "assets" / "docs" / "rules"
 
 
-def count_rules_per_file(rules_path: Path) -> Counter[str]:
-    with rules_path.open("r", encoding="utf-8") as f:
-        data = json.load(f)
+def count_rules(rules_dir: Path) -> tuple[Counter[str], Counter[str]]:
+    """Returns (rules per collection, rules per source PDF)."""
+    per_collection: Counter[str] = Counter()
+    per_file: Counter[str] = Counter()
 
-    rules = data.get("rules", [])
-    counter: Counter[str] = Counter()
+    for json_file in sorted(rules_dir.glob("*.json")):
+        import json
 
-    for rule in rules:
-        file_name = rule.get("file_name")
-        if file_name:
-            counter[file_name] += 1
+        data = json.loads(json_file.read_text())
+        for rule in data.get("rules", []):
+            collection = rule.get("collection", "<no collection>")
+            file_name = rule.get("file_name", "<no file>")
+            per_collection[collection] += 1
+            per_file[file_name] += 1
 
-    return counter
+    return per_collection, per_file
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Count how many rules each file_name has in assets/docs/rules.json.")
+    parser = argparse.ArgumentParser(description="Count rules per collection and source PDF in assets/docs/rules/.")
     parser.add_argument(
-        "--rules-path",
+        "--rules-dir",
         type=str,
-        default=str(get_default_rules_path()),
-        help="Path to rules.json (default: <repo_root>/assets/docs/rules.json)",
+        default=str(get_default_rules_dir()),
+        help="Path to rules directory (default: <repo_root>/assets/docs/rules/)",
     )
     args = parser.parse_args()
 
-    rules_path = Path(args.rules_path).expanduser().resolve()
+    rules_dir = Path(args.rules_dir).expanduser().resolve()
 
-    if not rules_path.is_file():
-        raise SystemExit(f"File not found at: {rules_path}")
+    if not rules_dir.is_dir():
+        raise SystemExit(f"Directory not found: {rules_dir}")
 
-    counts = count_rules_per_file(rules_path)
+    per_collection, per_file = count_rules(rules_dir)
 
-    # Print sorted by file_name for stable output
-    print(f"Counts per file_name in {rules_path}:")
-    for file_name in sorted(counts.keys()):
-        print(f"{file_name}: {counts[file_name]}")
+    total = sum(per_collection.values())
+    print(f"Total rules: {total}\n")
+
+    print("Rules per collection:")
+    for collection in sorted(per_collection):
+        print(f"  {collection}: {per_collection[collection]}")
+
+    print("\nRules per source PDF:")
+    for file_name in sorted(per_file):
+        print(f"  {file_name}: {per_file[file_name]}")
 
 
 if __name__ == "__main__":

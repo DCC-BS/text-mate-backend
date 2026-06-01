@@ -19,8 +19,8 @@ from text_mate_backend.models.rule_models import (
 from text_mate_backend.utils.configuration import Configuration
 
 logger = get_logger("advisor_service")
-MAX_RULES_PER_REQUEST = 3
-MAX_RULES = 30
+MAX_RULES_PER_REQUEST = 5
+MAX_RULES = 60
 
 
 @final
@@ -108,16 +108,16 @@ class AdvisorService:
                 ]
 
                 for doc in descriptions:
-                    if doc.file in seen_files:
-                        logger.error(f"Duplicate file found: {doc.file} in {json_file.name}")
+                    if doc.id in seen_files:
+                        logger.error(f"Duplicate file found: {doc.id} in {json_file.name}")
                         raise ApiErrorException(
                             {
                                 "status": 500,
                                 "errorId": LOADING_FILES_ERROR,
-                                "debugMessage": f"Duplicate document file found: {doc.file}",
+                                "debugMessage": f"Duplicate document file found: {doc.id}",
                             }
                         )
-                    seen_files.add(doc.file)
+                    seen_files.add(doc.id)
 
                 all_descriptions.extend(descriptions)
                 logger.info(f"Loaded {len(descriptions)} document descriptions from {json_file.name}")
@@ -146,7 +146,7 @@ class AdvisorService:
 
         return list(
             filter(
-                lambda doc: doc.file in doc_names,
+                lambda doc: doc.id in doc_names,
                 doc_descriptions,
             )
         )
@@ -154,8 +154,8 @@ class AdvisorService:
     def filter_rules(self, docs: set[str]) -> list[Rule]:
         filtered_rules: list[Rule] = []
         for doc in docs:
-            doc_rules = [rule for rule in self.ruel_container.rules if rule.file_name == doc]
-            filtered_rules.extend(doc_rules[:30])
+            doc_rules = [rule for rule in self.ruel_container.rules if rule.collection == doc]
+            filtered_rules.extend(doc_rules)
         return filtered_rules
 
     async def check_text_stream(self, text: str, docs: set[str]) -> AsyncIterator[RulesValidationContainer]:
