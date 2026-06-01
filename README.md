@@ -265,12 +265,111 @@ src/text_mate_backend/
     └── middleware.py              # Request/response middleware
 
 text_mate_tools/                    # Utility scripts
-├── preprocess_document_rules.py   # Document rule preprocessing
-├── count_rules_per_file.py        # Rule counting utility
-└── analyse_ruels.py               # Rule analysis utility
+├── preprocess_document_rules.py   # AI-assisted rule extraction from PDFs
+├── count_rules_per_file.py        # Rule count per collection and source PDF
+└── analyse_ruels.py               # Rule analysis across all collections
 
-assets/docs/                        # Reference documents and style guides
+assets/docs/
+├── rules/                          # Rule collections (one JSON per collection)
+│   ├── bundeskanzlei.json         # Merged Bundeskanzlei rules (51 rules)
+│   └── merkblatt_behoerdenbriefe.json  # Behördenbriefe rules (14 rules)
+├── meta/
+│   └── bund_dokumente.json        # Collection metadata shown to API consumers
+└── *.pdf                          # Source PDF documents
 tests/                              # Unit and integration tests
+```
+
+## Advisor Rule Collections
+
+The Document Advisor validates text against editorial rules sourced from Bundeskanzlei PDFs. Rules are organized into **collections** — logical groups exposed to API consumers:
+
+| Collection ID | File | Source PDFs |
+|---|---|---|
+| `bundeskanzlei` | `assets/docs/rules/bundeskanzlei.json` | Schreibweisungen, Rechtschreibleitfaden, Empfehlungen Anglizismen, Geschlechtergerechte Sprache |
+| `merkblatt_behoerdenbriefe` | `assets/docs/rules/merkblatt_behoerdenbriefe.json` | Merkblatt Behördenbriefe |
+
+Each rule has:
+- `name` — short rule title
+- `description` — full rule description
+- `file_name` — source PDF filename (used for citation in violations)
+- `page_number` — page in the source PDF
+- `example` — `Falsch: ... | Richtig: ...` string
+- `collection` — collection ID (used for filtering; must match `id` in `bund_dokumente.json`)
+
+Collection metadata shown to API consumers is in `assets/docs/meta/bund_dokumente.json`. Each entry has:
+- `id` — collection ID (matches `Rule.collection`)
+- `title` / `description` / `author` / `edition` — display metadata
+- `files` — list of downloadable source PDFs
+- `access` — list of roles, or `["all"]` for public access
+
+### Adding Rules to an Existing Collection
+
+**Option A — Manual:** Edit the collection JSON directly.
+
+Add a rule object to the `rules` array in the appropriate file (e.g. `assets/docs/rules/bundeskanzlei.json`):
+
+```json
+{
+  "name": "Rule name",
+  "description": "Full rule description.",
+  "file_name": "schreibweisungen.pdf",
+  "page_number": 42,
+  "example": "Falsch: ... | Richtig: ...",
+  "collection": "bundeskanzlei"
+}
+```
+
+`file_name` must be an existing PDF under `assets/docs/`. `collection` must match the `id` in `bund_dokumente.json`.
+
+**Option B — AI extraction from a PDF:** Use the preprocessing tool to extract rules automatically, then review and merge.
+
+```bash
+# Extract rules from a PDF into a staging directory
+uv run --env-file .env src/text_mate_tools/preprocess_document_rules.py \
+  assets/docs/schreibweisungen.pdf \
+  --collection bundeskanzlei \
+  --output ./staging/rules
+
+# Review the output
+cat staging/rules/schreibweisungen.json
+
+# Copy rules into the collection file (manual merge or jq)
+```
+
+After editing, run `make check` to verify everything is valid.
+
+### Adding a New Collection
+
+1. **Add rules JSON** — create `assets/docs/rules/<collection-id>.json` with the `collection` field set on every rule.
+
+2. **Add the source PDF** — place the PDF in `assets/docs/`.
+
+3. **Register the collection** — add an entry to `assets/docs/meta/bund_dokumente.json`:
+
+```json
+{
+  "title": "Collection display name",
+  "description": "Short description for the UI",
+  "author": "Author name",
+  "edition": "Edition string",
+  "id": "<collection-id>",
+  "files": ["source.pdf"],
+  "access": ["all"]
+}
+```
+
+4. **Run checks** — `make check`.
+
+> **API impact:** Adding a new collection is a non-breaking change — consumers only see the new entry when they call `GET /advisor/docs`. Renaming or removing a collection ID is breaking.
+
+### Analysing Rules
+
+```bash
+# Count rules per collection and source PDF
+uv run src/text_mate_tools/count_rules_per_file.py
+
+# Detailed analysis (char counts per collection)
+uv run src/text_mate_tools/analyse_ruels.py
 ```
 
 ## Troubleshooting
