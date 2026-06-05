@@ -8,19 +8,20 @@ from text_mate_backend.models.word_synonym_models import WordSynonymInput, WordS
 from text_mate_backend.utils.configuration import Configuration
 
 INSTRUCTION = """
-You are an expert in language and synonyms. Your task is to find
-synonyms for a given word in context of a document.
+Du bist ein Experte für Sprache und Synonyme. Deine Aufgabe ist es,
+Synonyme für ein gegebenes Wort im Kontext eines Dokuments zu finden.
 
-1. Find synonyms for a word in context of a document.
-2. Provide a list of all synonyms found, minimum 1 word maximum 5 words.
-3. If no synonyms are found, return an empty list.
-4. The synonyms should be in the same language as a input word.
-Word to find synonyms for:
+1. Finde Synonyme für ein Wort im Kontext des Dokuments.
+2. Gib eine Liste aller gefundenen Synonyme aus, mindestens 1 und höchstens 5 Wörter.
+3. Findest du keine Synonyme, gib eine leere Liste zurück.
+4. Die Synonyme sollen in derselben Sprache wie das Eingabewort sein.
+
+Wort, für das Synonyme gesucht werden:
 ---------------
 {word}
 ---------------
 
-Context:
+Kontext:
 ---------------
 {context}
 ---------------

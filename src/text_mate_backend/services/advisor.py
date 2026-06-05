@@ -1,3 +1,4 @@
+import asyncio
 import json
 from collections.abc import Iterator
 from pathlib import Path
@@ -19,8 +20,9 @@ from text_mate_backend.models.rule_models import (
 from text_mate_backend.utils.configuration import Configuration
 
 logger = get_logger("advisor_service")
-MAX_RULES_PER_REQUEST = 3
-MAX_RULES = 20
+MAX_RULES_PER_REQUEST = 5
+MAX_RULES = 60
+AGENT_TIMEOUT_SECONDS = 60
 
 
 @final
@@ -108,16 +110,16 @@ class AdvisorService:
                 ]
 
                 for doc in descriptions:
-                    if doc.file in seen_files:
-                        logger.error(f"Duplicate file found: {doc.file} in {json_file.name}")
+                    if doc.id in seen_files:
+                        logger.error(f"Duplicate file found: {doc.id} in {json_file.name}")
                         raise ApiErrorException(
                             {
                                 "status": 500,
                                 "errorId": LOADING_FILES_ERROR,
-                                "debugMessage": f"Duplicate document file found: {doc.file}",
+                                "debugMessage": f"Duplicate document file found: {doc.id}",
                             }
                         )
-                    seen_files.add(doc.file)
+                    seen_files.add(doc.id)
 
                 all_descriptions.extend(descriptions)
                 logger.info(f"Loaded {len(descriptions)} document descriptions from {json_file.name}")
@@ -146,19 +148,32 @@ class AdvisorService:
 
         return list(
             filter(
-                lambda doc: doc.file in doc_names,
+                lambda doc: doc.id in doc_names,
                 doc_descriptions,
             )
         )
 
     def filter_rules(self, docs: set[str]) -> list[Rule]:
-        return [rule for rule in self.ruel_container.rules if rule.file_name in docs]
+        filtered_rules: list[Rule] = []
+        for doc in docs:
+            doc_rules = [rule for rule in self.ruel_container.rules if rule.collection == doc]
+            filtered_rules.extend(doc_rules)
+        return filtered_rules
 
     async def check_text_stream(self, text: str, docs: set[str]) -> AsyncIterator[RulesValidationContainer]:
         """
         Checks the text for any violations of the rules and yields validation results
         batch-by-batch. This is intended for streaming (SSE) responses.
         """
+
+        if len(docs) > 5:
+            raise ApiErrorException(
+                {
+                    "status": 400,
+                    "errorId": CHECK_TEXT_ERROR,
+                    "debugMessage": "A maximum of 5 documents can be selected",
+                }
+            )
 
         try:
             async for result in self._check_text_stream(text, docs):
@@ -196,12 +211,23 @@ class AdvisorService:
         if not rules:
             logger.warn(f"No rules found for the documents {docs}")
             # Maintain parity with the non-streaming API by yielding a single empty container
-            yield RulesValidationContainer(rules=[])
+            yield RulesValidationContainer(rules=[], checked=0, total=0)
             return
 
-        for rule_batch in self._batched_rules(rules, MAX_RULES_PER_REQUEST):
-            validation_result = await self.agent.run(text, deps=RulesContainer(rules=rule_batch))
-            yield validation_result
+        total_rules = len(rules)
+        checked_rules = 0
+
+        for rule_batch in self._batched_rules(rules, MAX_RULES_PER_REQUEST, max_rules=len(rules)):
+            validation_result = await asyncio.wait_for(
+                self.agent.run(text, deps=RulesContainer(rules=rule_batch)),
+                timeout=AGENT_TIMEOUT_SECONDS,
+            )
+            checked_rules += len(rule_batch)
+            yield RulesValidationContainer(
+                rules=validation_result.rules,
+                checked=checked_rules,
+                total=total_rules,
+            )
 
     def _batched_rules(self, rules: list[Rule], batch_size: int, max_rules: int = MAX_RULES) -> Iterator[list[Rule]]:
         for i in range(0, min(len(rules), max_rules), batch_size):

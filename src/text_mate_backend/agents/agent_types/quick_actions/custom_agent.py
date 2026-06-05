@@ -16,8 +16,7 @@ class CustomAgent(QuickActionBaseAgent):
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext]) -> str:
         return f"""
-            You are a writing assistant. Your task is to take a given prompt
-            and rewrite text based on prompt.
-            The rewritten text should be in a same language as a input text.
+            Du bist ein Schreibassistent. Deine Aufgabe ist es, einen Text
+            anhand der folgenden Anweisung umzuschreiben.
             {ctx.deps.options}
             """

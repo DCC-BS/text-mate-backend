@@ -2,30 +2,26 @@ from pathlib import Path
 
 from text_mate_backend.models.rule_models import RulesContainer
 
-rules_file = Path("./assets/docs/rules.json")
+rules_dir = Path("./assets/docs/rules")
 
-rules_container = RulesContainer.model_validate_json(
-    rules_file.read_text(),
-    strict=True,
-)
+all_rules_containers = [RulesContainer.model_validate_json(f.read_text()) for f in sorted(rules_dir.glob("*.json"))]
 
-n_rules = len(rules_container.rules)
+all_rules = [rule for container in all_rules_containers for rule in container.rules]
 
-documents_ruel_count = {}
-documents_char_count = {}
+n_rules = len(all_rules)
 
-for ruel in rules_container.rules:
-    if ruel.file_name not in documents_ruel_count:
-        documents_ruel_count[ruel.file_name] = 0
-        documents_char_count[ruel.file_name] = 0
+collections_rule_count: dict[str, int] = {}
+collections_char_count: dict[str, int] = {}
 
-    documents_ruel_count[ruel.file_name] += 1
-    documents_char_count[ruel.file_name] += len(ruel.model_dump_json())
+for rule in all_rules:
+    collections_rule_count.setdefault(rule.collection, 0)
+    collections_char_count.setdefault(rule.collection, 0)
+    collections_rule_count[rule.collection] += 1
+    collections_char_count[rule.collection] += len(rule.model_dump_json())
 
 print(f"Total rules: {n_rules}")
 
-for file_name, n_rules in documents_ruel_count.items():
-    print(f"File: {file_name} - Rules: {n_rules}")
-    print(f"File: {file_name} - Characters: {documents_char_count[file_name]}")
+for collection, count in sorted(collections_rule_count.items()):
+    print(f"Collection: {collection} — Rules: {count}, Characters: {collections_char_count[collection]}")
 
-print(f"Total files: {len(documents_ruel_count)}")
+print(f"Total collections: {len(collections_rule_count)}")

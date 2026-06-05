@@ -1,6 +1,6 @@
 [project]
 name = "text_mate_backend"
-version = "0.3.2"
+version = "1.5.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
@@ -17,7 +17,8 @@ dependencies = [
     "pydantic-ai>=1.55.0",
     "logfire>=4.22.0",
     "pyyaml>=6.0.2",
-    "dcc-backend-common[fastapi]>=0.1.9",
+    "dcc-backend-common[fastapi]>=0.1.10",
+    "zix @ git+https://github.com/machinelearningZH/zix_understandability-index",
 ]
 
 [dependency-groups]
@@ -40,6 +41,9 @@ dev = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/text_mate_backend"]

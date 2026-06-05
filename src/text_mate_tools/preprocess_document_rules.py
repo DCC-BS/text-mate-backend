@@ -2,10 +2,11 @@
 This script extracts editorial rules from PDF documents using an AI agent.
 
 Usage:
-    uv run --env-file .env src/text_mate_tools/preprocess_document_rules.py <pdf_file> [<pdf_file> ...] [--output OUTPUT_DIR]
+    uv run --env-file .env src/text_mate_tools/preprocess_document_rules.py <pdf_file> [<pdf_file> ...] --collection <name> [--output OUTPUT_DIR]
 
 Example:
-    uv run --env-file .env src/text_mate_tools/preprocess_document_rules.py assets/docs/*.pdf --output ./output/rules
+    uv run --env-file .env src/text_mate_tools/preprocess_document_rules.py assets/docs/schreibweisungen.pdf --collection bundeskanzlei
+    uv run --env-file .env src/text_mate_tools/preprocess_document_rules.py assets/docs/merkblatt_behoerdenbriefe.pdf --collection merkblatt_behoerdenbriefe
 
 The script will:
 1. Load and parse PDF documents
@@ -15,12 +16,13 @@ The script will:
 
 Output:
     For each input PDF, a corresponding JSON file is created in the output directory
-    containing the extracted rules in a structured format.
+    containing the extracted rules in a structured format. Review this staging output
+    and merge rules into the appropriate collection file under assets/docs/rules/.
 
 Requirements:
     - PDF documents to process must exist and be readable
     - Environment must be configured with proper API keys (loaded from .env)
-    - Output directory will be created if it doesn't exist (default: ./assets/docs/rules/)
+    - Output directory will be created if it doesn't exist (default: ./staging/rules/)
 """  # noqa: E501
 
 import argparse
@@ -48,10 +50,11 @@ Rules documentation:
 
 Your task:
 1. Extract all rules from the document.
-2. Identify the file name and page number of the document json.
-3. Provide an example of the rule in use.
-4. Keep the text in the original language.
-5. Ignore Indexes, tables of contents, and other non-relevant content.
+2. Identify the file name and page number of the source document for each rule.
+3. Set the `collection` field to "{collection}" for every rule.
+4. Provide an example of the rule in use.
+5. Keep the text in the original language.
+6. Ignore indexes, tables of contents, and other non-relevant content.
 
 Return your findings as structured data according to the specified format.
 """
@@ -62,61 +65,39 @@ pdf_reader = PDFReader()
 
 
 class PreprocessAgent(BaseAgent[list[Document], RulesContainer]):
-    def __init__(self, config: Configuration):
+    def __init__(self, config: Configuration, collection: str):
+        self.collection = collection
         super().__init__(config, deps_type=list[Document], output_type=RulesContainer)
 
     def create_agent(self, model: Model) -> Agent[list[Document], RulesContainer]:
         agent = Agent(model, deps_type=list[Document], output_type=RulesContainer)
+        collection = self.collection
 
         @agent.instructions
         def instructions(ctx: RunContext[list[Document]]) -> str:
             json_docs = ",".join(map(lambda x: x.json(), ctx.deps))
-            return prompt.format(rules=f"[{json_docs}]")
+            return prompt.format(rules=f"[{json_docs}]", collection=collection)
 
         return agent
 
-
-agent = PreprocessAgent(Configuration.from_env())
 
 MAX_RETRIES = 1
 
 
 async def process_batch(
-    batch: list[Document], batch_index: int, total_batches: int
+    batch: list[Document], batch_index: int, total_batches: int, agent: PreprocessAgent
 ) -> tuple[RulesContainer | None, Exception | None, str]:
-    """
-    Process a batch of documents and extract rules with error handling.
-
-    Args:
-        batch: List of documents to process
-        batch_index: Index of the current batch
-        total_batches: Total number of batches
-
-    Returns:
-        Tuple containing (response or None, exception or None, batch_page_range)
-    """
     batch_page_range = f"pages {batch[0].metadata.get('page_label', '?')}-{batch[-1].metadata.get('page_label', '?')}"
     print(f"      ⚙️ Processing batch {batch_index + 1}/{total_batches} ({batch_page_range})")
 
     try:
         response = await agent.run(deps=batch)
-
         return response, None, batch_page_range
     except Exception as e:
         return None, e, batch_page_range
 
 
-async def get_rules(path: Path) -> RulesContainer:
-    """
-    Extract rules from a PDF document with detailed progress feedback.
-    Includes error handling and retry mechanism for batch processing.
-
-    Args:
-        path: Path to the PDF document
-
-    Returns:
-            Container with extracted rules
-    """
+async def get_rules(path: Path, agent: PreprocessAgent) -> RulesContainer:
     print(f"\n📄 Processing document: {path.name}")
     start_time = time.time()
 
@@ -128,7 +109,6 @@ async def get_rules(path: Path) -> RulesContainer:
         traceback.print_exc()
         return RulesContainer(rules=[])
 
-    # batch the documents to not exceed the max token limit (32000 tokens)
     batches: list[list[Document]] = []
     current_batch: list[Document] = []
     current_batch_size = 0
@@ -136,7 +116,6 @@ async def get_rules(path: Path) -> RulesContainer:
     for document in documents:
         if len(document.text) > token_limit:
             print(f"   ⚠️ Warning: Document page {document.metadata.get('page_label', '?')} exceeds token limit")
-            # Try to process it anyway by making it a separate batch
             if current_batch:
                 batches.append(current_batch)
                 current_batch = []
@@ -152,7 +131,6 @@ async def get_rules(path: Path) -> RulesContainer:
         current_batch.append(document)
         current_batch_size += len(document.json())
 
-    # Add the last batch if it's not empty
     if current_batch:
         batches.append(current_batch)
 
@@ -164,19 +142,14 @@ async def get_rules(path: Path) -> RulesContainer:
     for i, batch in enumerate(tqdm(batches, desc="   🔍 Processing batches", unit="batch")):
         batch_start = time.time()
 
-        # First attempt
-        response, exception, batch_page_range = await process_batch(batch, i, len(batches))
+        response, exception, batch_page_range = await process_batch(batch, i, len(batches), agent)
 
-        # Retry once if there was an error
         if exception is not None:
             print(f"      ⚠️ Error processing batch {i + 1}/{len(batches)} ({batch_page_range}): {str(exception)}")
             print(f"      🔄 Retrying batch {i + 1}/{len(batches)}...")
-
-            # Wait a bit before retrying
             time.sleep(2)
 
-            # Second attempt
-            response, retry_exception, _ = await process_batch(batch, i, len(batches))
+            response, retry_exception, _ = await process_batch(batch, i, len(batches), agent)
 
             if retry_exception is not None:
                 print(f"      ❌ Retry failed for batch {i + 1}/{len(batches)}: {str(retry_exception)}")
@@ -205,9 +178,7 @@ async def get_rules(path: Path) -> RulesContainer:
 
 
 async def main():
-    parser = argparse.ArgumentParser(
-        description="Extract rules from PDF documents and save to JSON files in assets/docs/rules/"
-    )
+    parser = argparse.ArgumentParser(description="Extract rules from PDF documents and save to staging JSON files.")
     parser.add_argument(
         "documents",
         nargs="+",
@@ -215,14 +186,23 @@ async def main():
         help="Path(s) to PDF document(s) to process",
     )
     parser.add_argument(
+        "--collection",
+        type=str,
+        required=True,
+        help=(
+            "Collection identifier to assign to all extracted rules. "
+            "Must match the 'id' field of an entry in assets/docs/meta/bund_dokumente.json "
+            "(e.g. 'bundeskanzlei' or 'merkblatt_behoerdenbriefe')."
+        ),
+    )
+    parser.add_argument(
         "--output",
         type=str,
-        default="./assets/docs/rules",
-        help="Output directory for extracted rules JSON files (default: ./assets/docs/rules)",
+        default="./staging/rules",
+        help="Output directory for extracted rules JSON files (default: ./staging/rules)",
     )
     args = parser.parse_args()
 
-    # Convert argument paths to Path objects and resolve relative paths
     document_paths: list[Path] = []
     for doc_path in args.documents:
         path = Path(doc_path)
@@ -234,15 +214,16 @@ async def main():
             sys.exit(1)
         document_paths.append(path)
 
+    agent = PreprocessAgent(Configuration.from_env(), collection=args.collection)
+
     print(f"🚀 Starting rule extraction from {len(document_paths)} document(s)")
+    print(f"📌 Collection: {args.collection}")
     total_start_time = time.time()
 
-    # Create rules directory if it doesn't exist
     rules_dir = Path(args.output)
-    rules_dir.mkdir(exist_ok=True)
-    print(f"📁 Using rules directory: {rules_dir.absolute()}")
+    rules_dir.mkdir(parents=True, exist_ok=True)
+    print(f"📁 Staging directory: {rules_dir.absolute()}")
 
-    # Write rules for each document to separate JSON files
     documents_processed = 0
     total_rules_saved = 0
     failed_documents: list[str] = []
@@ -250,18 +231,16 @@ async def main():
     for i, document in enumerate(document_paths):
         try:
             print(f"\n[{i + 1}/{len(document_paths)}] Processing document: {document.name}")
-            response = await get_rules(document)
+            response = await get_rules(document, agent)
 
-            # Create output file name based on document name
             output_filename = document.stem + ".json"
             output_path = rules_dir / output_filename
 
-            # Write rules to separate file
             output_path.write_text(data=response.model_dump_json(indent=2))
 
             documents_processed += 1
             total_rules_saved += len(response.rules)
-            print(f"💾 Saved {len(response.rules)} rules to {output_path.name}")
+            print(f"💾 Saved {len(response.rules)} rules to {output_path}")
         except Exception as e:
             print(f"❌ ERROR: Failed to process document {document}: {str(e)}")
             traceback.print_exc()
@@ -269,11 +248,16 @@ async def main():
 
     total_time = time.time() - total_start_time
 
-    print("\n✨ Process complete!")
+    print("\n✨ Extraction complete!")
     print(f"📊 Documents processed: {documents_processed}/{len(document_paths)}")
-    print(f"📊 Total rules saved: {total_rules_saved}")
+    print(f"📊 Total rules extracted: {total_rules_saved}")
     print(f"⏱️ Total processing time: {total_time:.2f}s")
-    print(f"💾 Rules directory: {rules_dir.absolute()}")
+    print(f"💾 Staging directory: {rules_dir.absolute()}")
+    print("\n👉 Next steps:")
+    print(f"   1. Review the extracted rules in {rules_dir.absolute()}")
+    print("   2. Remove duplicates and refine rule descriptions")
+    print(f"   3. Merge rules into assets/docs/rules/{args.collection}.json")
+    print("   4. Run 'make check' to verify the changes")
 
     if failed_documents:
         print(f"\n⚠️ Warning: Failed to process {len(failed_documents)} documents:")

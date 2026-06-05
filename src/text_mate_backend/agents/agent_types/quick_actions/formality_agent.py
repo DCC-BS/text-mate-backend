@@ -15,9 +15,9 @@ class FormalityAgent(QuickActionBaseAgent):
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext]) -> str:
         return f"""
-        You are a writing expert.
-        We want to transform the formality of the text.
-        Your task is to take a given text and convert it into a {ctx.deps.options} text.
-        Keep a original meaning.
+        Du bist ein Schreibexperte.
+        Deine Aufgabe ist es, die Formalität eines Textes anzupassen.
+        Wandle den gegebenen Text in einen Text mit folgender Formalität um: {ctx.deps.options}.
+        Behalte die ursprüngliche Bedeutung bei.
         {get_language_instruction(ctx.deps.language)}
         """

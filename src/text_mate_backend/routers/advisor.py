@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.params import Security
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi_azure_auth.user import User
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from text_mate_backend.container import Container
 from text_mate_backend.models.error_codes import NO_DOCUMENT
@@ -24,7 +24,7 @@ logger = get_logger("advisor_router")
 
 class AdvisorInput(BaseModel):
     text: Annotated[str, "The text to analyze and provide advice for"]
-    docs: Annotated[set[str], "The documents to use for the analysis"]
+    docs: Annotated[set[str], Field(max_length=5, description="The documents to use for the analysis")]
 
 
 @inject
@@ -62,14 +62,25 @@ def create_router(
         async def event_generator() -> AsyncGenerator[str, None]:
             # NOTE: CancelOnDisconnect is not used here because StreamingResponse evaluation
             # happens after this handler returns. Disconnects will be handled by ASGI server.
-            async for validation_result in advisor_service.check_text_stream(
-                data.text,
-                data.docs,
-            ):
-                # Each SSE event contains a single RulesValidationContainer as JSON
-                yield f"data: {validation_result.model_dump_json()}\n\n"
+            try:
+                async for validation_result in advisor_service.check_text_stream(
+                    data.text,
+                    data.docs,
+                ):
+                    yield f"data: {validation_result.model_dump_json()}\n\n"
+                yield "event: done\ndata: {}\n\n"
+            except Exception:
+                logger.exception("Unhandled error during advisor SSE stream")
+                yield "event: error\ndata: {}\n\n"
 
-        return StreamingResponse(event_generator(), media_type="text/event-stream")
+        return StreamingResponse(
+            event_generator(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+            },
+        )
 
     @router.get("/doc/{name}", dependencies=[Security(auth_scheme)])
     async def get_document(name: str) -> FileResponse:

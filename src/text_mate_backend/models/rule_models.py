@@ -4,9 +4,12 @@ from pydantic import BaseModel, Field
 class Rule(BaseModel):
     name: str = Field(description="A descriptive name for the rule in the original language")
     description: str = Field(description="Description of the rule in the original language")
-    file_name: str = Field(description="Filename of the source document")
+    file_name: str = Field(description="Filename of the source PDF document")
     page_number: int = Field(description="Page number of the source document")
     example: str = Field(description="Example of the rule in use")
+    collection: str = Field(
+        description="Logical collection key used for filtering (matches RuelDocumentDescription.id)"
+    )
 
 
 class RuelValidation(Rule):
@@ -25,14 +28,21 @@ class RulesContainer(BaseModel):
 
     @property
     def document_names(self) -> set[str]:
-        """
-        Get the unique document names from the rules.
-        """
-        return {rule.file_name for rule in self.rules}
+        return {rule.collection for rule in self.rules}
+
+
+class RulesValidationResult(BaseModel):
+    """LLM output type — rules only, no progress metadata."""
+
+    rules: list[RuelValidation] = Field(description="All violations of the rules")
 
 
 class RulesValidationContainer(BaseModel):
+    """Streaming response type — rules plus progress counters set by the service layer."""
+
     rules: list[RuelValidation] = Field(description="All violations of the rules")
+    checked: int = Field(default=0, description="Number of rules checked so far")
+    total: int = Field(default=0, description="Total number of rules to check")
 
 
 class RuelDocumentDescription(BaseModel):
@@ -40,5 +50,6 @@ class RuelDocumentDescription(BaseModel):
     description: str = Field(description="Description of the document")
     author: str = Field(description="Author of the document")
     edition: str = Field(description="Edition of the document")
-    file: str = Field(description="Filename of the document")
+    id: str = Field(description="Collection identifier matching Rule.collection")
+    files: list[str] = Field(description="Downloadable PDF filenames for this collection")
     access: list[str] = Field(description="Access permissions for the document, e.g., 'all' for public access")

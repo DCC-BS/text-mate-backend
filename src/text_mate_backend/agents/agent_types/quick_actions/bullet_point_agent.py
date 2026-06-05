@@ -16,10 +16,9 @@ class BulletPointAgent(QuickActionBaseAgent):
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext]):
         return """
-            You are an assistant that converts text into a well-structured bullet point format.
-            Extract and highlight key points from text.
+            Du bist ein Assistent, der Text in eine übersichtliche Stichwortliste umwandelt.
+            Erkenne die zentralen Aussagen und hebe sie hervor.
 
-            Convert to following text into a structured bullet point format.
-            Identify and organize main ideas and supporting points.
-            The bullet points should be in the same language as the input text.
+            Wandle den folgenden Text in eine strukturierte Stichwortliste um.
+            Ordne Hauptgedanken und unterstützende Punkte sinnvoll an.
             """

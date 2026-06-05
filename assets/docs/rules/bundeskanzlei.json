@@ -1,0 +1,412 @@
+{
+  "rules": [
+    {
+      "name": "Guillemets als Anführungszeichen verwenden",
+      "description": "Verwende als Anführungs- und Schlusszeichen die typografischen Guillemets «» (öffnend «, schliessend »). Eine Verletzung liegt vor, wenn gerade Schreibmaschinen-Anführungszeichen (\"...\"), deutsche Gänsefüsschen (‚...' oder ähnliche) oder die in Deutschland übliche Form mit nach innen zeigenden Guillemets (»...«) verwendet werden.",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 21,
+      "example": "Falsch: Die Zeitung \"Der Bund\" berichtete. | Richtig: Die Zeitung «Der Bund» berichtete.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Halbe Anführungszeichen für verschachtelte Zitate",
+      "description": "Verwende für ein Zitat oder eine Hervorhebung innerhalb eines bereits in «» stehenden Textes die halben Guillemets ‹›. Eine Verletzung liegt vor, wenn innerhalb von «» erneut volle «» statt ‹› gesetzt werden.",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 21,
+      "example": "Falsch: «Der Bund bewilligt einen Kredit für die Stiftung «Zukunft für Schweizer Fahrende».» | Richtig: «Der Bund bewilligt einen Kredit für die Stiftung ‹Zukunft für Schweizer Fahrende›.»",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Kurze Zahlen im Fliesstext ausschreiben",
+      "description": "Schreibe kurze, ein- und zweisilbige Zahlen (null bis zwölf, ferner Formen wie zwanzig, hundert, tausend) im Fliesstext in Worten aus; längere Zahlen werden in Ziffern geschrieben. Eine Verletzung liegt vor, wenn im normalen Fliesstext eine kurze Zahl unnötig als Ziffer steht, sofern nicht eine Sonderregel (Masse, Geldbeträge, Fristen, mehrere Zahlen im gleichen Zusammenhang) greift.",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 77,
+      "example": "Falsch: Es wurden 3 Eingaben gemacht. | Richtig: Es wurden drei Eingaben gemacht.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Mehrere Zahlen im gleichen Zusammenhang in Ziffern",
+      "description": "Schreibe alle Zahlen in Ziffern, wenn in einem Satz mehrere Zahlangaben einander gegenübergestellt oder verglichen werden. Eine Verletzung liegt vor, wenn in solchen Aufzählungen oder Gegenüberstellungen Zahlwörter und Ziffern gemischt werden.",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 77,
+      "example": "Falsch: Die Frist beträgt sieben Tage, bei Verträgen 14 Tage. | Richtig: Die Frist beträgt 7 Tage, bei Verträgen 14 Tage.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Masse, Gewichte und Währungen mit abgekürzter Einheit in Ziffern",
+      "description": "Schreibe Zahlen stets in Ziffern, wenn sie vor einer abgekürzten Mass-, Gewichts- oder Währungseinheit oder einem Begriffszeichen stehen (z. B. km, kg, m, %, Fr.). Eine Verletzung liegt vor, wenn vor einer abgekürzten Einheit ein Zahlwort ausgeschrieben wird, etwa «zwölf km» oder «zwanzig Fr.».",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 78,
+      "example": "Falsch: Die Strecke ist zwölf km lang. | Richtig: Die Strecke ist 12 km lang.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Grosse Zahlen in Dreiergruppen mit Festabstand gliedern",
+      "description": "Gliedere Zahlen ab fünf Ziffern von der Endziffer her in Dreiergruppen, die durch ein (geschütztes) Leerzeichen getrennt sind. Vierstellige Zahlen bleiben ungegliedert. Eine Verletzung liegt vor, wenn grosse Zahlen mit Punkten, Kommas oder Apostroph gegliedert (z. B. 123.456 oder 123'456) oder gar nicht gegliedert werden.",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 79,
+      "example": "Falsch: Der Kredit beträgt 123'456'789 Franken. | Richtig: Der Kredit beträgt 123 456 789 Franken.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Uhrzeit mit Punkt in der 24-Stunden-Zählung",
+      "description": "Gib die Uhrzeit in der 24-Stunden-Zählung an und trenne Stunden und Minuten mit einem Punkt (kein Doppelpunkt). Eine Verletzung liegt vor, wenn ein Doppelpunkt verwendet wird, etwa «14:30 Uhr» statt «14.30 Uhr».",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 84,
+      "example": "Falsch: Die Sitzung beginnt um 14:30 Uhr. | Richtig: Die Sitzung beginnt um 14.30 Uhr.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Volle Stunden ohne Minutenangabe",
+      "description": "Schreibe volle Stunden ohne angehängte Minuten, also «7 Uhr» statt «7.00 Uhr» (die Form mit «.00» ist nur in Listen zulässig). Eine Verletzung liegt vor, wenn im Fliesstext bei einer vollen Stunde unnötig «.00 Uhr» angehängt wird.",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 84,
+      "example": "Falsch: Der Schalter öffnet um 8.00 Uhr. | Richtig: Der Schalter öffnet um 8 Uhr.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Datum im Fliesstext mit ausgeschriebenem Monat",
+      "description": "Schreibe Datumsangaben im Fliesstext in der Reihenfolge Tag, Monat, Jahr und schreibe den Monatsnamen immer aus (Tag mit Festabstand zum Monat). Eine Verletzung liegt vor, wenn der Monat als Ziffer geschrieben wird, etwa «2.9.2006» oder «02.09.2006» statt «2. September 2006».",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 85,
+      "example": "Falsch: Die Frist läuft am 2.9.2006 ab. | Richtig: Die Frist läuft am 2. September 2006 ab.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Jahreszahlen vierstellig schreiben",
+      "description": "Schreibe Jahreszahlen vierstellig aus. Eine Verletzung liegt vor, wenn verkürzte Formen wie «07» oder «'07» verwendet werden oder aus dem Englischen entlehnte Fügungen wie «im 99» oder «in 2003» auftreten (richtig: «1999» bzw. «im Jahr 2003»).",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 82,
+      "example": "Falsch: In 2003 stieg die Verschuldung. | Richtig: Im Jahr 2003 stieg die Verschuldung.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Geldbeträge mit Währungseinheit vor dem Betrag",
+      "description": "Setze bei Geldbeträgen die Währungseinheit (Fr., CHF, EUR, das Begriffszeichen) mit Festabstand vor den Betrag, nicht nachgestellt. Eine Verletzung liegt vor, wenn ein genau bezifferter Betrag mit nachgestellter Abkürzung geschrieben wird, etwa «327.65 Franken» statt «Fr. 327.65».",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 86,
+      "example": "Falsch: Der Kredit beträgt 327.65 Franken. | Richtig: Der Kredit beträgt Fr. 327.65.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Franken und Rappen mit Punkt, fehlende Rappen mit Gedankenstrich",
+      "description": "Trenne bei abgekürzten Geldbeträgen Franken und Rappen mit einem Punkt (Dezimalpunkt, nicht Komma); fehlt die Rappenangabe, steht anstelle der Nullen ein Gedankenstrich. Eine Verletzung liegt vor, wenn ein Komma verwendet wird (Fr. 64,15) oder volle Frankenbeträge als «Fr. 20.00» statt «Fr. 20.–» geschrieben werden.",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 87,
+      "example": "Falsch: Die Gebühr beträgt Fr. 64,15 und der Beitrag Fr. 20.00. | Richtig: Die Gebühr beträgt Fr. 64.15 und der Beitrag Fr. 20.–.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Mehrgliedrige Abkürzungen mit Festabstand",
+      "description": "Schreibe mehrgliedrige Abkürzungen mit einem (geschützten) Leerzeichen zwischen den Bestandteilen, damit sie nicht am Zeilenende auseinandergerissen werden. Eine Verletzung liegt vor, wenn Abkürzungen wie «z. B.», «d. h.», «u. a.», «i. V.» ohne Leerzeichen zusammengeschrieben werden (zB, dh, ua).",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 73,
+      "example": "Falsch: Beispiele wie Tastaturen zB Computertasten. | Richtig: Beispiele wie Tastaturen, z. B. Computertasten.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Eidgenössisch und Behördennamen im Fliesstext nicht abkürzen",
+      "description": "Schreibe im Fliesstext das Adjektiv «eidgenössisch» und andere Bestandteile von Behördennamen (z. B. «Departement») aus; ist eine Verkürzung nötig, ist das Kürzel bzw. die Kurzbezeichnung zu verwenden. Eine Verletzung liegt vor, wenn Bestandteile wie «Eidg.» oder «Dep.» als Wortteil-Abkürzung im Fliesstext stehen.",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 68,
+      "example": "Falsch: Die Eidg. Steuerverwaltung prüft den Fall. | Richtig: Die Eidgenössische Steuerverwaltung prüft den Fall.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Inländische Telefonnummern in Zweier- und Dreiergruppen",
+      "description": "Schreibe inländische Telefon- und Faxnummern mit der Vorwahl als Dreierzahlenblock (mit führender Null) und die nachfolgenden Ziffern in Zweierblöcken, getrennt durch Leerzeichen. Eine Verletzung liegt vor, wenn die Nummer mit Klammern um die Vorwahl oder mit Schrägstrich gegliedert wird, etwa «(026) 324/11 13».",
+      "file_name": "schreibweisungen.pdf",
+      "page_number": 81,
+      "example": "Falsch: Erreichbar unter (026) 324/11 13. | Richtig: Erreichbar unter 026 324 11 13.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Doppel-s statt Eszett (ß)",
+      "description": "Schreibe in der Schweizer Hausorthografie niemals das Eszett «ß». Ersetze jedes «ß» durch «ss», unabhängig davon, ob ein langer oder kurzer Vokal vorausgeht. Jedes Vorkommen von «ß» im Text ist eine Verletzung.",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 21,
+      "example": "Falsch: Die Strasse war wegen Hochwasser geschlossen, niemand musste mehr draußen warten. | Richtig: Die Strasse war wegen Hochwasser geschlossen, niemand musste mehr draussen warten.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Stammprinzip bei Ableitungen und Zusammensetzungen",
+      "description": "Behalte bei Ableitungen (mit Vor- oder Nachsilben) und bei Zusammensetzungen den Wortstamm unverändert bei, auch wenn dabei drei gleiche Buchstaben aufeinandertreffen. Eine Schreibung, die den Stammkonsonanten tilgt, ist falsch.",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 20,
+      "example": "Falsch: Wir nummerieren die Seiten und prüfen die Schiffahrt. | Richtig: Wir nummerieren (wegen Nummer) die Seiten und prüfen die Schifffahrt (Schiff + Fahrt).",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Substantive in festen Fügungen mit Verben grossschreiben",
+      "description": "Schreibe Substantive in festen Wortgruppen mit Verben gross, sofern sie nicht mit dem Verb zusammengeschrieben werden (z. B. Rad fahren, Klavier spielen, Folge leisten, Gefahr laufen, Angst haben, Not leiden). Eine Kleinschreibung des Substantivs in solchen getrennt geschriebenen Fügungen ist falsch.",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 52,
+      "example": "Falsch: Wer der Aufforderung nicht folge leistet, muss mit einer Busse rechnen. | Richtig: Wer der Aufforderung nicht Folge leistet, muss mit einer Busse rechnen.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Präpositionale Fügungen zusammen und klein (aufgrund, zugunsten)",
+      "description": "Schreibe die häufig gebrauchten Gefüge mit präpositionaler Funktion immer zusammen und klein: anstelle, aufgrund, zugunsten, zuhanden, zulasten. Eine getrennte oder grossgeschriebene Variante (z. B. «auf Grund», «zu Gunsten») ist hier nicht zulässig.",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 52,
+      "example": "Falsch: Auf Grund der neuen Regelung wird zu Gunsten der Anwohner entschieden. | Richtig: Aufgrund der neuen Regelung wird zugunsten der Anwohner entschieden.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Substantivierungen grossschreiben",
+      "description": "Schreibe Wörter anderer Wortarten gross, wenn sie als Substantive gebraucht werden. Erkennbar an vorausgehendem Artikel, Pronomen, unbestimmtem Zahlwort, adjektivischem Attribut oder Präposition (z. B. das Lesen und Schreiben, im Allgemeinen, des Weiteren, nichts Neues, alles Übrige). Kleinschreibung in diesen Fällen ist falsch.",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 56,
+      "example": "Falsch: Das lesen und schreiben fiel ihm schwer, und im allgemeinen blieb nichts neues übrig. | Richtig: Das Lesen und Schreiben fiel ihm schwer, und im Allgemeinen blieb nichts Neues übrig.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Flektiertes Adjektiv in fester Präpositionalfügung grossschreiben",
+      "description": "Schreibe das flektierte Adjektiv in fester Verbindung mit einer Präposition gross: binnen Kurzem, von Neuem, von Weitem, bei Weitem, bis auf Weiteres, ohne Weiteres, seit Langem. Das nicht flektierte Adjektiv in adverbialer Verwendung dagegen klein (z. B. von fern, über kurz oder lang).",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 56,
+      "example": "Falsch: Die Bewilligung gilt bis auf weiteres, und seit langem ist nichts geschehen. | Richtig: Die Bewilligung gilt bis auf Weiteres, und seit Langem ist nichts geschehen.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Mehrteilige Eigennamen: nur erstes Wort und Substantive gross",
+      "description": "Schreibe bei Eigennamen aus mehreren Wörtern das erste Wort und die enthaltenen Substantive gross, die übrigen Wörter (auch Adjektive ausser am Anfang) klein. Eine durchgehende Grossschreibung aller Wörter ist in der Hausorthografie falsch, sofern nicht ein Gesetz die Schreibung anders festlegt.",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 60,
+      "example": "Falsch: Das Bundesamt für Wirtschaftliche Landesversorgung tagt nächste Woche. | Richtig: Das Bundesamt für wirtschaftliche Landesversorgung tagt nächste Woche.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Zusammengesetzte Substantive im Schriftbild zusammensetzen",
+      "description": "Schreibe zusammengesetzte Substantive zusammen (oder mit Bindestrich), nie nach englischer Manier als blosses Nebeneinander getrennter Wörter. Mehrere Substantive lose nebeneinanderzustellen ist im Deutschen nicht zulässig.",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 44,
+      "example": "Falsch: Wir suchen einen Leasing Vertrag für den neuen Imbiss Stand. | Richtig: Wir suchen einen Leasingvertrag für den neuen Imbissstand.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Bindestrich bei drei gleichen Vokalbuchstaben, ohne bei Konsonanten",
+      "description": "Setze bei Zusammensetzungen, in denen drei gleiche Vokalbuchstaben aufeinandertreffen, in der Regel einen Bindestrich (Kaffee-Ernte, Armee-Einsatz, See-Elefant). Treffen dagegen drei gleiche Konsonantenbuchstaben aufeinander, schreibe in der Regel ohne Bindestrich (Schifffahrt, Brennnessel, Schritttempo).",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 45,
+      "example": "Falsch: Die Kaffeeernte fiel gering aus, ebenso der Armee-einsatz. | Richtig: Die Kaffee-Ernte fiel gering aus, ebenso der Armee-Einsatz.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Bindestrich bei Einzelbuchstaben, Abkürzungen, Zahlen und E-Wörtern",
+      "description": "Verknüpfe Wortteile mit Einzelbuchstaben, Abkürzungen und Zahlen mit Bindestrich (S-Bahn, EU-Parlament, der 100-Franken-Gutschein, der 14-Jährige, 75-mal). Schreibe «E-Wörter» ebenfalls mit Bindestrich; handelt es sich um ein Substantiv, wird das E grossgeschrieben. Eine Zusammenschreibung ohne Bindestrich oder ein kleines E bei Substantiven ist falsch.",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 48,
+      "example": "Falsch: Bitte sende die EMail mit dem 32Fachen des Betrags an das EUParlament. Das Ebook steht bereit. | Richtig: Bitte sende die E-Mail mit dem 32-Fachen des Betrags an das EU-Parlament. Das E-Book steht bereit.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Sehr lange Zusammensetzungen mit Bindestrich gliedern",
+      "description": "Gliedere unübersichtliche Zusammensetzungen aus vier oder mehr Sinneinheiten mit einem Bindestrich, der gesetzt wird, ohne Sinneinheiten auseinanderzureissen. Kurze, leicht erfassbare Zusammensetzungen aus zwei oder drei Teilen schreibe ohne Bindestrich.",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 44,
+      "example": "Falsch: Die Rheinschifffahrtspolizeiverordnung wurde an der Altglas-annahmestelle ausgehängt. | Richtig: Die Rheinschifffahrtspolizei-Verordnung wurde an der Altglas-Annahmestelle ausgehängt.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Verbverbindungen aus Substantiv und Verb getrennt schreiben",
+      "description": "Schreibe Verbindungen, in denen das Substantiv Objekt zum Verb ist oder eine stehende Wendung bildet, getrennt und das Substantiv gross (Auto fahren, Rad fahren, Klavier spielen, Zeitung lesen, Erfolg versprechen). Nur wenn das Substantiv ganz dem Verb einverleibt wurde, wird zusammengeschrieben (teilnehmen, stattfinden).",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 28,
+      "example": "Falsch: Sie will heute autofahren und danach zeitunglesen. | Richtig: Sie will heute Auto fahren und danach Zeitung lesen.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Stämme phot/phon/graph mit f schreiben",
+      "description": "Schreibe in Wörtern der Allgemeinsprache die aus dem Griechischen stammenden Stämme phot, phon und graph mit «f» (Fotografie, Telefon, Geografie, Mikrofon, Sinfonie). Die fremdsprachige «ph»-Schreibung gilt nur noch in Fachsprachen; im Zweifelsfall ist «f» zu wählen.",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 70,
+      "example": "Falsch: Er studierte Geographie und liess die Photographie am Telephon erklären. | Richtig: Er studierte Geografie und liess die Fotografie am Telefon erklären.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Einheitliche Schreibvariante im selben Text",
+      "description": "Verwende dort, wo Schreibvarianten zulässig sind, innerhalb desselben Textes für denselben Ausdruck durchgehend die gleiche Schreibung. Ein Wechsel zwischen zugelassenen Varianten desselben Begriffs – ob bei deutschen Ausdrücken oder Anglizismen – im selben Text ist eine Verletzung.",
+      "file_name": "rechtschreibleitfaden-2017.pdf",
+      "page_number": 8,
+      "example": "Falsch: Mass halten ist wichtig; wer nicht masshalten kann, scheitert. Das Callcenter meldete sich; das Call-Center war besetzt. | Richtig: Mass halten ist wichtig; wer nicht Mass halten kann, scheitert. Das Callcenter meldete sich; das Callcenter war besetzt.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Unnötige Anglizismen durch deutsches Wort ersetzen",
+      "description": "Ersetze Anglizismen, die nur etwas bereits Bekanntes neu benennen und eine gleichwertige deutsche Entsprechung haben, durch das deutsche Wort. Eine Verletzung liegt vor, wenn ein solcher Modewort-Anglizismus (z. B. «Meeting», «Story», «Kids», «Business», «Call», «Event», «Location») verwendet wird, obwohl es ein etabliertes deutsches Wort gibt.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 5,
+      "example": "Falsch: Das nächste Meeting findet am Montag statt. | Richtig: Die nächste Sitzung findet am Montag statt.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Etablierte Anglizismen beibehalten",
+      "description": "Behalte etablierte, im Wörterbuch verzeichnete Anglizismen ohne deutsche Ersatzbildung bei. Eine Verletzung liegt vor, wenn geläufige Anglizismen wie «E-Mail», «Computer», «Film», «Pullover», «surfen» oder «Leasing» durch fragwürdige, niemandem bekannte deutsche Bildungen ersetzt werden.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 4,
+      "example": "Falsch: Bitte beantworten Sie meine elektronische Briefpost. | Richtig: Bitte beantworten Sie meine E-Mail.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Deutsche Entsprechung für neue Anglizismen prüfen",
+      "description": "Prüfe bei einem Anglizismus, der etwas Neues bezeichnet, ob ein bestehendes deutsches Wort oder eine neue deutsche Bezeichnung verwendet werden kann. Eine Verletzung liegt vor, wenn ein Anglizismus benutzt wird, obwohl eine gängige deutsche Entsprechung existiert (z. B. «Back-up» statt «Sicherungskopie», «followen» statt «folgen», «sharen» statt «teilen»).",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 5,
+      "example": "Falsch: Erstellen Sie zuerst ein Back-up Ihrer Daten. | Richtig: Erstellen Sie zuerst eine Sicherungskopie Ihrer Daten.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Unklare oder fachsprachliche Anglizismen erklären",
+      "description": "Erkläre nicht allgemein verständliche, neue oder fachsprachliche Anglizismen bei der Erstnennung durch Umschreibung oder ein deutsches Äquivalent. Richtet sich der Text an ein Laienpublikum, ersetze oder erläutere fachsprachliche Anglizismen. Eine Verletzung liegt vor, wenn ein solcher Begriff (z. B. «Nudging», «Whistleblower», «Router», «Bail-in-Bonds») ohne jede Erläuterung in einem allgemein verständlichen Text verwendet wird.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 7,
+      "example": "Falsch: Die EFK ist Anlaufstelle für Whistleblower. Bail-in-Bonds wurden 2016 eingeführt. | Richtig: Die EFK ist Anlaufstelle für Whistleblower (Hinweisgeber). Bail-in-Bonds (Schuldinstrumente zur Verlusttragung) wurden 2016 eingeführt.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Jugend- und Werbeslang vermeiden",
+      "description": "Vermeide stilistisch markierte, jugendsprachliche oder salopp-umgangssprachliche Anglizismen in Behördentexten. Eine Verletzung liegt vor, wenn Wörter wie «heavy», «crazy», «cheap», «abchillen», «Bro», «easy» oder «abgespact» in sachlich-neutralen Texten auftauchen.",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 6,
+      "example": "Falsch: Das neue Angebot ist echt crazy und mega cheap. | Richtig: Das neue Angebot ist sehr attraktiv und günstig.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Anglizismus-Substantive grossschreiben",
+      "description": "Schreibe aus dem Englischen übernommene Substantive im Deutschen gross. Eine Verletzung liegt vor, wenn ein Anglizismus-Substantiv kleingeschrieben wird (z. B. «das darknet», «das layout»).",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "Falsch: Kriminelle agieren oft im darknet. | Richtig: Kriminelle agieren oft im Darknet.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Komposita mit Anglizismen korrekt bilden",
+      "description": "Bilde Zusammensetzungen mit Anglizismen mit Bindestrich oder zusammengeschrieben, nicht mit Leerzeichen («Deppenleerzeichen»). Eine Verletzung liegt vor, wenn die Bestandteile eines Kompositums getrennt geschrieben werden (z. B. «Smart Farming» statt «Smart-Farming», «Cyber Sicherheit» statt «Cybersicherheit»).",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "Falsch: Der Bund fördert Smart Farming. | Richtig: Der Bund fördert Smart-Farming.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Plural von Anglizismen auf -y mit -s bilden",
+      "description": "Bilde den Plural von aus dem Englischen übernommenen Wörtern auf -y im Deutschen durch Anhängen von -s, nicht mit der englischen Endung -ies. Eine Verletzung liegt vor, wenn die englische Pluralform verwendet wird (z. B. «Babies» statt «Babys», «Parties» statt «Partys»).",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 8,
+      "example": "Falsch: Im Spital wurden drei Babies geboren. | Richtig: Im Spital wurden drei Babys geboren.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Anglizismus-Verben deutsch konjugieren",
+      "description": "Integriere aus dem Englischen übernommene Verben vollständig in das deutsche Konjugationssystem. Eine Verletzung liegt vor, wenn ein Anglizismus-Verb mit englischen Beugungs- oder Partizipformen statt mit deutschen Endungen verwendet wird (z. B. «geskyped» statt «geskypt», «getweetet» statt «getwittert»).",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 2,
+      "example": "Falsch: Wir haben gestern lange geskyped und getweetet. | Richtig: Wir haben gestern lange geskypt und getwittert.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Genus von Anglizismen konsistent verwenden",
+      "description": "Weise einem übernommenen Anglizismus-Substantiv ein festes Genus zu und verwende den im Schweizer Sprachgebrauch üblichen Artikel konsistent. Eine Verletzung liegt vor, wenn das Genus innerhalb des Textes wechselt oder ein in der Schweiz unübliches Genus verwendet wird (z. B. «die Mail» statt schweizerisch «das Mail»).",
+      "file_name": "empfehlungen-anglizismen-maerz-2020.pdf",
+      "page_number": 2,
+      "example": "Falsch: Ich habe Ihnen die Mail bereits geschickt. | Richtig: Ich habe Ihnen das Mail bereits geschickt.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Kein generisches Maskulinum",
+      "description": "Verwende nie die alleinige männliche Form, um Personen unterschiedlichen oder unbekannten Geschlechts zu bezeichnen. Eine männliche Personenbezeichnung, die offensichtlich auch Frauen meint, ist eine Verletzung und muss durch eine Paarform oder eine geschlechtsneutrale Form ersetzt werden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 4,
+      "example": "Falsch: Die Mitarbeiter erhalten eine Zulage. | Richtig: Die Mitarbeiterinnen und Mitarbeiter erhalten eine Zulage.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Paarform mit beiden Geschlechtern",
+      "description": "Wenn geschlechtsspezifisch auf Personen verschiedenen Geschlechts Bezug genommen wird, führe sowohl die weibliche als auch die männliche Personenbezeichnung auf. Es liegt eine Verletzung vor, wenn nur eine der beiden Formen erscheint.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 4,
+      "example": "Falsch: die Bürger | Richtig: die Bürgerinnen und Bürger",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Verbotene Genderschreibweisen",
+      "description": "Verbiete jegliche Genderzeichen innerhalb einer Personenbezeichnung sowie das grosse Binnen-I und die Klammerform: Asterisk (Bürger*innen), Doppelpunkt (Bürger:innen), Unterstrich (Bürger_innen), Mediopunkt (Bürger·innen), Binnen-I (BürgerInnen) und Klammerform (Bürger(innen)) sind alle verboten. Jedes solche Zeichen im Wortinneren ist eine Verletzung.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 7,
+      "example": "Falsch: Bürger*innen / Bürger:innen / BürgerInnen / Bürger(innen) | Richtig: Bürgerinnen und Bürger",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Geschlechtsneutrale Formen zulässig",
+      "description": "Anstelle einer Paarform darf eine geschlechtsneutrale Formulierung verwendet werden: substantivierte Adjektive oder Partizipien (die Stimmberechtigten, die Studierenden), geschlechtsunspezifische Nomen (Fachperson, Lehrkraft) oder Kollektivbezeichnungen (das Publikum, die Belegschaft). Solche Formen sind korrekt und nicht zu beanstanden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 8,
+      "example": "Falsch: Studentinnen und Studenten, Assistentinnen und Assistenten | Richtig: Studierende und Assistierende",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Konsistente Reihenfolge der Paarform",
+      "description": "Behalte die einmal gewählte Reihenfolge der weiblichen und männlichen Form über den ganzen Text bei. Ein Wechsel der Reihenfolge zwischen verschiedenen Paarformen im selben Text ist eine Verletzung.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 5,
+      "example": "Falsch: Bürgerinnen und Bürger ... später Schweizer und Schweizerinnen | Richtig: Bürgerinnen und Bürger ... Schweizerinnen und Schweizer",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Konjunktion oder/und in Paarformen",
+      "description": "Verbinde die beiden Elemente einer Paarform in der Einzahl mit der Konjunktion oder und in der Mehrzahl mit der Konjunktion und. Die Konjunktion beziehungsweise (bzw.) ist in Paarformen nicht zu verwenden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 5,
+      "example": "Falsch: der Präsident bzw. die Präsidentin | Richtig: der Präsident oder die Präsidentin",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Keine Paarform im ersten Teil eines Kompositums",
+      "description": "Verwende im ersten Element von zusammengesetzten und abgeleiteten Wörtern keine Paarform. Eine doppelte Nennung im Bestimmungswort ist eine Verletzung; es ist die einfache Form zu verwenden.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 5,
+      "example": "Falsch: Kundinnen- und Kundendienst | Richtig: Kundendienst",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Sparschreibung nur mit Schrägstrich und vollständiger Grundform",
+      "description": "Eine Kurzform der Paarform ist nur in verknapptem Text (Formulare, Fussnoten, Tabellen) und ausschliesslich mit Schrägstrich zulässig. Vor dem Schrägstrich muss immer eine vollständige Wortform stehen; eine Kurzform, die zu einer grammatisch unvollständigen männlichen Form führt, ist eine Verletzung.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 7,
+      "example": "Falsch: Ärzt/-in | Richtig: Arzt/Ärztin",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Keine Sparschreibung im fortlaufenden Text",
+      "description": "Verwende im fortlaufenden, ausformulierten Text keine Sparschreibung mit Schrägstrich. Kurzformen mit Schrägstrich sind nur in verknapptem Text erlaubt; im Fliesstext sind sie eine Verletzung.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 6,
+      "example": "Falsch: Die Bürger/-innen können sich an jedem Ort niederlassen. | Richtig: Die Bürgerinnen und Bürger können sich an jedem Ort niederlassen.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Juristische Personen ohne Paarform",
+      "description": "Bezeichne juristische Personen und Organisationseinheiten (Gesellschaften, Vereine, Ämter) mit nur einer Form, da sie kein Geschlecht haben. Eine Paarform für eine juristische Person ist eine Verletzung, weil sie den Eindruck einer natürlichen Person erweckt.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 15,
+      "example": "Falsch: der Anbieter oder die Anbieterin von Fernmeldediensten | Richtig: die Anbieterin von Fernmeldediensten",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Geschlechtergerechte Formen bei englischen Personenbezeichnungen",
+      "description": "Behandle aus dem Englischen stammende Personenbezeichnungen im Deutschen als geschlechtsspezifisch und verwende eine Paarform, wobei die weibliche Form meist auf -in gebildet wird. Ein englischer Begriff in alleiniger männlicher Form ist eine Verletzung.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 18,
+      "example": "Falsch: der User | Richtig: der User oder die Userin",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Genderzeichen in Übersetzungen auflösen",
+      "description": "Enthält ein Ausgangstext Personenbezeichnungen mit Genderzeichen, gib diese im deutschen Zieltext durch Paarformen oder geschlechtsneutrale Formulierungen wieder. Ein übernommenes Genderzeichen im Zieltext ist eine Verletzung.",
+      "file_name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+      "page_number": 18,
+      "example": "Falsch: Bürger*innen (übernommen aus dem Ausgangstext) | Richtig: Bürgerinnen und Bürger",
+      "collection": "bundeskanzlei"
+    }
+  ]
+}

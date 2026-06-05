@@ -2,32 +2,33 @@ from dcc_backend_common.llm_agent import BaseAgent
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 
-from text_mate_backend.models.rule_models import RulesContainer, RulesValidationContainer
+from text_mate_backend.models.rule_models import RulesContainer, RulesValidationResult
 from text_mate_backend.utils.configuration import Configuration
 
-INSTRUCTION = """ You are an expert in editorial guidelines. Review only the given rules and
-                identify any clear, material violations in the input text.
-                Guidelines:
-                1. Focus on substantive issues that meaningfully impact clarity, accuracy, tone, wrong use of words,
-                abbreviations, etc.
-                2. If you are unsure whether a rule is violated, do not report it.
-                3. Provide practical, respectful rewrite proposals that keep the author's intent.
-                4. If no qualifying violations exist, return an empty list.
+INSTRUCTION = """ Du bist ein Experte für Redaktionsrichtlinien. Prüfe ausschliesslich anhand der
+                gegebenen Regeln und finde klare, wesentliche Verstösse im Eingabetext.
+                Richtlinien:
+                1. Konzentriere dich auf wesentliche Probleme, die Klarheit, Korrektheit, Ton, falsche
+                Wortwahl, Abkürzungen usw. spürbar beeinträchtigen.
+                2. Bist du unsicher, ob eine Regel verletzt ist, melde sie nicht.
+                3. Mache praktische, respektvolle Verbesserungsvorschläge, die die Absicht der Autorin
+                oder des Autors bewahren.
+                4. Gibt es keine relevanten Verstösse, gib eine leere Liste zurück.
 
-                Rules documentation:
+                Regeldokumentation:
                 ---------------
                 {rules}
                 ---------------
 
-                Keep your answer in the original language."""
+                Antworte in der Sprache des Eingabetextes."""
 
 
-class AdvisorAgent(BaseAgent[RulesContainer, RulesValidationContainer]):
+class AdvisorAgent(BaseAgent[RulesContainer, RulesValidationResult]):
     def __init__(self, config: Configuration):
-        super().__init__(config, deps_type=RulesContainer, output_type=RulesValidationContainer, enable_thinking=True)
+        super().__init__(config, deps_type=RulesContainer, output_type=RulesValidationResult, enable_thinking=False)
 
     def create_agent(self, model: Model):
-        agent = Agent(model=model, deps_type=RulesContainer, output_type=RulesValidationContainer)
+        agent = Agent(model=model, deps_type=RulesContainer, output_type=RulesValidationResult)
 
         @agent.instructions
         def get_instruction(ctx: RunContext[RulesContainer]):

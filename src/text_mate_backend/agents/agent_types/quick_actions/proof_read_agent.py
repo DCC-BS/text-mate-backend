@@ -24,7 +24,7 @@ class ProofReadAgent(QuickActionBaseAgent):
         - Achte besonders auf:
             - Laut-Buchstaben-Zuordnungen und das Stammprinzip (Stämme möglichst einheitlich schreiben,
             z. B. Nummer → nummerieren; Aufwand → aufwendig; selbst → selbstständig).
-            - Getrennt- und Zusammenschreibung (z B. Verb-Verb-, Substantiv-Verb-, Adjektiv-Verb-Verbindungen,
+            - Getrennt- und Zusammenschreibung (z. B. Verb-Verb-, Substantiv-Verb-, Adjektiv-Verb-Verbindungen,
             Partikelverben, Fügungen mit «wieder», «weiter», «nicht», «kennenlernen», «spazierengehen» etc.).
             - Zusammensetzungen und Leerschläge: vermeide unnötige Leerzeichen innerhalb zusammengesetzter Wörter;
             setze Bindestriche, wenn die Lesbarkeit es erfordert (z. B. bei drei gleichen Buchstaben,
@@ -32,8 +32,6 @@ class ProofReadAgent(QuickActionBaseAgent):
             - Gross- und Kleinschreibung von Substantiven, substantivierten Infinitiven und Partizipien, Eigennamen,
             festen Fügungen und Präpositionalausdrücken (z. B. aufgrund, zugunsten, anstelle, zulasten, zuhause).
         - Verwende, wo möglich, einheitliche Varianten innerhalb eines Textes (gleiche Begriffe immer gleich schreiben).
-        - Fall der Text nicht Deutsch ist, korrigiere ihn trotzdem nach den oben genannten Regeln,
+        - Falls der Text nicht Deutsch ist, korrigiere ihn trotzdem nach den oben genannten Regeln,
         aber in der jeweiligen Sprache.
-
-        Korrigiere diesen Text:
         """

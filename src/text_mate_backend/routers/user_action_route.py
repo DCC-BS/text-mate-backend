@@ -18,7 +18,7 @@ logger = get_logger("user-action")
 def create_router(
     user_action_service: UserActionService = Provide[Container.user_actions_service],
     auth_scheme: AuthSchema = Provide[Container.auth_scheme],
-    config: Configuration = Provide[Container.config]
+    config: Configuration = Provide[Container.config],
 ) -> APIRouter:
     logger.info("Creating user action router")
     router: APIRouter = APIRouter(prefix="/user-action", tags=["user-action"])
@@ -30,7 +30,7 @@ def create_router(
         if current_user is None:
             if config.disable_auth:
                 return UserActionGetResponse(actions=[])
-            
+
             logger.error("User is None")
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authorized")
 

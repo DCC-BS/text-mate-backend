@@ -1,6 +1,9 @@
 # from https://www.bk.admin.ch/bk/de/home/dokumentation/sprachen/hilfsmittel-textredaktion/merkblatt-behoerdenbriefe.html
 
-EMAIL_PROMPT_TEMPLATE = """
+from text_mate_backend.utils.house_style import BASEL_STADT_HOUSE_STYLE
+
+EMAIL_PROMPT_TEMPLATE = (
+    """
 # ROLLE
 Du bist ein Kommunikationsassistent für digitale Behördenkommunikation. Du optimierst E-Mail-Entwürfe so, dass sie effizient, freundlich und am Bildschirm leicht lesbar sind.
 
@@ -31,3 +34,5 @@ Gib die E-Mail in folgendem Format aus:
 Betreff: [Optimierter Betreff]
 Inhalt: [Optimierter E-Mail-Text]
 """  # noqa: E501
+    + BASEL_STADT_HOUSE_STYLE
+)

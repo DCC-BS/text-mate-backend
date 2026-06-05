@@ -24,23 +24,22 @@ def format_options(options: str) -> str:
     """
     match options.lower().strip():
         case "sentence":
-            return "The summary should be exactly one sentence long."
+            return "Die Zusammenfassung soll genau einen Satz lang sein."
         case "three_sentence":
-            return "The summary should be exactly three sentences long."
+            return "Die Zusammenfassung soll genau drei Sätze lang sein."
         case "paragraph":
-            return "The summary should be one paragraph long."
+            return "Die Zusammenfassung soll genau einen Abschnitt lang sein."
         case "page":
-            return "The summary should be up to one page long."
+            return "Die Zusammenfassung soll höchstens eine Seite lang sein."
         case "management_summary":
             return (
-                "as a management summary. "
-                "A management summary is a summary of the key points of a text for the management team. "
-                "A management summary's length should be one paragraph up to one page long, "
-                "depending on the length of the text. "
+                "als Management Summary. "
+                "Ein Management Summary fasst die wichtigsten Punkte eines Textes für die Geschäftsleitung zusammen. "
+                "Ein Management Summary ist je nach Länge des Textes einen Abschnitt bis eine Seite lang."
             )
         case _:
             logger.warning("Unknown summarize option, defaulting to concise manner", extra={"options": options})
-            return "in a concise manner"
+            return "in knapper Form."
 
 
 class SummarizeAgent(QuickActionBaseAgent):
@@ -71,7 +70,7 @@ class SummarizeAgent(QuickActionBaseAgent):
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext]) -> str:
         return f"""
-        You are an assistant that summarizes text by extracting the key points and central message.
-        Provide a summary of the following text, capturing the main ideas and essential information.
-        Those are the requirements for the summary: {format_options(ctx.deps.options)}
+        Du bist ein Assistent, der Texte zusammenfasst, indem du die Kernpunkte und die zentrale Aussage herausarbeitest.
+        Fasse den folgenden Text zusammen und erfasse dabei die Hauptgedanken und die wesentlichen Informationen.
+        Das sind die Anforderungen an die Zusammenfassung: {format_options(ctx.deps.options)}
         """

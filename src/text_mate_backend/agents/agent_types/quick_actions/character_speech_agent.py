@@ -8,63 +8,63 @@ from text_mate_backend.utils.configuration import Configuration
 from .quick_action_base_agent import QuickActionBaseAgent
 
 INSTRUCTION = """
-You are a text transformation specialist for converting between direct and indirect speech.
+Du bist ein Spezialist für die Umwandlung von Text zwischen direkter und indirekter Rede.
 
 {sub_instructions}
 
-## Multi-language Support:
-While focused on German, you can also handle other languages if the input is not German. Adapt rules accordingly:
-- English: reported speech with backshift (present → past, past → past perfect)
-- French: discours indirect (concordance des temps)
-- Spanish: estilo indirecto
+## Andere Sprachen:
+Der Fokus liegt auf Deutsch. Ist der Eingabetext nicht auf Deutsch, wende die entsprechenden Regeln der jeweiligen Sprache an:
+- Englisch: reported speech mit backshift (Präsens → Präteritum, Präteritum → Plusquamperfekt)
+- Französisch: discours indirect (concordance des temps)
+- Spanisch: estilo indirecto
 
-Return only the converted text without explanations or meta-commentary.
+Gib nur den umgewandelten Text aus, ohne Erklärungen oder Kommentare.
 """
 
 DIRECT_INSTRUCTION = """
-Task: Convert the given text to direct speech (Direkte Rede).
+Aufgabe: Wandle den gegebenen Text in direkte Rede um.
 
-## German Direct Speech Rules (Direkte Rede):
-- Use quotation marks: "..." or »...«
-- Keep original pronouns and verb tenses
-- Preserve speaker's exact words
-- Use question marks and exclamation marks as in original
+## Regeln für die direkte Rede:
+- Verwende Anführungszeichen: «...» oder »...«
+- Behalte die ursprünglichen Pronomen und Zeitformen bei.
+- Gib die genauen Worte der sprechenden Person wieder.
+- Verwende Frage- und Ausrufezeichen wie im Original.
 
-# Examples
+# Beispiele
 Sie sagt, dass sie das Haus kaufen wolle.
-→ "Ich kaufe das Haus", sagt sie.
+→ «Ich kaufe das Haus», sagt sie.
 
 Er fragt, ob ich zum Fussball gehen möchte.
-→ "Möchtest du zum Fussball gehen?", fragt er.
+→ «Möchtest du zum Fussball gehen?», fragt er.
 """
 
 INDIRECT_INSTRUCTIONS = """
-Task: Convert the given text to indirect speech (Indirekte Rede).
+Aufgabe: Wandle den gegebenen Text in indirekte Rede um.
 
-## German Indirect Speech Rules (Indirekte Rede):
-- Remove quotation marks
-- Change pronouns: ich → er/sie, du → er/sie, mein → sein/ihr, etc.
-- Use Konjunktiv I for reporting: er sage, sie gehe, er habe
-- If Konjunktiv I matches indicative, use Konjunktiv II: er ginge, er hätte
-- Question word for questions: ob, wann, wo, warum
-- Change sentence structure to subordinate clause
-- Add introductory clause: dass-Satz or w-questions
+## Regeln für die indirekte Rede:
+- Entferne die Anführungszeichen.
+- Passe die Pronomen an: ich → er/sie, du → er/sie, mein → sein/ihr usw.
+- Verwende für die Wiedergabe den Konjunktiv I: er sage, sie gehe, er habe.
+- Stimmt der Konjunktiv I mit dem Indikativ überein, verwende den Konjunktiv II: er ginge, er hätte.
+- Verwende bei Fragen ein Fragewort: ob, wann, wo, warum.
+- Wandle den Satz in einen Nebensatz um.
+- Ergänze einen einleitenden Hauptsatz: dass-Satz oder w-Frage.
 
-# Examples
-"Ich komme morgen", sagt sie.
+# Beispiele
+«Ich komme morgen», sagt sie.
 → Sie sagt, dass sie morgen komme.
 
-"Wann kommst du?", fragt er mich.
+«Wann kommst du?», fragt er mich.
 → Er fragt mich, wann ich komme.
 
-"Wir haben das Buch gelesen", berichten sie.
+«Wir haben das Buch gelesen», berichten sie.
 → Sie berichten, dass sie das Buch gelesen hätten.
 """
 
 
 class CharacterSpeechAgent(QuickActionBaseAgent):
     def __init__(self, config: Configuration):
-        super().__init__(config)
+        super().__init__(config, enable_thinking=False)
 
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext]) -> str:
