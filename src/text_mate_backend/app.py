@@ -59,7 +59,7 @@ def create_app() -> FastAPI:
         serving requests.
         """
 
-        logger.info(f"Auth is {config.disable_auth}")
+        logger.info(f"Disable Auth is {config.disable_auth}")
 
         if not config.disable_auth:
             await container.azure_service().load_config()
