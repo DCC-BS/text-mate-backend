@@ -1,0 +1,204 @@
+{
+  "rules": [
+    {
+      "name": "Vermeidung von Anglizismen bei vorhandenen deutschen Entsprechungen",
+      "description": "In allen Texten, insbesondere Gesetzes- und Behördendokumenten, dürfen englische oder amerikanische Ausdruecke nur dann verwendet werden, wenn es keine gleichwertige deutsche (bzw. französische oder italienische) Bezeichnung gibt. Wird ein vorhandenes deutsches Wort ignoriert, liegt ein Verstoss vor.",
+      "file_name": "Empfehlungen_Umgang_mit_Anglizismen.pdf",
+      "page_number": 1,
+      "example": "Falsch: Wir müssen das Feedback einholen. | Richtig: Wir muessen die Rueckmeldung einholen.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Bundesrat als Aufsichtsinstanz fuer Anglizismenvermeidung",
+      "description": "Der Bundesrat hat die Aufgabe sicherzustellen, dass die Bundesverwaltung und vom Bund kontrollierte Unternehmen keine englischen oder amerikanischen Ausdruecke benutzen, sofern deutsche, französische oder italienische Entsprechungen verfuegbar sind. Ein Verstoss liegt vor, wenn diese Pflicht nicht beachtet wird.",
+      "file_name": "Empfehlungen_Umgang_mit_Anglizismen.pdf",
+      "page_number": 1,
+      "example": "Falsch: Die Behorde nutzt das Wort Workflow trotz vorhandenen deutschen Begriffs Arbeitsablauf. | Richtig: Die Behorde verwendet Arbeitsablauf.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Substantive grossschreiben und Genus zuweisen",
+      "description": "Wird ein Anglizismus als Substantiv ins Deutsche uebernommen, muss er grossgeschrieben und mit dem passenden deutschen Genus samt bestimmtem Artikel verwendet werden. Ein Verstoss liegt vor, wenn das Wort klein geschrieben oder mit dem falschen Genus/Artikel kombiniert wird.",
+      "file_name": "anglizismen_empfehlungen.pdf",
+      "page_number": 2,
+      "example": "Falsch: die cocktail | Richtig: der Cocktail",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Deutsche Pluralbildung fuer Anglizismen nutzen",
+      "description": "Anglizistische Substantive erhalten im Deutschen reguläre Pluralformen (z. B. -s, -e, -en). Enden sie im Englischen auf -y, wird im Deutschen der Plural mit -s gebildet. Die Verwendung eines englischen Plurals ist unzulässig.",
+      "file_name": "anglizismen_empfehlungen.pdf",
+      "page_number": 2,
+      "example": "Falsch: die Baby’s | Richtig: die Babys",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Verbalisierung nach deutschen Konjugationsregeln",
+      "description": "Anglizistische Verben sind nach dem deutschen Konjugationssystem zu flektieren. Ein Verstoss liegt vor, wenn das englische Infinitiv unveraendert bleibt oder nach englischer Grammatik konjugiert wird.",
+      "file_name": "anglizismen_empfehlungen.pdf",
+      "page_number": 2,
+      "example": "Falsch: Wir tweeten das Ergebnis. | Richtig: Wir twittern das Ergebnis.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Duden-konforme Schreibweise (inkl. Binde- und Gross-/Kleinschreibung)",
+      "description": "Anglizismen sind nach den im Duden festgelegten Schreibregeln zu schreiben, einschliesslich korrekter Bindestrichsetzung und Gross- bzw. Kleinschreibung. Abweichungen stellen einen Verstoss dar.",
+      "file_name": "anglizismen_empfehlungen.pdf",
+      "page_number": 2,
+      "example": "Falsch: Start up | Richtig: Start-up",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Vermeidung von Pseudo-Anglizismen",
+      "description": "Worte, die im Englischen nicht existieren, aber im Deutschen wie Anglizismen erscheinen, duerfen nicht als solche behandelt werden. Ein Verstoss liegt vor, wenn ein solches Wort als englisches Lehnwort präsentiert wird.",
+      "file_name": "anglizismen_empfehlungen.pdf",
+      "page_number": 2,
+      "example": "Falsch: Das Handy ist ein englisches Wort. | Richtig: Das Handy ist ein deutsches Lehnwort (kein Anglizismus).",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Etablierte Anglizismen: korrekte Form und Nutzung",
+      "description": "Anglizismen, die im gängigen deutschsprachigen Woerterbuch verzeichnet und deren Schreibweise im Deutschen weit verbreitet ist, duerfen verwendet werden. Es muss die Duden-konforme Form benutzt werden; nicht im Woerterbuch aufgefuehrte oder falsche Varianten sind unzulässig.",
+      "file_name": "anglizismen_empfehlungen.pdf",
+      "page_number": 2,
+      "example": "Falsch: die Callcenters | Richtig: das Callcenter",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Bedeutungsuebernahme durch Anglizismus",
+      "description": "Ein bereits im Deutschen vorhandenes Wort darf eine neue Bedeutung annehmen, die der englischen Entsprechung entspricht, jedoch muss die Bedeutung im Text klar gemacht werden, um Missverstaendnisse zu vermeiden.",
+      "file_name": "Anglizismen.pdf",
+      "page_number": 3,
+      "example": "Falsch: Das Team muss realisieren, welche Aufgaben zu erledigen sind. | Richtig: Das Team muss realisieren, welche Aufgaben zu erledigen sind (im Sinne von 'begreifen').",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Wortbildung nach englischem Modell",
+      "description": "Deutsche Ausdruecke koennen mithilfe deutschen Wortmaterials nach dem Muster englischer Wortbildungen gebildet werden (z. B. Wolkenkratzer). Ein Verstoss liegt vor, wenn die entsprechende Bildung fehlerhaft ist oder nicht dem beschriebenen Muster folgt.",
+      "file_name": "Anglizismen.pdf",
+      "page_number": 3,
+      "example": "Falsch: Der Himmelhochhaus | Richtig: Der Wolkenkratzer",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Apostroph im Genitiv von Eigennamen",
+      "description": "Der Apostroph wird im Deutschen beim Genitiv von Eigennamen (z. B. Mandy's) als korrekt angesehen. Ein Verstoss liegt vor, wenn der Genitiv ohne Apostroph geschrieben wird, obwohl die Schreibweise mit Apostroph nach aktuellem Sprachgebrauch zulaessig ist.",
+      "file_name": "Anglizismen.pdf",
+      "page_number": 3,
+      "example": "Falsch: Mandy Nagelstudio | Richtig: Mandy's Nagelstudio",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Vorsicht bei direkt uebernommenen Anglizismen",
+      "description": "Worte, die unveraendert aus dem Englischen ins Deutsche uebernommen werden, gelten als besonders auffaellig und sollten nur verwendet werden, wenn keine adaequate deutsche Alternative existiert. Ein Verstoss liegt vor, wenn ein solcher Anglizismus ohne Notwendigkeit eingesetzt wird.",
+      "file_name": "Anglizismen.pdf",
+      "page_number": 3,
+      "example": "Falsch: Wir muessen das Projekt jetzt cachen. | Richtig: Wir muessen das Projekt jetzt im Zwischenspeicher ablegen.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Anglizismen fuer neue Konzepte ohne deutsche Entsprechung",
+      "description": "Anglizismen duerfen eingesetzt werden, wenn sie ein neu entstandenes Konzept, eine Technologie oder Realitaet bezeichnen, fuer die im Deutschen kein etablierter Ausdruck existiert. Liegt ein deutscher Fachbegriff vor, ist dieser zu verwenden.",
+      "file_name": "Anglizismen.pdf",
+      "page_number": 3,
+      "example": "Falsch: Digitale Waehrung (allgemein) | Richtig: Bitcoin (wenn es um die spezifische Kryptowaehrung geht).",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Anglizismen zur Ausdruck von Gruppenzugehoerigkeit",
+      "description": "Der Einsatz von Anglizismen, um eine bestimmte Geisteshaltung oder Jugendkultur zu signalisieren, ist in formellen, offiziellen Texten zu vermeiden. Ein Verstoss liegt vor, wenn solche Stilmittel dort verwendet werden.",
+      "file_name": "Anglizismen.pdf",
+      "page_number": 3,
+      "example": "Falsch: Das neue Produkt ist total crazy und easy zu bedienen. | Richtig: Das neue Produkt ist aeusserst innovativ und benutzerfreundlich.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Deutsch-Alternative-Pruefung bei Anglizismus",
+      "description": "Vor der Nutzung eines Anglizismus ist zu pruefen, ob ein existierendes deutsches Wort oder eine neu zu bildende deutsche Bezeichnung den gleichen Sachverhalt ausdruecken kann. Ein Verstoss liegt vor, wenn trotz verfuegbarer deutscher Alternative ein Anglizismus gewaehlt wird.",
+      "file_name": "document.pdf",
+      "page_number": 5,
+      "example": "Falsch: Bitte senden Sie ein \"Backup\" der Daten. | Richtig: Bitte senden Sie eine Sicherheitskopie der Daten.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Redundante Anglizismen vermeiden & Passtung zur Textsorte",
+      "description": "In behördlichen und offiziellen Texten duerfen Anglizismen nur eingesetzt werden, wenn sie einen sachlichen Mehrwert bieten oder ein neues Konzept bezeichnen. Stilistische Ersatzformen (z. B. Meeting statt Sitzung) oder ungeeignete Anglizismen fuer die Textsorte sind zu vermeiden.",
+      "file_name": "document.pdf",
+      "page_number": 5,
+      "example": "Falsch: Das Meeting wird am Freitag stattfinden. | Richtig: Die Sitzung findet am Freitag statt.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Neue, noch nicht etablierte Anglizismen meiden",
+      "description": "Anglizismen, die noch nicht im Woerterbuch verzeichnet sind oder deren Schreibweise/Grammatik unsicher ist, duerfen nicht verwendet werden; stattdessen ist eine deutsche Alternative zu finden.",
+      "file_name": "bundeskanzlei_richtlinien.pdf",
+      "page_number": 6,
+      "example": "Falsch: Das Projekt ist ein \"kick-off-Event\". | Richtig: Das Projekt ist ein Auftaktevent.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Mode-Anglizismen fuer bestehende Begriffe vermeiden",
+      "description": "Anglizismen, die lediglich modische Modewoerter fuer bereits deutsch benannte Dinge darstellen, duerfen nicht verwendet werden; die etablierte deutsche Bezeichnung ist zu nutzen.",
+      "file_name": "bundeskanzlei_richtlinien.pdf",
+      "page_number": 6,
+      "example": "Falsch: Wir benoetigen ein \"Smartphone\". | Richtig: Wir benoetigen ein Mobiltelefon.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Fachtermini (Anglizismen) zulassen",
+      "description": "In Fachtexten duerfen etablierte Anglizismen aus Bereichen wie Informatik, Technik oder Wirtschaft verwendet werden, da die Zielgruppe sie kennt. In Laientexten muss der Begriff erklärt oder vermieden werden.",
+      "file_name": "bundeskanzlei_richtlinien.pdf",
+      "page_number": 6,
+      "example": "Falsch: Der Router muss neu konfiguriert werden. (Laientext) | Richtig: Der Router muss neu konfiguriert werden. (Fachtext).",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Stilistisch markierte Anglizismen meiden",
+      "description": "Anglizismen, die stark stilistisch auffallen, jugendlich, salopp oder informal sind, duerfen in Behördentexten nicht verwendet werden; stattdessen neutral formulieren.",
+      "file_name": "bundeskanzlei_richtlinien.pdf",
+      "page_number": 6,
+      "example": "Falsch: Das Projekt war total \"crazy\". | Richtig: Das Projekt war aeusserst riskant.",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Verstaendlichkeit sicherstellen bei Anglizismen",
+      "description": "Beim Einsatz von Anglizismen muss geprueft werden, ob die Zielgruppe den Begriff versteht. Nicht allgemein verstandene Anglizismen muessen erklärt oder durch ein deutsches Aequivalent ersetzt werden. Ein Verstoss liegt vor, wenn ein unguenstig verstandener Anglizismus ohne Erlaeuterung verwendet wird.",
+      "file_name": "anglizismen.pdf",
+      "page_number": 7,
+      "example": "Falsch: Der Fachbegriff lautet Nudging. | Richtig: Der Fachbegriff lautet Nudging (deutsch: Anstoess zur Verhaltensveraenderung).",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Komposita von Anglizismen korrekt verbinden",
+      "description": "Anglizistische Komposita muessen entweder zusammengeschrieben oder mit Bindestrich geschrieben werden. Eine falsche Trennungsweise stellt einen Verstoss dar.",
+      "file_name": "Redaktionsrichtlinien.pdf",
+      "page_number": 8,
+      "example": "Falsch: Smart Farming | Richtig: Smart-Farming oder SmartFarming",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "E-Woerter mit Bindestrich und grossem E schreiben",
+      "description": "Waehrend Woerter, die als Fremdworte mit dem Buchstaben E uebernommen werden, im Deutschen einen Bindestrich und ein grosses E erhalten (z. B. E-Book). Ein Verstoss liegt vor, wenn das Wort kleingeschrieben oder ohne Bindestrich verwendet wird.",
+      "file_name": "Redaktionsrichtlinien.pdf",
+      "page_number": 8,
+      "example": "Falsch: e-book | Richtig: E-Book",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Konsistente Verwendung von Anglizismen innerhalb eines Textes",
+      "description": "Wird ein Anglizismus eingefuehrt, muss Schreibweise und Flexion im gesamten Dokument einheitlich bleiben. Wechselnde Formen gelten als Verstoesse.",
+      "file_name": "Redaktionsrichtlinien.pdf",
+      "page_number": 8,
+      "example": "Falsch: Dropout, Dropouts’ | Richtig: Dropout, Dropouts",
+      "collection": "bundeskanzlei"
+    },
+    {
+      "name": "Geschlechtergerechte Personenbezeichnungen",
+      "description": "Personenbezeichnungen muessen geschlechtergerecht formuliert sein, beide Geschaefte explizit nennen oder genderneutrale Formen verwenden. Ein Verstoss liegt vor, wenn nur die maennliche Form verwendet wird.",
+      "file_name": "Redaktionsrichtlinien.pdf",
+      "page_number": 8,
+      "example": "Falsch: die Manager | Richtig: die Managerinnen und Manager",
+      "collection": "bundeskanzlei"
+    }
+  ]
+}

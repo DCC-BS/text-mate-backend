@@ -1,3 +1,4 @@
+import asyncio
 from collections.abc import AsyncGenerator
 from os import path
 from typing import Annotated
@@ -13,7 +14,7 @@ from pydantic import BaseModel, Field
 from text_mate_backend.container import Container
 from text_mate_backend.models.error_codes import NO_DOCUMENT
 from text_mate_backend.models.error_response import ApiErrorException
-from text_mate_backend.models.rule_models import RuelDocumentDescription
+from text_mate_backend.models.rule_models import RuleDocumentDescription
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.utils.auth import AuthSchema
 from text_mate_backend.utils.configuration import Configuration
@@ -39,7 +40,7 @@ def create_router(
     @router.get("/docs", dependencies=[Security(auth_scheme)])
     def get_advisor_docs(
         current_user: Annotated[User | None, Depends(auth_scheme)],
-    ) -> list[RuelDocumentDescription]:
+    ) -> list[RuleDocumentDescription]:
         return advisor_service.get_docs(current_user)
 
     @router.post("/validate", dependencies=[Security(auth_scheme)])
@@ -69,6 +70,9 @@ def create_router(
                 ):
                     yield f"data: {validation_result.model_dump_json()}\n\n"
                 yield "event: done\ndata: {}\n\n"
+            except asyncio.CancelledError:
+                logger.info("Client disconnected from advisor SSE stream")
+                raise
             except Exception:
                 logger.exception("Unhandled error during advisor SSE stream")
                 yield "event: error\ndata: {}\n\n"

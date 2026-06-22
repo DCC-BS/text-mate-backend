@@ -4,9 +4,9 @@ services:
         image: vllm/vllm-openai:v0.22.1
         container_name: vllm_gemma4
         ports:
-            - ${LLM_API_PORT}:8000
+            - ${LLM_API_PORT:-8001}:8000
         environment:
-            - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN}
+            - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN:-}
         runtime: nvidia
         deploy:
             resources:
@@ -17,7 +17,7 @@ services:
                           capabilities: [gpu]
         ipc: host
         volumes:
-            - ${HUGGING_FACE_CACHE_DIR}:/root/.cache/huggingface
+            - ${HUGGING_FACE_CACHE_DIR:-${HOME}/cache/huggingface}:/root/.cache/huggingface
         command: >
             --port 8000
             --model nvidia/Gemma-4-26B-A4B-NVFP4
@@ -45,10 +45,10 @@ services:
                           device_ids: ["1"]
                           capabilities: [gpu]
         ports:
-            - ${DOCLING_API_PORT}:5001
+            - ${DOCLING_API_PORT:-5001}:5001
         environment:
             - DOCLING_MODELS_PATH=/models
             - DOCLING_CONFIG_FILE=/app/docling_config.json
             - DOCLING_SERVE_ENABLE_UI=true
         volumes:
-            - "${HOME}/.cache/docling:/models"
+            - "${HOME:-/root}/.cache/docling:/models"
