@@ -1,4 +1,5 @@
 from .advisor_agent import AdvisorAgent
+from .fix_agent import FixAgent
 from .quick_actions import (
     BulletPointAgent,
     CustomAgent,
@@ -14,6 +15,7 @@ from .word_synonym_agent import WordSynonymAgent
 
 __all__ = [
     "AdvisorAgent",
+    "FixAgent",
     "SentenceRewriteAgent",
     "WordSynonymAgent",
     "BulletPointAgent",

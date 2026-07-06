@@ -35,7 +35,6 @@ dev = [
     "ty>=0.0.12",
     "tqdm>=4.67.1",
     "types-tqdm>=4.67.0.20250809",
-    "llama-index>=0.14.13",
 ]
 
 [build-system]

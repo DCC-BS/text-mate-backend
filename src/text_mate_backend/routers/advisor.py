@@ -1,8 +1,9 @@
 import asyncio
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, AsyncIterable
 from os import path
 from typing import Annotated
 
+from dcc_backend_common.fastapi_error_handling import ApiErrorCodes, api_error_exception
 from dcc_backend_common.logger import get_logger
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request
@@ -14,8 +15,10 @@ from pydantic import BaseModel, Field
 from text_mate_backend.container import Container
 from text_mate_backend.models.error_codes import NO_DOCUMENT
 from text_mate_backend.models.error_response import ApiErrorException
-from text_mate_backend.models.rule_models import RuleDocumentDescription
+from text_mate_backend.models.fix_models import FixRequest
+from text_mate_backend.models.rule_models import RuleDocumentDescription, RulesValidationContainer
 from text_mate_backend.services.advisor import AdvisorService
+from text_mate_backend.services.fix_service import FixService
 from text_mate_backend.utils.auth import AuthSchema
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
@@ -31,6 +34,7 @@ class AdvisorInput(BaseModel):
 @inject
 def create_router(
     advisor_service: AdvisorService = Provide[Container.advisor_service],
+    fix_service: FixService = Provide[Container.fix_service],
     auth_scheme: AuthSchema = Provide[Container.auth_scheme],
     config: Configuration = Provide[Container.config],
 ) -> APIRouter:
@@ -48,7 +52,7 @@ def create_router(
         request: Request,
         data: AdvisorInput,
         current_user: Annotated[User, Depends(auth_scheme)],
-    ) -> StreamingResponse:
+    ) -> AsyncIterable[RulesValidationContainer]:
         pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
 
         logger.info(
@@ -60,26 +64,50 @@ def create_router(
             },
         )
 
-        async def event_generator() -> AsyncGenerator[str, None]:
+        try:
+            async for validation_result in advisor_service.check_text_stream(
+                data.text,
+                data.docs,
+            ):
+                yield validation_result
+        except asyncio.CancelledError:
+            logger.info("Client disconnected from advisor JSON Lines stream")
+            raise
+        except Exception as e:
+            logger.exception("Unhandled error during advisor JSON Lines stream")
+            raise api_error_exception(errorId=ApiErrorCodes.UNEXPECTED_ERROR, status=500, debugMessage=str(e)) from e
+
+    @router.post("/fix", dependencies=[Security(auth_scheme)])
+    async def fix_text(
+        request: Request,
+        data: FixRequest,
+        current_user: Annotated[User, Depends(auth_scheme)],
+    ) -> StreamingResponse:
+        pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
+
+        logger.info(
+            "app_event",
+            extra={
+                "pseudonym_id": pseudonymized_user_id,
+                "event": fix_text.__name__,
+                "text_length": len(data.text),
+                "thread_count": len(data.threads),
+            },
+        )
+
+        async def text_generator() -> AsyncGenerator[str, None]:
             # NOTE: CancelOnDisconnect is not used here because StreamingResponse evaluation
             # happens after this handler returns. Disconnects will be handled by ASGI server.
             try:
-                async for validation_result in advisor_service.check_text_stream(
-                    data.text,
-                    data.docs,
-                ):
-                    yield f"data: {validation_result.model_dump_json()}\n\n"
-                yield "event: done\ndata: {}\n\n"
+                async for chunk in fix_service.fix_text_stream(data.text, data.threads):
+                    yield chunk
             except asyncio.CancelledError:
-                logger.info("Client disconnected from advisor SSE stream")
+                logger.info("Client disconnected from advisor fix stream")
                 raise
-            except Exception:
-                logger.exception("Unhandled error during advisor SSE stream")
-                yield "event: error\ndata: {}\n\n"
 
         return StreamingResponse(
-            event_generator(),
-            media_type="text/event-stream",
+            text_generator(),
+            media_type="text/plain",
             headers={
                 "Cache-Control": "no-cache",
                 "X-Accel-Buffering": "no",

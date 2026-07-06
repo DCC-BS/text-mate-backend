@@ -36,6 +36,11 @@ class RulesValidationResult(BaseModel):
     violations: list[Violation] = Field(description="All violations found in the text")
 
 
+class ViolationRange(BaseModel):
+    start: int = Field(description="Start character position (0-based) of the violating text")
+    end: int = Field(description="End character position (exclusive) of the violating text")
+
+
 class ViolationResult(BaseModel):
     """API response model — violation with resolved character positions."""
 
@@ -45,8 +50,10 @@ class ViolationResult(BaseModel):
     source: str = Field(description="Exact text snippet from the input that violates the rule")
     file_name: str = Field(description="Filename of the source PDF document for this rule")
     page_number: int = Field(description="Page number in the source document for this rule")
-    start: int = Field(description="Start character position (0-based) of the violating text")
-    end: int = Field(description="End character position (exclusive) of the violating text")
+    range: ViolationRange = Field(description="Character range of the violating text")
+    collection: str = Field(
+        description="Logical collection key used for filtering (matches RuleDocumentDescription.id)"
+    )
 
 
 class RulesValidationContainer(BaseModel):

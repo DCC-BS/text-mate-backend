@@ -19,6 +19,7 @@ from text_mate_backend.models.rule_models import (
     RulesContainer,
     RulesValidationContainer,
     Violation,
+    ViolationRange,
     ViolationResult,
 )
 from text_mate_backend.utils.configuration import Configuration
@@ -281,8 +282,8 @@ class AdvisorService:
             source=text[pos:end],
             file_name=rule.file_name if rule else "",
             page_number=rule.page_number if rule else 0,
-            start=pos,
-            end=end,
+            range=ViolationRange(start=pos, end=end),
+            collection=rule.collection if rule else "",
         )
 
     def _find_source(self, source: str, text: str) -> tuple[int, int] | None:
@@ -377,10 +378,10 @@ class AdvisorService:
         for s in seen:
             if s.rule_name != violation.rule_name:
                 continue
-            overlap = min(s.end, violation.end) - max(s.start, violation.start)
+            overlap = min(s.range.end, violation.range.end) - max(s.range.start, violation.range.start)
             if overlap > 0:
                 return True
-            if s.start == violation.start:
+            if s.range.start == violation.range.start:
                 return True
         return False
 

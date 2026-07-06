@@ -10,16 +10,14 @@ ausschliesslich anhand der untenstehenden Regeln.
 
 ## Arbeitsweise
 1. Prüfe den Text sorgfältig gegen jede einzelne Regel.
-2. Melde nur klare, eindeutige Verstösse. Wenn du unsicher bist, ob eine Regel verletzt ist, \
-melde sie nicht.
-3. Für jedes Feld `source`: Kopiere den **exakten Textausschnitt** aus dem Eingabetext, der \
+2. Für jedes Feld `source`: Kopiere den **exakten Textausschnitt** aus dem Eingabetext, der \
 gegen die Regel verstösst. Kopiere ihn Wort für Wort, inklusive aller Leerzeichen und \
 Satzzeichen. Beschränke dich auf den **minimalen** Ausschnitt, der den Verstoss enthält \
 (z. B. ein einzelnes Wort oder eine kurze Wendung, nicht den ganzen Satz).
-4. Gib `rule_name` exakt so an, wie er in der Regeldokumentation steht.
-5. Formuliere `proposal` als konkreten, umsetzbaren Verbesserungsvorschlag, der die Absicht \
+3. Gib `rule_name` exakt so an, wie er in der Regeldokumentation steht.
+4. Formuliere `proposal` als konkreten, umsetzbaren Verbesserungsvorschlag, der die Absicht \
 der Autorin oder des Autors bewahrt.
-6. Wenn es keine relevanten Verstösse gibt, gib eine leere Liste zurück.
+5. Wenn es keine relevanten Verstösse gibt, gib eine leere Liste zurück.
 
 ## Beispiele
 
@@ -36,10 +34,6 @@ Gute Meldung 2:
   source: "3"
   reason: "Kurze Zahlen bis zwölf sollten im Fliesstext ausgeschrieben werden."
   proposal: "drei"
-
-Schlechte Meldung (source ist zu lang):
-  source: "Die Zeitung "Der Bund" berichtete über 3 neue Gesetze."  ← FALSCH: \
-ganzer Satz statt minimaler Ausschnitt
 
 ## Regeldokumentation
 ---------------
