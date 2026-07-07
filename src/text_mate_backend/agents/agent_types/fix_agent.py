@@ -4,6 +4,7 @@ from dcc_backend_common.llm_agent import BaseAgent
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 
+from text_mate_backend.agents.agent_utils import build_agent_metadata
 from text_mate_backend.models.fix_models import FixRequest
 from text_mate_backend.utils.configuration import Configuration
 
@@ -40,7 +41,19 @@ class FixAgent(BaseAgent[FixRequest, str]):
 
     @override
     def create_agent(self, model: Model) -> Agent[FixRequest, str]:
-        agent = Agent(model=model, deps_type=FixRequest, output_type=str)
+        agent = Agent(
+            model=model,
+            deps_type=FixRequest,
+            output_type=str,
+            name="Fix Agent",
+            description="Applies correction threads to an input text and returns the fully corrected text",
+            metadata=lambda ctx: build_agent_metadata(
+                "fix",
+                output_type="str",
+                text_length=len(ctx.deps.text),
+                thread_count=len(ctx.deps.threads),
+            ),
+        )
 
         @agent.instructions
         def get_instruction(ctx: RunContext[FixRequest]) -> str:

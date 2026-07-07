@@ -12,6 +12,14 @@ class UserActionAgent(QuickActionBaseAgent):
     def __init__(self, config: Configuration):
         super().__init__(config)
 
+    @property
+    def agent_name(self) -> str:
+        return "User Action Agent"
+
+    @property
+    def agent_description(self) -> str:
+        return "Applies a database-driven custom user action to rewrite text"
+
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext[UserAction]]):
         if ctx.deps.extras is None:

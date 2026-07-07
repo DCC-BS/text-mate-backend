@@ -3,6 +3,7 @@ from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 from pydantic_ai.models.openai import OpenAIResponsesModelSettings
 
+from text_mate_backend.agents.agent_utils import build_agent_metadata
 from text_mate_backend.models.rule_models import DetectionResult, RulesContainer
 from text_mate_backend.utils.configuration import Configuration
 
@@ -68,7 +69,21 @@ class ViolationDetectionAgent(BaseAgent[RulesContainer, DetectionResult]):
 
     def create_agent(self, model: Model):
         settings = OpenAIResponsesModelSettings(openai_reasoning_effort="medium", openai_reasoning_summary="detailed")
-        agent = Agent(model=model, deps_type=RulesContainer, output_type=DetectionResult, model_settings=settings)
+        agent = Agent(
+            model=model,
+            deps_type=RulesContainer,
+            output_type=DetectionResult,
+            model_settings=settings,
+            name="Violation Detection Agent",
+            description="Detects violations of editorial rules in a text and returns structured findings",
+            metadata=lambda ctx: build_agent_metadata(
+                "violation_detection",
+                enable_thinking=True,
+                output_type="DetectionResult",
+                rule_count=len(ctx.deps.rules),
+                rule_collections=sorted(ctx.deps.document_names),
+            ),
+        )
 
         @agent.instructions
         def get_instruction(ctx: RunContext[RulesContainer]):

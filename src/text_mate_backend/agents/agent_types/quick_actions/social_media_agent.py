@@ -11,6 +11,14 @@ class SocialMediaAgent(QuickActionBaseAgent):
     def __init__(self, config: Configuration):
         super().__init__(config)
 
+    @property
+    def agent_name(self) -> str:
+        return "Social Media Agent"
+
+    @property
+    def agent_description(self) -> str:
+        return "Transforms text into a social media post adapted to a target platform"
+
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext]) -> str:
         return f"""

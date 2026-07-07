@@ -46,6 +46,14 @@ class SummarizeAgent(QuickActionBaseAgent):
     def __init__(self, config: Configuration):
         super().__init__(config)
 
+    @property
+    def agent_name(self) -> str:
+        return "Summarize Agent"
+
+    @property
+    def agent_description(self) -> str:
+        return "Summarizes text to a configurable length (sentence, paragraph, page or management summary)"
+
     @override
     def create_agent(self, model: Model) -> Agent[QuickActionContext, str]:
         agent = super().create_agent(model)

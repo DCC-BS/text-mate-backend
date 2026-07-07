@@ -230,31 +230,38 @@ class AdvisorService:
             return
 
         total_rules = len(rules)
-        checked_rules = 0
-        seen_detections: list[ResolvedDetection] = []
         rule_lookup: dict[str, Rule] = {rule.name: rule for rule in rules}
 
-        for rule_batch in self._batched_rules(rules, MAX_RULES_PER_REQUEST, max_rules=len(rules)):
+        batches = list(self._batched_rules(rules, MAX_RULES_PER_REQUEST, max_rules=len(rules)))
+
+        # Run all batches concurrently. Each batch carries its own per-batch
+        # dedup state (see _process_batch), so there is no shared mutable state
+        # between them. The wrapper folds timeouts/errors into an empty result
+        # while returning the batch's rule count, so as_completed consumers can
+        # update progress without needing to map futures back to batches.
+        async def run_batch(batch: list[Rule]) -> tuple[int, list[ViolationResult]]:
+            batch_size = len(batch)
             try:
-                new_violations = await asyncio.wait_for(
-                    self._process_batch(text, rule_batch, rule_lookup, seen_detections),
+                result = await asyncio.wait_for(
+                    self._process_batch(text, batch, rule_lookup),
                     timeout=BATCH_TIMEOUT_SECONDS,
                 )
             except asyncio.TimeoutError:
-                logger.error(
-                    f"Batch timed out after {BATCH_TIMEOUT_SECONDS}s, checked {checked_rules}/{total_rules} rules"
-                )
-                checked_rules += len(rule_batch)
-                yield RulesValidationContainer(
-                    violations=[],
-                    checked=checked_rules,
-                    total=total_rules,
-                )
-                continue
+                logger.error(f"Batch timed out after {BATCH_TIMEOUT_SECONDS}s, batch_size={batch_size}")
+                result = []
             except asyncio.CancelledError:
                 raise
-            checked_rules += len(rule_batch)
+            except Exception as e:
+                logger.error(f"Batch failed: {e}")
+                result = []
+            return batch_size, result
 
+        tasks = [asyncio.ensure_future(run_batch(batch)) for batch in batches]
+
+        checked_rules = 0
+        for completed in asyncio.as_completed(tasks):
+            batch_size, new_violations = await completed
+            checked_rules += batch_size
             yield RulesValidationContainer(
                 violations=new_violations,
                 checked=checked_rules,
@@ -266,9 +273,16 @@ class AdvisorService:
         text: str,
         rule_batch: list[Rule],
         rule_lookup: dict[str, Rule],
-        seen_detections: list[ResolvedDetection],
     ) -> list[ViolationResult]:
-        """Run step 1 (detection) then step 2 (parallel proposals) for one rule batch."""
+        """Run step 1 (detection) then step 2 (parallel proposals) for one rule batch.
+
+        Dedup is intentionally local to this batch: rule names are globally unique,
+        so the cross-batch dedup performed previously never triggered. Keeping it
+        per-batch removes shared mutable state and makes batches safe to run in
+        parallel.
+        """
+
+        seen_detections: list[ResolvedDetection] = []
 
         # --- Step 1: detection -------------------------------------------------
         try:

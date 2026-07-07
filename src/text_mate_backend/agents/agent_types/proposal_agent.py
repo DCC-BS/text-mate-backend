@@ -2,6 +2,7 @@ from dcc_backend_common.llm_agent import BaseAgent, Preprocessor
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 
+from text_mate_backend.agents.agent_utils import build_agent_metadata
 from text_mate_backend.models.rule_models import ProposalRequest
 from text_mate_backend.utils.configuration import Configuration
 
@@ -53,7 +54,20 @@ class ProposalAgent(BaseAgent[ProposalRequest, str]):
         return []
 
     def create_agent(self, model: Model):
-        agent = Agent(model=model, deps_type=ProposalRequest, output_type=str)
+        agent = Agent(
+            model=model,
+            deps_type=ProposalRequest,
+            output_type=str,
+            name="Proposal Agent",
+            description="Generates a concrete, actionable improvement proposal for a single editorial rule violation",
+            metadata=lambda ctx: build_agent_metadata(
+                "proposal",
+                output_type="str",
+                rule_name=ctx.deps.rule.name,
+                source_length=len(ctx.deps.source),
+                context_length=len(ctx.deps.context_sentence),
+            ),
+        )
 
         @agent.instructions
         def get_instruction(ctx: RunContext[ProposalRequest]):
