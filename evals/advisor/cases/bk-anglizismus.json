@@ -1,0 +1,13 @@
+{
+  "id": "bk-anglizismus",
+  "description": "One avoidable anglicism (Meeting) explicitly listed in the rule description; sibling anglicism rule accepted as alternative attribution.",
+  "collections": ["bundeskanzlei"],
+  "text": "Das nächste Meeting der Arbeitsgruppe findet am 3. Juni 2026 statt. Wir freuen uns auf zahlreiche Beiträge.",
+  "expected": [
+    {
+      "rule_name": "Unnötige Anglizismen durch deutsches Wort ersetzen",
+      "source": "Meeting",
+      "alt_rule_names": ["Deutsche Entsprechung für neue Anglizismen prüfen"]
+    }
+  ]
+}
