@@ -32,9 +32,10 @@ services:
             --tensor-parallel-size 1
             --max-num-seqs 1
             --reasoning-parser gemma4
-            --no-enforce-eager
-            --limit-mm-per-prompt '{"image": 0}'
+            --enforce-eager
+            --limit-mm-per-prompt '{"image": 0, "video": 0}'
             --disable_chunked_mm_input
+            --cpu-offload-gb 10
 
     docling-serve:
         image: ghcr.io/docling-project/docling-serve-cu130:main

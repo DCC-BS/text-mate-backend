@@ -1,12 +1,14 @@
 from dcc_backend_common.llm_agent import BaseAgent, Preprocessor
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
+from pydantic_ai.models.openai import OpenAIResponsesModelSettings
 
-from text_mate_backend.models.rule_models import RulesContainer, RulesValidationResult
+from text_mate_backend.models.rule_models import DetectionResult, RulesContainer
 from text_mate_backend.utils.configuration import Configuration
 
 INSTRUCTION = """Du bist ein Experte für Redaktionsrichtlinien. Du prüfst den Eingabetext \
-ausschliesslich anhand der untenstehenden Regeln.
+ausschliesslich anhand der untenstehenden Regeln. In diesem Schritt geht es nur darum, \
+Verstösse zu **finden** — du generierst keine Verbesserungsvorschläge.
 
 ## Arbeitsweise
 1. Prüfe den Text sorgfältig gegen jede einzelne Regel.
@@ -15,9 +17,25 @@ gegen die Regel verstösst. Kopiere ihn Wort für Wort, inklusive aller Leerzeic
 Satzzeichen. Beschränke dich auf den **minimalen** Ausschnitt, der den Verstoss enthält \
 (z. B. ein einzelnes Wort oder eine kurze Wendung, nicht den ganzen Satz).
 3. Gib `rule_name` exakt so an, wie er in der Regeldokumentation steht.
-4. Formuliere `proposal` als konkreten, umsetzbaren Verbesserungsvorschlag, der die Absicht \
-der Autorin oder des Autors bewahrt.
+4. Formuliere `reason` als kurze Beschreibung, **warum** der Textausschnitt gegen die Regel \
+verstösst. Kein Verbesserungsvorschlag hier — der folgt in einem separaten Schritt.
 5. Wenn es keine relevanten Verstösse gibt, gib eine leere Liste zurück.
+
+Die Regeln haben follgendes Format:
+---------------
+{input_model_description}
+---------------
+
+## Regeldokumentation
+---------------
+{rules}
+---------------
+
+## Output Format
+Generiere deine Antwort ensprechen diesem Schema:
+---------------
+{output_model_description}
+---------------
 
 ## Beispiele
 
@@ -27,28 +45,21 @@ Gute Meldung 1:
   rule_name: "Guillemets als Anführungszeichen verwenden"
   source: ""Der Bund""
   reason: "Es werden gerade Anführungszeichen statt Guillemets verwendet."
-  proposal: "«Der Bund»"
 
 Gute Meldung 2:
   rule_name: "Kurze Zahlen im Fliesstext ausschreiben"
   source: "3"
   reason: "Kurze Zahlen bis zwölf sollten im Fliesstext ausgeschrieben werden."
-  proposal: "drei"
-
-## Regeldokumentation
----------------
-{rules}
----------------
 
 Antworte in der Sprache des Eingabetextes."""
 
 
-class AdvisorAgent(BaseAgent[RulesContainer, RulesValidationResult]):
+class ViolationDetectionAgent(BaseAgent[RulesContainer, DetectionResult]):
     def __init__(self, config: Configuration):
         super().__init__(
             config,
             deps_type=RulesContainer,
-            output_type=RulesValidationResult,
+            output_type=DetectionResult,
             enable_thinking=True,
         )
 
@@ -56,10 +67,15 @@ class AdvisorAgent(BaseAgent[RulesContainer, RulesValidationResult]):
         return []
 
     def create_agent(self, model: Model):
-        agent = Agent(model=model, deps_type=RulesContainer, output_type=RulesValidationResult)
+        settings = OpenAIResponsesModelSettings(openai_reasoning_effort="medium", openai_reasoning_summary="detailed")
+        agent = Agent(model=model, deps_type=RulesContainer, output_type=DetectionResult, model_settings=settings)
 
         @agent.instructions
         def get_instruction(ctx: RunContext[RulesContainer]):
-            return INSTRUCTION.format(rules=ctx.deps.model_dump_json())
+            return INSTRUCTION.format(
+                rules=ctx.deps.model_dump_json(),
+                input_model_description=RulesContainer.model_json_schema(),
+                output_model_description=DetectionResult.model_json_schema(),
+            )
 
         return agent

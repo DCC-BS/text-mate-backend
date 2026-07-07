@@ -14,10 +14,10 @@ dependencies = [
     "structlog>=25.5.0",
     "types-requests>=2.32.4.20260107",
     "types-setuptools>=80.10.0.20260124",
-    "pydantic-ai>=1.55.0",
+    "pydantic-ai<2.0.0",
     "logfire>=4.22.0",
     "pyyaml>=6.0.2",
-    "dcc-backend-common[fastapi]>=0.1.10",
+    "dcc-backend-common[fastapi]>=0.1.12",
     "zix @ git+https://github.com/machinelearningZH/zix_understandability-index",
 ]
 

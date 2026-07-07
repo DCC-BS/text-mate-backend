@@ -10,15 +10,19 @@ from dcc_backend_common.logger import get_logger
 from fastapi_azure_auth.user import User
 from typing_extensions import AsyncIterator
 
-from text_mate_backend.agents.agent_types.advisor_agent import AdvisorAgent
+from text_mate_backend.agents.agent_types.proposal_agent import ProposalAgent
+from text_mate_backend.agents.agent_types.violation_detection_agent import ViolationDetectionAgent
 from text_mate_backend.models.error_codes import CHECK_TEXT_ERROR, LOADING_FILES_ERROR
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.rule_models import (
+    DetectionResult,
+    DetectionViolation,
+    ProposalRequest,
+    ResolvedDetection,
     Rule,
     RuleDocumentDescription,
     RulesContainer,
     RulesValidationContainer,
-    Violation,
     ViolationRange,
     ViolationResult,
 )
@@ -27,7 +31,9 @@ from text_mate_backend.utils.configuration import Configuration
 logger = get_logger("advisor_service")
 MAX_RULES_PER_REQUEST = 5
 MAX_RULES = 60
-AGENT_TIMEOUT_SECONDS = 60
+DETECTION_TIMEOUT_SECONDS = 300
+PROPOSAL_TIMEOUT_SECONDS = 60
+BATCH_TIMEOUT_SECONDS = 200
 FUZZY_MATCH_THRESHOLD = 0.85
 
 
@@ -38,7 +44,8 @@ class AdvisorService:
 
         self.config = config
         self.rule_container = self._merge_rules_files(Path("assets/docs/rules"))
-        self.agent = AdvisorAgent(config)
+        self.detection_agent = ViolationDetectionAgent(config)
+        self.proposal_agent = ProposalAgent(config)
 
     def _merge_rules_files(self, directory: Path) -> RulesContainer:
         """
@@ -224,31 +231,29 @@ class AdvisorService:
 
         total_rules = len(rules)
         checked_rules = 0
-        seen_violations: list[ViolationResult] = []
+        seen_detections: list[ResolvedDetection] = []
         rule_lookup: dict[str, Rule] = {rule.name: rule for rule in rules}
 
         for rule_batch in self._batched_rules(rules, MAX_RULES_PER_REQUEST, max_rules=len(rules)):
             try:
-                validation_result = await asyncio.wait_for(
-                    self.agent.run(text, deps=RulesContainer(rules=rule_batch)),
-                    timeout=AGENT_TIMEOUT_SECONDS,
+                new_violations = await asyncio.wait_for(
+                    self._process_batch(text, rule_batch, rule_lookup, seen_detections),
+                    timeout=BATCH_TIMEOUT_SECONDS,
                 )
             except asyncio.TimeoutError:
                 logger.error(
-                    f"Agent timed out after {AGENT_TIMEOUT_SECONDS}s, checked {checked_rules}/{total_rules} rules"
+                    f"Batch timed out after {BATCH_TIMEOUT_SECONDS}s, checked {checked_rules}/{total_rules} rules"
                 )
-                break
+                checked_rules += len(rule_batch)
+                yield RulesValidationContainer(
+                    violations=[],
+                    checked=checked_rules,
+                    total=total_rules,
+                )
+                continue
+            except asyncio.CancelledError:
+                raise
             checked_rules += len(rule_batch)
-
-            new_violations: list[ViolationResult] = []
-            for violation in validation_result.violations:
-                resolved = self._resolve_violation(violation, text, rule_lookup)
-                if resolved is None:
-                    continue
-                if self._is_duplicate(resolved, seen_violations):
-                    continue
-                new_violations.append(resolved)
-                seen_violations.append(resolved)
 
             yield RulesValidationContainer(
                 violations=new_violations,
@@ -256,10 +261,96 @@ class AdvisorService:
                 total=total_rules,
             )
 
-    def _resolve_violation(
-        self, violation: Violation, text: str, rule_lookup: dict[str, Rule]
-    ) -> ViolationResult | None:
-        """Resolve a violation's source snippet to character positions in the original text."""
+    async def _process_batch(
+        self,
+        text: str,
+        rule_batch: list[Rule],
+        rule_lookup: dict[str, Rule],
+        seen_detections: list[ResolvedDetection],
+    ) -> list[ViolationResult]:
+        """Run step 1 (detection) then step 2 (parallel proposals) for one rule batch."""
+
+        # --- Step 1: detection -------------------------------------------------
+        try:
+            detection_result: DetectionResult = await asyncio.wait_for(
+                self.detection_agent.run(text, deps=RulesContainer(rules=rule_batch)),
+                timeout=DETECTION_TIMEOUT_SECONDS,
+            )
+        except asyncio.TimeoutError:
+            logger.error(f"Detection timed out after {DETECTION_TIMEOUT_SECONDS}s")
+            return []
+
+        # Resolve positions + dedup before requesting proposals (skip wasted calls).
+        survivors: list[ResolvedDetection] = []
+        for violation in detection_result.violations:
+            resolved = self._resolve_detection(violation, text, rule_lookup)
+            if resolved is None:
+                continue
+            if self._is_duplicate(resolved, seen_detections):
+                continue
+            survivors.append(resolved)
+            seen_detections.append(resolved)
+
+        if not survivors:
+            return []
+
+        # --- Step 2: parallel proposal generation ------------------------------
+        proposal_tasks = [
+            asyncio.wait_for(
+                self.proposal_agent.run(None, deps=self._build_proposal_request(text, resolved, rule_lookup)),
+                timeout=PROPOSAL_TIMEOUT_SECONDS,
+            )
+            for resolved in survivors
+        ]
+        proposals = await asyncio.gather(*proposal_tasks, return_exceptions=True)
+
+        results: list[ViolationResult] = []
+        for resolved, proposal in zip(survivors, proposals, strict=True):
+            if isinstance(proposal, BaseException):
+                logger.error(
+                    f"Proposal generation failed for rule '{resolved.rule_name}' "
+                    f"at [{resolved.range.start}:{resolved.range.end}]: {proposal}. Dropping violation."
+                )
+                continue
+            results.append(self._build_violation_result(resolved, proposal))
+        return results
+
+    def _build_proposal_request(
+        self, text: str, resolved: ResolvedDetection, rule_lookup: dict[str, Rule]
+    ) -> ProposalRequest:
+        rule = rule_lookup.get(resolved.rule_name)
+        if rule is None:
+            rule = Rule(
+                name=resolved.rule_name,
+                description="",
+                file_name=resolved.file_name,
+                page_number=resolved.page_number,
+                example="",
+                collection=resolved.collection,
+            )
+        return ProposalRequest(
+            rule=rule,
+            source=resolved.source,
+            reason=resolved.reason,
+            context_sentence=self._surrounding_sentence(text, resolved.range),
+        )
+
+    def _surrounding_sentence(self, text: str, range_: ViolationRange) -> str:
+        """Return the sentence/segment unit that contains the violating range."""
+        units = self._split_into_search_units(text)
+        for unit_text, unit_start in units:
+            unit_end = unit_start + len(unit_text)
+            if unit_start <= range_.start < unit_end:
+                return unit_text
+        # Fallback: widen around the range.
+        start = max(0, range_.start - 80)
+        end = min(len(text), range_.end + 80)
+        return text[start:end]
+
+    def _resolve_detection(
+        self, violation: DetectionViolation, text: str, rule_lookup: dict[str, Rule]
+    ) -> ResolvedDetection | None:
+        """Resolve a detection's source snippet to character positions in the original text."""
         source = violation.source.strip()
         if not source or len(source) < 1:
             logger.warn(f"Empty source for violation: {violation.rule_name}")
@@ -275,15 +366,26 @@ class AdvisorService:
 
         rule = rule_lookup.get(violation.rule_name)
 
-        return ViolationResult(
+        return ResolvedDetection(
             rule_name=violation.rule_name,
             reason=self._to_swiss_german(violation.reason),
-            proposal=self._to_swiss_german(violation.proposal),
             source=text[pos:end],
+            range=ViolationRange(start=pos, end=end),
             file_name=rule.file_name if rule else "",
             page_number=rule.page_number if rule else 0,
-            range=ViolationRange(start=pos, end=end),
             collection=rule.collection if rule else "",
+        )
+
+    def _build_violation_result(self, resolved: ResolvedDetection, proposal: str) -> ViolationResult:
+        return ViolationResult(
+            rule_name=resolved.rule_name,
+            reason=resolved.reason,
+            proposal=self._to_swiss_german(proposal),
+            source=resolved.source,
+            file_name=resolved.file_name,
+            page_number=resolved.page_number,
+            range=resolved.range,
+            collection=resolved.collection,
         )
 
     def _find_source(self, source: str, text: str) -> tuple[int, int] | None:
@@ -373,15 +475,15 @@ class AdvisorService:
             units.append((text, 0))
         return units
 
-    def _is_duplicate(self, violation: ViolationResult, seen: list[ViolationResult]) -> bool:
-        """Check if a violation duplicates an already-seen one."""
+    def _is_duplicate(self, detection: ResolvedDetection, seen: list[ResolvedDetection]) -> bool:
+        """Check if a detection duplicates an already-seen one."""
         for s in seen:
-            if s.rule_name != violation.rule_name:
+            if s.rule_name != detection.rule_name:
                 continue
-            overlap = min(s.range.end, violation.range.end) - max(s.range.start, violation.range.start)
+            overlap = min(s.range.end, detection.range.end) - max(s.range.start, detection.range.start)
             if overlap > 0:
                 return True
-            if s.range.start == violation.range.start:
+            if s.range.start == detection.range.start:
                 return True
         return False
 

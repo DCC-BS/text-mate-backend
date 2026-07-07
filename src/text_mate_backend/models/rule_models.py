@@ -20,25 +20,47 @@ class RulesContainer(BaseModel):
         return {rule.collection for rule in self.rules}
 
 
-class Violation(BaseModel):
-    """Lean LLM output model — only what the LLM needs to return.
-    Position resolution happens on the backend."""
+class DetectionViolation(BaseModel):
+    """Step 1 LLM output model — detection only.
+    Proposal generation happens in a separate call; position resolution happens on the backend."""
 
     rule_name: str = Field(description="Name der Regel, die verletzt wurde (exakt wie in der Regeldokumentation)")
     reason: str = Field(description="Kurze Beschreibung des Verstosses in der Sprache des Textes")
-    proposal: str = Field(description="Konkreter Verbesserungsvorschlag in der Sprache des Textes")
     source: str = Field(description="Exakter Textausschnitt aus dem Eingabetext, der gegen die Regel verstosst")
 
 
-class RulesValidationResult(BaseModel):
-    """LLM output type."""
+class DetectionResult(BaseModel):
+    """Step 1 LLM output type — list of detected violations."""
 
-    violations: list[Violation] = Field(description="All violations found in the text")
+    violations: list[DetectionViolation] = Field(description="All violations found in the text")
+
+
+class ProposalRequest(BaseModel):
+    """Step 2 deps type — context for generating a single proposal."""
+
+    rule: Rule = Field(description="The rule that was violated")
+    source: str = Field(description="Exakter Textausschnitt aus dem Eingabetext, der gegen die Regel verstosst")
+    reason: str = Field(description="Kurze Beschreibung des Verstosses in der Sprache des Textes")
+    context_sentence: str = Field(description="Der Satz, der den Verstoss enthält, als Kontext für den Vorschlag")
 
 
 class ViolationRange(BaseModel):
     start: int = Field(description="Start character position (0-based) of the violating text")
     end: int = Field(description="End character position (exclusive) of the violating text")
+
+
+class ResolvedDetection(BaseModel):
+    """Intermediate result after step 1 (detection) and position resolution.
+    Holds everything needed to request a proposal in step 2 and to build a
+    ViolationResult once the proposal is returned."""
+
+    rule_name: str
+    reason: str
+    source: str
+    range: ViolationRange
+    file_name: str
+    page_number: int
+    collection: str
 
 
 class ViolationResult(BaseModel):

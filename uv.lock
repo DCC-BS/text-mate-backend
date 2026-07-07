@@ -11,11 +11,11 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "2026-06-16T13:22:14.981156432Z"
+exclude-newer = "2026-06-30T12:35:22.256672522Z"
 exclude-newer-span = "P1W"
 
 [options.exclude-newer-package]
-dcc-backend-common = { timestamp = "2026-06-23T13:22:14.981171132Z", span = "PT0S" }
+dcc-backend-common = { timestamp = "2026-07-07T12:35:22.256684952Z", span = "PT0S" }
 
 [[package]]
 name = "ag-ui-protocol"
@@ -727,7 +727,7 @@ wheels = [
 
 [[package]]
 name = "dcc-backend-common"
-version = "0.1.11"
+version = "0.1.12"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "datasets" },
@@ -736,9 +736,9 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "structlog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/36/73/71040a7b05249beb909a3e66bfdb3d7bc2ade5b52c78ef170a8330ff49b8/dcc_backend_common-0.1.11.tar.gz", hash = "sha256:4b824589e778ac228c2c616113eef40673198c60960213870a967185acc6a404", size = 234188, upload-time = "2026-05-29T09:31:42.329Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/fb/f4/5ce9c6d9c0bb27735cc985e33b19ddf690c41fa7a78e5897738ec0c52072/dcc_backend_common-0.1.12.tar.gz", hash = "sha256:a6a5abaac67ea7cb6accccd44c05a5e706c298705af3f0efaa9a57da7bcee7e9", size = 235804, upload-time = "2026-07-07T09:08:01.347Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0e/d1/2f5e6409c0f6071845346abb258dfb05a56a3c43443d4d400b97ebfbf9f7/dcc_backend_common-0.1.11-py3-none-any.whl", hash = "sha256:e342b998bf9311f1782880b087beeb2c3f6426b35988e40b1edb07cdcb74cbcb", size = 25615, upload-time = "2026-05-29T09:31:41.386Z" },
+    { url = "https://files.pythonhosted.org/packages/f9/f9/004cd0e543719e048e82eb2bbb13c190cceb29966bf93d3a773899cb9f4a/dcc_backend_common-0.1.12-py3-none-any.whl", hash = "sha256:752e19dddd44a46e30dbb8a648f207df695e96bc999c62e2923341fe61319dfb", size = 25623, upload-time = "2026-07-07T09:08:00.175Z" },
 ]
 
 [package.optional-dependencies]
@@ -3885,12 +3885,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "dcc-backend-common", extras = ["fastapi"], specifier = ">=0.1.10" },
+    { name = "dcc-backend-common", extras = ["fastapi"], specifier = ">=0.1.12" },
     { name = "dependency-injector", specifier = ">=4.48.3" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.128.2" },
     { name = "fastapi-azure-auth", specifier = ">=5.2.0" },
     { name = "logfire", specifier = ">=4.22.0" },
-    { name = "pydantic-ai", specifier = ">=1.55.0" },
+    { name = "pydantic-ai", specifier = "<2.0.0" },
     { name = "python-jose", extras = ["cryptography"], specifier = ">=3.5.0" },
     { name = "pyyaml", specifier = ">=6.0.2" },
     { name = "requests", specifier = ">=2.32.5" },

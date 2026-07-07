@@ -1,22 +1,24 @@
 """Export all agent classes and utilities."""
 
 from .agent_types import (
-    AdvisorAgent,
     BulletPointAgent,
     CustomAgent,
     FixAgent,
     FormalityAgent,
     MediumAgent,
     PlainLanguageAgent,
+    ProposalAgent,
     QuickActionBaseAgent,
     SentenceRewriteAgent,
     SocialMediaAgent,
     SummarizeAgent,
+    ViolationDetectionAgent,
     WordSynonymAgent,
 )
 
 __all__ = [
-    "AdvisorAgent",
+    "ViolationDetectionAgent",
+    "ProposalAgent",
     "SentenceRewriteAgent",
     "WordSynonymAgent",
     "BulletPointAgent",
