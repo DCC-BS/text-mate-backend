@@ -258,15 +258,50 @@ class AdvisorService:
 
         tasks = [asyncio.ensure_future(run_batch(batch)) for batch in batches]
 
-        checked_rules = 0
-        for completed in asyncio.as_completed(tasks):
-            batch_size, new_violations = await completed
-            checked_rules += batch_size
-            yield RulesValidationContainer(
-                violations=new_violations,
-                checked=checked_rules,
-                total=total_rules,
-            )
+        try:
+            checked_rules = 0
+            for completed in asyncio.as_completed(tasks):
+                batch_size, new_violations = await completed
+                checked_rules += batch_size
+                yield RulesValidationContainer(
+                    violations=new_violations,
+                    checked=checked_rules,
+                    total=total_rules,
+                )
+        finally:
+            # If the consumer stops iterating (client disconnect → CancelledError),
+            # cancel any still-running batches so in-flight LLM calls don't keep
+            # running (and costing) after nobody is listening.
+            for task in tasks:
+                if not task.done():
+                    task.cancel()
+            if tasks:
+                await asyncio.gather(*tasks, return_exceptions=True)
+
+    def _resolve_and_dedup(
+        self,
+        violations: list[DetectionViolation],
+        text: str,
+        rule_lookup: dict[str, Rule],
+    ) -> list[ResolvedDetection]:
+        """Resolve detection snippets to character positions and drop duplicates.
+
+        Repeated identical snippets are tracked per rule via consumed offsets so
+        that the second occurrence resolves to a distinct position instead of
+        being collapsed onto the first (and then dropped as a duplicate).
+        """
+        survivors: list[ResolvedDetection] = []
+        consumed_by_rule: dict[str, list[tuple[int, int]]] = {}
+        for violation in violations:
+            consumed = consumed_by_rule.get(violation.rule_name)
+            resolved = self._resolve_detection(violation, text, rule_lookup, consumed_ranges=consumed)
+            if resolved is None:
+                continue
+            if self._is_duplicate(resolved, survivors):
+                continue
+            survivors.append(resolved)
+            consumed_by_rule.setdefault(violation.rule_name, []).append((resolved.range.start, resolved.range.end))
+        return survivors
 
     async def _process_batch(
         self,
@@ -282,8 +317,6 @@ class AdvisorService:
         parallel.
         """
 
-        seen_detections: list[ResolvedDetection] = []
-
         # --- Step 1: detection -------------------------------------------------
         try:
             detection_result: DetectionResult = await asyncio.wait_for(
@@ -295,15 +328,7 @@ class AdvisorService:
             return []
 
         # Resolve positions + dedup before requesting proposals (skip wasted calls).
-        survivors: list[ResolvedDetection] = []
-        for violation in detection_result.violations:
-            resolved = self._resolve_detection(violation, text, rule_lookup)
-            if resolved is None:
-                continue
-            if self._is_duplicate(resolved, seen_detections):
-                continue
-            survivors.append(resolved)
-            seen_detections.append(resolved)
+        survivors = self._resolve_and_dedup(detection_result.violations, text, rule_lookup)
 
         if not survivors:
             return []
@@ -362,7 +387,11 @@ class AdvisorService:
         return text[start:end]
 
     def _resolve_detection(
-        self, violation: DetectionViolation, text: str, rule_lookup: dict[str, Rule]
+        self,
+        violation: DetectionViolation,
+        text: str,
+        rule_lookup: dict[str, Rule],
+        consumed_ranges: list[tuple[int, int]] | None = None,
     ) -> ResolvedDetection | None:
         """Resolve a detection's source snippet to character positions in the original text."""
         source = violation.source.strip()
@@ -370,7 +399,7 @@ class AdvisorService:
             logger.warn(f"Empty source for violation: {violation.rule_name}")
             return None
 
-        found = self._find_source(source, text)
+        found = self._find_source(source, text, consumed=consumed_ranges)
         if found is None:
             logger.warn(f"Could not locate source in text: '{source[:80]}' (rule: {violation.rule_name})")
             return None
@@ -402,15 +431,50 @@ class AdvisorService:
             collection=resolved.collection,
         )
 
-    def _find_source(self, source: str, text: str) -> tuple[int, int] | None:
-        """Try to locate source in text. Returns (position, length) or None."""
-        pos = text.find(source)
+    def _find_source(
+        self, source: str, text: str, consumed: list[tuple[int, int]] | None = None
+    ) -> tuple[int, int] | None:
+        """Try to locate source in text. Returns (position, length) or None.
+
+        When ``consumed`` ranges are given, the first match that does not overlap
+        any consumed range is returned. This lets repeated identical snippets
+        resolve to distinct occurrences instead of all collapsing onto the first
+        (which would then be dropped as a duplicate by ``_is_duplicate``).
+        """
+        if not consumed:
+            return self._find_source_first(source, text, 0)
+
+        min_start = 0
+        last_pos = -1
+        while True:
+            found = self._find_source_first(source, text, min_start)
+            if found is None:
+                return None
+            pos, match_len = found
+            if not self._overlaps_any((pos, pos + match_len), consumed):
+                return found
+            # Match overlaps an already-consumed span: advance and look for the next.
+            if pos <= last_pos:
+                # No progress possible (normalized/fuzzy paths ignore ``start``);
+                # return the best we have rather than loop forever.
+                return found
+            last_pos = pos
+            min_start = pos + 1
+
+    def _find_source_first(self, source: str, text: str, start: int = 0) -> tuple[int, int] | None:
+        """Single-pass search cascade from a minimum start offset.
+
+        The exact and case-insensitive paths honour ``start``; the normalized and
+        fuzzy fallbacks do not (they are rare edge cases) and return the first
+        match instead.
+        """
+        pos = text.find(source, start)
         if pos != -1:
             return pos, len(source)
 
         lower_text = text.lower()
         lower_source = source.lower()
-        pos = lower_text.find(lower_source)
+        pos = lower_text.find(lower_source, start)
         if pos != -1:
             return pos, len(source)
 
@@ -418,24 +482,49 @@ class AdvisorService:
         normalized_source = self._normalize_whitespace(source)
         pos = normalized_text.find(normalized_source)
         if pos != -1:
-            orig_pos = self._map_normalized_to_original(text, normalized_text, pos)
-            if orig_pos is not None:
-                return orig_pos, len(source)
+            orig_start = self._map_normalized_to_original(text, normalized_text, pos)
+            if orig_start is not None:
+                # Map the end of the normalized match back to original coords so
+                # collapsed-whitespace runs are reflected in the span length. Only
+                # apply the corrected length when it is at least as long as the
+                # (possibly whitespace-rich) source; otherwise fall back to be safe.
+                orig_end = self._map_normalized_to_original(text, normalized_text, pos + len(normalized_source))
+                if orig_end is not None and orig_end - orig_start >= len(source):
+                    return orig_start, orig_end - orig_start
+                return orig_start, len(source)
 
         return self._fuzzy_find(source, text)
+
+    @staticmethod
+    def _overlaps_any(rng: tuple[int, int], ranges: list[tuple[int, int]]) -> bool:
+        for r in ranges:
+            if min(rng[1], r[1]) > max(rng[0], r[0]):
+                return True
+        return False
 
     def _normalize_whitespace(self, text: str) -> str:
         return re.sub(r"\s+", " ", text)
 
     def _map_normalized_to_original(self, original: str, normalized: str, norm_pos: int) -> int | None:
+        """Map a position in whitespace-normalized text back to the original text.
+
+        Whitespace normalization collapses each run of whitespace to a single
+        space, so one normalized space corresponds to a run of 1+ whitespace chars
+        in the original. This walks both in lockstep, consuming whole original
+        whitespace runs so the mapping is correct even across collapsed runs.
+        """
         orig_pos = 0
         norm_idx = 0
         while norm_idx < norm_pos and orig_pos < len(original):
-            if normalized[norm_idx] == original[orig_pos]:
+            if normalized[norm_idx] == original[orig_pos] and not original[orig_pos].isspace():
                 norm_idx += 1
                 orig_pos += 1
-            elif normalized[norm_idx] == " " and original[orig_pos].isspace():
+            elif normalized[norm_idx].isspace() and original[orig_pos].isspace():
+                norm_idx += 1
                 orig_pos += 1
+                # Consume the remainder of this original whitespace run.
+                while orig_pos < len(original) and original[orig_pos].isspace():
+                    orig_pos += 1
             else:
                 return None
         return orig_pos if norm_idx == norm_pos else None

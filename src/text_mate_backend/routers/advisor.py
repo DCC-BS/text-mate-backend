@@ -104,6 +104,14 @@ def create_router(
             except asyncio.CancelledError:
                 logger.info("Client disconnected from advisor fix stream")
                 raise
+            except Exception:
+                # The response (200 + text/plain) is already sent, so we cannot
+                # signal the error to the client without corrupting the text
+                # stream. Log the full traceback at the router boundary (matching
+                # /validate) and re-raise so the connection closes rather than
+                # completing as if nothing went wrong.
+                logger.exception("Unhandled error during advisor fix stream")
+                raise
 
         return StreamingResponse(
             text_generator(),

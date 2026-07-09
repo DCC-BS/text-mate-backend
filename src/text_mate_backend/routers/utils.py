@@ -1,4 +1,4 @@
-from typing import TypeVar
+from typing import TypeVar, cast
 
 from dcc_backend_common.logger import get_logger
 from returns.result import Failure, Result, Success
@@ -62,7 +62,7 @@ def handle_result(result: Result[T, Exception], request_id: str | None = None) -
             )
 
         case Success(value):
-            return value
+            return cast(T, value)
 
         case _:
             logger.error("Unknown result type returned", result_type=str(type(result)), **log_context)
