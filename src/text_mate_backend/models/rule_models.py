@@ -45,8 +45,14 @@ class ProposalRequest(BaseModel):
 
 
 class ViolationRange(BaseModel):
-    start: int = Field(description="Start character position (0-based) of the violating text")
-    end: int = Field(description="End character position (exclusive) of the violating text")
+    start: int = Field(
+        description="Start position (0-based) of the violating text, "
+        "as a UTF-16 code-unit index (JavaScript-compatible)"
+    )
+    end: int = Field(
+        description="End position (exclusive) of the violating text, "
+        "as a UTF-16 code-unit index (JavaScript-compatible)"
+    )
 
 
 class ResolvedDetection(BaseModel):

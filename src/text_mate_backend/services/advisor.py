@@ -351,7 +351,7 @@ class AdvisorService:
                     f"at [{resolved.range.start}:{resolved.range.end}]: {proposal}. Dropping violation."
                 )
                 continue
-            results.append(self._build_violation_result(resolved, proposal))
+            results.append(self._build_violation_result(resolved, proposal, text))
         return results
 
     def _build_proposal_request(
@@ -419,7 +419,11 @@ class AdvisorService:
             collection=rule.collection if rule else "",
         )
 
-    def _build_violation_result(self, resolved: ResolvedDetection, proposal: str) -> ViolationResult:
+    def _build_violation_result(self, resolved: ResolvedDetection, proposal: str, text: str) -> ViolationResult:
+        # API boundary: the frontend is JavaScript, which indexes strings by
+        # UTF-16 code units. All internal work (resolution, dedup, slicing) runs
+        # on Python code points, so we translate the range to UTF-16 here, on the
+        # way out. See ``_to_utf16_offset`` for the rationale.
         return ViolationResult(
             rule_name=resolved.rule_name,
             reason=resolved.reason,
@@ -427,14 +431,44 @@ class AdvisorService:
             source=resolved.source,
             file_name=resolved.file_name,
             page_number=resolved.page_number,
-            range=resolved.range,
+            range=ViolationRange(
+                start=self._to_utf16_offset(text, resolved.range.start),
+                end=self._to_utf16_offset(text, resolved.range.end),
+            ),
             collection=resolved.collection,
         )
+
+    @staticmethod
+    def _to_utf16_offset(text: str, codepoint_offset: int) -> int:
+        """Translate a Python code-point index into a JavaScript UTF-16 code-unit index.
+
+        Python ``str`` is a sequence of Unicode code points; ``str.find`` /
+        slicing / regex offsets are therefore code-point based. JavaScript, by
+        contrast, stores strings as UTF-16 and indexes them by **code unit**.
+        The two indexing schemes agree for every Basic Multilingual Plane (BMP)
+        character — that covers all of Latin, umlauts, ``ß``, accented letters,
+        Cyrillic, CJK, etc. They diverge only for code points >= U+10000
+        (supplementary plane: emoji, some symbols, historic scripts), which are
+        a single Python code point but two UTF-16 code units (a surrogate pair).
+
+        For each character before ``codepoint_offset`` we add 2 when it lies
+        outside the BMP and 1 otherwise, yielding the offset a JS consumer would
+        compute. This keeps UTF-16 translation at the API boundary only; all
+        internal resolution logic continues to operate on code points.
+        """
+        return sum(2 if ord(ch) >= 0x10000 else 1 for ch in text[:codepoint_offset])
 
     def _find_source(
         self, source: str, text: str, consumed: list[tuple[int, int]] | None = None
     ) -> tuple[int, int] | None:
         """Try to locate source in text. Returns (position, length) or None.
+
+        All offsets here are **Python code points** (the native ``str`` indexing
+        unit), not UTF-8 bytes and not UTF-16 code units. This is deliberate:
+        the result feeds back into Python slicing (``text[pos:end]``), regex
+        offsets, dedup and the ``consumed`` loop, which all operate on code
+        points. Translation to JavaScript UTF-16 code-unit indices happens once,
+        at the API boundary, in ``_build_violation_result``.
 
         When ``consumed`` ranges are given, the first match that does not overlap
         any consumed range is returned. This lets repeated identical snippets

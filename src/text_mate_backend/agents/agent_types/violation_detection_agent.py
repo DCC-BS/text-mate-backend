@@ -68,12 +68,10 @@ class ViolationDetectionAgent(BaseAgent[RulesContainer, DetectionResult]):
         return []
 
     def create_agent(self, model: Model):
-        settings = OpenAIResponsesModelSettings(openai_reasoning_effort="medium", openai_reasoning_summary="detailed")
         agent = Agent(
             model=model,
             deps_type=RulesContainer,
             output_type=DetectionResult,
-            model_settings=settings,
             name="Violation Detection Agent",
             description="Detects violations of editorial rules in a text and returns structured findings",
             metadata=lambda ctx: build_agent_metadata(

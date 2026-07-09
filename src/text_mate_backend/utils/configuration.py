@@ -45,6 +45,8 @@ class Configuration(LlmConfig):
             llm_api_key=llm_api_key,
             llm_url=get_env_or_throw("LLM_URL"),
             llm_model=get_env_or_throw("LLM_MODEL"),
+            llm_timeout=60 * 5,
+            llm_max_retries=2,
             docling_url=get_env_or_throw("DOCLING_URL"),
             docling_api_key=get_env_or_throw("DOCLING_API_KEY"),
             llm_health_check_url=get_env_or_throw("LLM_HEALTH_CHECK_URL"),

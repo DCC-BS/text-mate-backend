@@ -17,7 +17,7 @@ dependencies = [
     "pydantic-ai<2.0.0",
     "logfire>=4.22.0",
     "pyyaml>=6.0.2",
-    "dcc-backend-common[fastapi]>=0.1.12",
+    "dcc-backend-common[fastapi]>=0.1.13",
     "zix @ git+https://github.com/machinelearningZH/zix_understandability-index",
     # Pin scikit-learn to match the version zix's bundled pickles were built with.
     "scikit-learn>=1.8,<1.9",

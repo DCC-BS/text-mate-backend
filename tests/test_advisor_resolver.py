@@ -238,3 +238,73 @@ class TestMapNormalizedToOriginal:
         normalized = svc._normalize_whitespace(text)  # "abc def"
         # 'd' is at normalized index 4 but original index 5 (after double space).
         assert svc._map_normalized_to_original(text, normalized, 4) == 5
+
+
+class TestToUtf16Offset:
+    def test_bmp_text_unchanged(self) -> None:
+        # All BMP (umlauts, ß) — UTF-16 code-unit count equals code-point count.
+        assert AdvisorService._to_utf16_offset("Grüße Anhörung", 6) == 6
+
+    def test_supplementary_char_before_offset_counts_double(self) -> None:
+        # 🎉 (U+1F389) is one Python code point but two UTF-16 units.
+        text = "🎉Anhörung"
+        assert AdvisorService._to_utf16_offset(text, 1) == 2
+
+    def test_supplementary_char_after_offset_ignored(self) -> None:
+        text = "abc🎉"
+        assert AdvisorService._to_utf16_offset(text, 3) == 3
+
+    def test_mixed_offsets(self) -> None:
+        text = "a🎉b🎉c"  # code points: a(0) 🎉(1) b(2) 🎉(3) c(4)
+        assert AdvisorService._to_utf16_offset(text, 1) == 1  # "a"
+        assert AdvisorService._to_utf16_offset(text, 3) == 4  # "a🎉b" -> 1+2+1
+        assert AdvisorService._to_utf16_offset(text, 5) == 7  # whole string
+
+    def test_zero_and_past_end(self) -> None:
+        assert AdvisorService._to_utf16_offset("🎉abc", 0) == 0
+        assert AdvisorService._to_utf16_offset("🎉abc", 4) == 5
+
+
+class TestBuildViolationResultUtf16:
+    def _resolved(self, text: str, snippet: str) -> ResolvedDetection:
+        start = text.find(snippet)
+        return ResolvedDetection(
+            rule_name="r",
+            reason="Grund",
+            source=snippet,
+            range=ViolationRange(start=start, end=start + len(snippet)),
+            file_name="doc.pdf",
+            page_number=1,
+            collection="c",
+        )
+
+    def test_range_translated_to_utf16_with_emoji_before_match(self) -> None:
+        svc = make_service()
+        # "Anhörung" sits after an emoji; the emoji is 1 code point but 2 UTF-16
+        # units, so the JS-visible offsets are each +1 versus the code points.
+        text = "Test 🎉 Anhörung."
+        resolved = self._resolved(text, "Anhörung")
+        result = svc._build_violation_result(resolved, "Vorschlag", text)
+        assert result.range.start == resolved.range.start + 1
+        assert result.range.end == resolved.range.end + 1
+
+    def test_bmp_only_range_unchanged(self) -> None:
+        svc = make_service()
+        text = "Grüße und Anhörung."
+        resolved = self._resolved(text, "Anhörung")
+        result = svc._build_violation_result(resolved, "Vorschlag", text)
+        assert result.range.start == resolved.range.start
+        assert result.range.end == resolved.range.end
+
+    def test_source_and_other_fields_preserved(self) -> None:
+        svc = make_service()
+        text = "Test 🎉 Anhörung."
+        resolved = self._resolved(text, "Anhörung")
+        result = svc._build_violation_result(resolved, "Vorschlaß", text)
+        assert result.source == "Anhörung"
+        assert result.proposal == "Vorschlass"  # ß -> ss
+        assert result.rule_name == resolved.rule_name
+        assert result.reason == resolved.reason
+        assert result.file_name == resolved.file_name
+        assert result.page_number == resolved.page_number
+        assert result.collection == resolved.collection
