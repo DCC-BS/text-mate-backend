@@ -4,7 +4,6 @@ from contextlib import asynccontextmanager
 from dcc_backend_common.fastapi_error_handling import inject_api_error_handler
 from dcc_backend_common.fastapi_health_probes import health_probe_router
 from dcc_backend_common.fastapi_health_probes.router import ServiceDependency
-from dcc_backend_common.fastapi_logging_middleware import add_logging_middleware
 from dcc_backend_common.logger import get_logger, init_logger
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

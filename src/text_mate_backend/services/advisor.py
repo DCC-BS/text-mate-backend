@@ -207,6 +207,15 @@ class AdvisorService:
                 }
             ) from e
 
+    def can_access_document(self, document_name: str, user: User | None):
+        doc_descriptions = [x for x in self.doc_descriptions if document_name in x.files]
+
+        for desc in doc_descriptions:
+            if self._has_access(user, desc):
+                return True
+
+        return False
+
     def _has_access(self, user: User | None, doc: RuleDocumentDescription) -> bool:
         if "all" in doc.access:
             return True

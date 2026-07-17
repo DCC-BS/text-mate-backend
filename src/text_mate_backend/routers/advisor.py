@@ -7,12 +7,13 @@ from dcc_backend_common.fastapi_error_handling import ApiErrorCodes, api_error_e
 from dcc_backend_common.logger import get_logger
 from dcc_backend_common.usage_tracking import UsageTrackingService
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.params import Security
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi_azure_auth.user import User
 from pydantic import BaseModel, Field
 
+from starlette.status import HTTP_403_FORBIDDEN
 from text_mate_backend.container import Container
 from text_mate_backend.models.error_codes import NO_DOCUMENT
 from text_mate_backend.models.error_response import ApiErrorException
@@ -49,10 +50,9 @@ def create_router(
 
     @router.post("/validate", dependencies=[Security(auth_scheme)])
     async def validate_advisor(
-        request: Request,
         data: AdvisorInput,
         current_user: Annotated[User, Depends(auth_scheme)],
-    ) -> StreamingResponse:
+    ) -> AsyncIterable[RulesValidationContainer]:
         usage_tracking_service.log_event(
             "advisor",
             validate_advisor.__name__,
@@ -75,20 +75,15 @@ def create_router(
 
     @router.post("/fix", dependencies=[Security(auth_scheme)])
     async def fix_text(
-        request: Request,
         data: FixRequest,
         current_user: Annotated[User, Depends(auth_scheme)],
     ) -> StreamingResponse:
-        pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
-
-        logger.info(
-            "app_event",
-            extra={
-                "pseudonym_id": pseudonymized_user_id,
-                "event": fix_text.__name__,
-                "text_length": len(data.text),
-                "thread_count": len(data.threads),
-            },
+        usage_tracking_service.log_event(
+            "advisor",
+            fix_text.__name__,
+            get_user_id(current_user),
+            text_length=len(data.text),
+            thread_count=len(data.threads)
         )
 
         async def text_generator() -> AsyncGenerator[str, None]:
@@ -119,15 +114,24 @@ def create_router(
         )
 
     @router.get("/doc/{name}", dependencies=[Security(auth_scheme)])
-    async def get_document(name: str) -> FileResponse:
+    async def get_document(name: str, current_user: Annotated[User, Depends(auth_scheme)]) -> FileResponse:
         """
         Get the document description by name.
         """
+        usage_tracking_service.log_event(
+            "advisor",
+            get_document.__name__,
+            get_user_id(current_user),
+            document_name=name
+        )
 
         file_path = path.join("assets/docs", name)
 
         if not path.exists(file_path):
             raise ApiErrorException({"status": 404, "errorId": NO_DOCUMENT, "debugMessage": "Document not found"})
+
+        if not advisor_service.can_access_document(name, current_user):
+            raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="User does not have access to this document")
 
         return FileResponse(path=file_path, media_type="application/pdf", filename=name)
 
