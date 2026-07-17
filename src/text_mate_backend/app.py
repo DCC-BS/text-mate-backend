@@ -21,7 +21,6 @@ from text_mate_backend.routers import (
     user_action_route,
     word_synonym,
 )
-from text_mate_backend.utils.middleware import add_logging_middleware
 
 
 def create_app() -> FastAPI:
@@ -93,9 +92,6 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
     logger.info(f"CORS configured with origin: {config.client_url}")
-
-    # Add logging middleware
-    add_logging_middleware(app)
 
     # Include routers
     logger.debug("Registering API routers")

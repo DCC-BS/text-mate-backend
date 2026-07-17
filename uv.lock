@@ -11,11 +11,11 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "2026-07-02T10:17:28.688615535Z"
+exclude-newer = "2026-07-09T08:01:11.488665712Z"
 exclude-newer-span = "P1W"
 
 [options.exclude-newer-package]
-dcc-backend-common = { timestamp = "2026-07-09T10:17:28.688628544Z", span = "PT0S" }
+dcc-backend-common = { timestamp = "2026-07-16T08:01:11.488676472Z", span = "PT0S" }
 
 [[package]]
 name = "ag-ui-protocol"
@@ -709,7 +709,7 @@ wheels = [
 
 [[package]]
 name = "dcc-backend-common"
-version = "0.1.13"
+version = "0.1.16"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "datasets" },
@@ -718,9 +718,9 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "structlog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d5/e1/0531e363c3183067baacf1ebc371813a6eec8fdcd37dbce220a771e7c083/dcc_backend_common-0.1.13.tar.gz", hash = "sha256:8ee8ab6778bc6cc77e05a4d21ce2a2d217772c2b72fdc4d30e90ff157a6440a2", size = 218727, upload-time = "2026-07-09T10:01:20.008Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5f/a9/298ec8e092a58e712c3856f93b837a6aef923c9f1824f89feeed998a594a/dcc_backend_common-0.1.16.tar.gz", hash = "sha256:f2aa64ad7445f7deb89eb7724e5d5ba7a5e1c84f97bb66cf0bf1c8827b346584", size = 224482, upload-time = "2026-07-16T07:50:33.575Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/33/33/341efbdb20766528821407c9f6b6d7e04ec1bb299613558a51b7ab293a67/dcc_backend_common-0.1.13-py3-none-any.whl", hash = "sha256:18a1e95914493840601a3dfd6e4687481625559fa4af68fbee8011bcef50097a", size = 26356, upload-time = "2026-07-09T10:01:19.02Z" },
+    { url = "https://files.pythonhosted.org/packages/a7/03/fbf9a66f4551345bd7384158f00bf0c00a8c1ecef49ee367f4aeb13ad5dd/dcc_backend_common-0.1.16-py3-none-any.whl", hash = "sha256:f8d585010f03b1ae368a3aa2600954703b68ba5e1427d94c830d4c6a57ccd2b0", size = 28194, upload-time = "2026-07-16T07:50:32.578Z" },
 ]
 
 [package.optional-dependencies]
@@ -4171,7 +4171,7 @@ wheels = [
 
 [[package]]
 name = "text-mate-backend"
-version = "1.5.0"
+version = "1.6.0"
 source = { editable = "." }
 dependencies = [
     { name = "dcc-backend-common", extra = ["fastapi"] },
@@ -4210,7 +4210,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "dcc-backend-common", extras = ["fastapi"], specifier = ">=0.1.13" },
+    { name = "dcc-backend-common", extras = ["fastapi"], specifier = ">=0.1.16" },
     { name = "dependency-injector", specifier = ">=4.48.3" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.128.2" },
     { name = "fastapi-azure-auth", specifier = ">=5.2.0" },
