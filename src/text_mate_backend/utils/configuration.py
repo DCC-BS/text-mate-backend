@@ -35,7 +35,15 @@ class Configuration(LlmConfig):
     @override
     def from_env(cls) -> "Configuration":
         llm_api_key = os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY")
-        disable_auth = os.getenv("AUTH_MODE", "none").lower().strip() == "none"
+        # Fail closed: a missing AUTH_MODE must never silently disable authentication.
+        disable_auth = get_env_or_throw("AUTH_MODE").lower().strip() == "none"
+        app_mode = os.getenv("APP_MODE", "prod")
+
+        if disable_auth and app_mode == "prod":
+            raise ValueError(
+                "AUTH_MODE=none is not allowed when APP_MODE=prod: "
+                "refusing to start with authentication disabled in production"
+            )
 
         if not llm_api_key:
             raise ValueError("LLM_API_KEY environment variable must be set")
@@ -54,7 +62,7 @@ class Configuration(LlmConfig):
             azure_scope_description="" if disable_auth else get_env_or_throw("AZURE_SCOPE_DESCRIPTION"),
             hmac_secret=get_env_or_throw("HMAC_SECRET"),
             disable_auth=disable_auth,
-            environment="production" if os.getenv("APP_MODE", "prod") == "prod" else "development",
+            environment="production" if app_mode == "prod" else "development",
         )
 
     @override

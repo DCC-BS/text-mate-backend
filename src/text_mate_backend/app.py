@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from dcc_backend_common.fastapi_error_handling import inject_api_error_handler
 from dcc_backend_common.fastapi_health_probes import health_probe_router
 from dcc_backend_common.fastapi_health_probes.router import ServiceDependency
+from dcc_backend_common.fastapi_logging_middleware import add_logging_middleware
 from dcc_backend_common.logger import get_logger, init_logger
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,7 +22,6 @@ from text_mate_backend.routers import (
     user_action_route,
     word_synonym,
 )
-from text_mate_backend.utils.middleware import add_logging_middleware
 
 
 def create_app() -> FastAPI:
@@ -37,10 +37,16 @@ def create_app() -> FastAPI:
         modules=[advisor, quick_action, word_synonym, sentence_rewrite, convert_route, user_action_route, text_analysis]
     )
     container.check_dependencies()
-    logger.info("Dependency injection configured")
+    logger.debug("Dependency injection configured")
 
     config = container.config()
     logger.info(f"Running with configuration: {config}")
+
+    if config.disable_auth:
+        logger.warning(
+            "Authentication is DISABLED - all requests are treated as anonymous",
+            environment=config.environment,
+        )
 
     # only in development mode, enable pydantic_ai logfire instrumentation
     if config.environment == "development":
@@ -62,7 +68,7 @@ def create_app() -> FastAPI:
         serving requests.
         """
 
-        logger.info(f"Disable Auth is {config.disable_auth}")
+        logger.info("Authentication mode configured", disable_auth=config.disable_auth)
 
         if not config.disable_auth:
             await container.azure_service().load_config()
@@ -92,7 +98,7 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    logger.info(f"CORS configured with origin: {config.client_url}")
+    logger.debug("CORS configured", origin=config.client_url)
 
     # Add logging middleware
     add_logging_middleware(app)
@@ -106,7 +112,7 @@ def create_app() -> FastAPI:
     app.include_router(convert_route.create_router())
     app.include_router(user_action_route.create_router())
     app.include_router(text_analysis.create_router())
-    logger.info("All routers registered")
+    logger.debug("All routers registered")
 
     logger.info("API setup complete")
     return app

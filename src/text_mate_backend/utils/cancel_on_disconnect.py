@@ -8,7 +8,7 @@ logger = get_logger("cancel_on_disconnect")
 
 
 async def _monitor_disconnect(request: Request, task: asyncio.Task[None]) -> None:
-    logger.info("Starting disconnect monitor")
+    logger.debug("Starting disconnect monitor")
     try:
         while not task.done():
             try:
@@ -16,14 +16,14 @@ async def _monitor_disconnect(request: Request, task: asyncio.Task[None]) -> Non
                 if message["type"] == "http.disconnect":
                     task.cancel()
                     break
-            except Exception as e:
-                logger.warning(f"Error receiving message: {e}")
+            except Exception:
+                logger.warning("Error receiving message in disconnect monitor", exc_info=True)
                 break
             await asyncio.sleep(0.1)
     except asyncio.CancelledError:
         raise
-    except Exception as e:
-        logger.error(f"Unexpected error in disconnect monitor: {e}")
+    except Exception:
+        logger.exception("Unexpected error in disconnect monitor")
 
 
 class CancelOnDisconnect:
@@ -56,7 +56,7 @@ class CancelOnDisconnect:
             except (asyncio.CancelledError, asyncio.TimeoutError):
                 # Expected when cancelling
                 pass
-            except Exception as e:
-                logger.warning(f"Error during disconnect monitor cleanup: {e}")
+            except Exception:
+                logger.warning("Error during disconnect monitor cleanup", exc_info=True)
             finally:
                 self.disconnect_monitor = None

@@ -216,7 +216,7 @@ make run
 Or manually:
 
 ```bash
-FORCE_COLOR=1 varlock run -- uv run fastapi run ./src/text_mate_backend/app.py --port 8000
+varlock run -- uv run uvicorn text_mate_backend.app:app --port 8000 --no-access-log
 ```
 
 ## Docker Deployment

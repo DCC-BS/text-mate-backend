@@ -76,7 +76,7 @@ class QuickActionService:
             )
 
         if action not in [member.value for member in Actions]:
-            logger.info(f"{action} is not of type {[member.value for member in Actions]}")
+            logger.debug("Action is not a predefined quick action, treating as custom user action", action=str(action))
             user_action = self.user_action_service.get_action(action)
             context = QuickActionContext(
                 text=text, options=";".join(filtered_segments), language=language, extras=user_action
@@ -95,9 +95,9 @@ class QuickActionService:
             return response
         except Exception as e:
             process_time = time.time() - start_time
-            logger.error(
-                f"Quick action {action} failed",
-                error=str(e),
+            logger.exception(
+                "Quick action failed",
+                action=str(action),
                 error_type=type(e).__name__,
                 processing_time_ms=round(process_time * 1000),
             )

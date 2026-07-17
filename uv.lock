@@ -517,14 +517,14 @@ name = "cohere"
 version = "7.0.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "fastavro" },
-    { name = "httpx" },
-    { name = "pydantic" },
-    { name = "pydantic-core" },
-    { name = "requests" },
-    { name = "tokenizers" },
-    { name = "types-requests" },
-    { name = "typing-extensions" },
+    { name = "fastavro", marker = "sys_platform != 'emscripten'" },
+    { name = "httpx", marker = "sys_platform != 'emscripten'" },
+    { name = "pydantic", marker = "sys_platform != 'emscripten'" },
+    { name = "pydantic-core", marker = "sys_platform != 'emscripten'" },
+    { name = "requests", marker = "sys_platform != 'emscripten'" },
+    { name = "tokenizers", marker = "sys_platform != 'emscripten'" },
+    { name = "types-requests", marker = "sys_platform != 'emscripten'" },
+    { name = "typing-extensions", marker = "sys_platform != 'emscripten'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/cf/3c/670631ee223d7b64d157dc3f309bf93bde65efe0bb1a8341d9b575f407d3/cohere-7.0.4.tar.gz", hash = "sha256:35b6a397d35ae6eafa1a02921f42c2a98309a990874533e5238efaf3426b6a21", size = 208794, upload-time = "2026-06-11T15:17:52.994Z" }
 wheels = [
@@ -766,7 +766,7 @@ wheels = [
 
 [[package]]
 name = "dcc-backend-common"
-version = "0.1.11"
+version = "0.1.18"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "datasets" },
@@ -775,9 +775,9 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "structlog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/36/73/71040a7b05249beb909a3e66bfdb3d7bc2ade5b52c78ef170a8330ff49b8/dcc_backend_common-0.1.11.tar.gz", hash = "sha256:4b824589e778ac228c2c616113eef40673198c60960213870a967185acc6a404", size = 234188, upload-time = "2026-05-29T09:31:42.329Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/dd/10/cca9b93512e1c97d505b84eb6a6a4f32dac47bc542e3da1d8e527622f132/dcc_backend_common-0.1.18.tar.gz", hash = "sha256:7bbdb40e7317084c9bb84ceb03df7543a1374942527871bf884e94a6143c0d02", size = 226736, upload-time = "2026-07-17T09:40:26.114Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/0e/d1/2f5e6409c0f6071845346abb258dfb05a56a3c43443d4d400b97ebfbf9f7/dcc_backend_common-0.1.11-py3-none-any.whl", hash = "sha256:e342b998bf9311f1782880b087beeb2c3f6426b35988e40b1edb07cdcb74cbcb", size = 25615, upload-time = "2026-05-29T09:31:41.386Z" },
+    { url = "https://files.pythonhosted.org/packages/82/c8/dc82092e4e89d59f81626b3dbcbefa491121cf74f792b9b637031b3c03d9/dcc_backend_common-0.1.18-py3-none-any.whl", hash = "sha256:b6befe641aa18c2728770585cfdb99eed9385e6a67a92bef225f1dcf40a993d7", size = 31196, upload-time = "2026-07-17T09:40:24.999Z" },
 ]
 
 [package.optional-dependencies]
@@ -4258,7 +4258,7 @@ wheels = [
 
 [[package]]
 name = "text-mate-backend"
-version = "1.5.0"
+version = "1.5.1"
 source = { editable = "." }
 dependencies = [
     { name = "dcc-backend-common", extra = ["fastapi"] },
@@ -4296,7 +4296,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "dcc-backend-common", extras = ["fastapi"], specifier = ">=0.1.10" },
+    { name = "dcc-backend-common", extras = ["fastapi"], specifier = ">=0.1.18" },
     { name = "dependency-injector", specifier = ">=4.48.3" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.128.2" },
     { name = "fastapi-azure-auth", specifier = ">=5.2.0" },
@@ -4447,7 +4447,7 @@ name = "tokenizers"
 version = "0.23.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "huggingface-hub" },
+    { name = "huggingface-hub", marker = "sys_platform != 'emscripten'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/c1/60/21f715d9faba5f5407ff759472ade058ec4a507ad62bcea47cb847239a73/tokenizers-0.23.1.tar.gz", hash = "sha256:1feeeadf865a7915adc25445dea30e9933e593c31bb96c277cee36de227c8bfa", size = 365748, upload-time = "2026-04-27T14:43:25.606Z" }
 wheels = [

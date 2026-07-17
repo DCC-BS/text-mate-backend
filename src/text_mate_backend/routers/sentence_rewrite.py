@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from dcc_backend_common.logger import get_logger
+from dcc_backend_common.usage_tracking import UsageTrackingService
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request
 from fastapi.params import Security
@@ -13,7 +14,7 @@ from text_mate_backend.routers.utils import handle_exception
 from text_mate_backend.utils.auth import AuthSchema
 from text_mate_backend.utils.cancel_on_disconnect import CancelOnDisconnect
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
+from text_mate_backend.utils.usage_tracking import get_user_id
 
 logger = get_logger("sentence_rewrite_router")
 
@@ -22,6 +23,7 @@ logger = get_logger("sentence_rewrite_router")
 def create_router(
     auth_scheme: AuthSchema = Provide[Container.auth_scheme],
     config: Configuration = Provide[Container.config],
+    usage_tracking_service: UsageTrackingService = Provide[Container.usage_tracking_service],
 ) -> APIRouter:
     """
     Create and configure a FastAPI APIRouter for sentence rewriting.
@@ -29,7 +31,7 @@ def create_router(
     Returns:
         APIRouter: A router with the configured sentence-rewrite POST endpoint.
     """
-    logger.info("Creating sentence rewrite router")
+    logger.debug("Creating sentence rewrite router")
     router: APIRouter = APIRouter(prefix="/sentence-rewrite", tags=["sentence-rewrite"])
     agent = SentenceRewriteAgent(config)
 
@@ -39,15 +41,12 @@ def create_router(
         data: SentenceRewriteInput,
         current_user: Annotated[User, Depends(auth_scheme)],
     ) -> SentenceRewriteResult:
-        pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
-        logger.info(
-            "app_event",
-            extra={
-                "pseudonym_id": pseudonymized_user_id,
-                "event": rewrite_sentence.__name__,
-                "sentence_length": len(data.sentence),
-                "context_length": len(data.context),
-            },
+        usage_tracking_service.log_event(
+            "sentence_rewrite",
+            rewrite_sentence.__name__,
+            get_user_id(current_user),
+            sentence_length=len(data.sentence),
+            context_length=len(data.context),
         )
 
         try:
@@ -57,5 +56,5 @@ def create_router(
             handle_exception(exp)
             raise exp
 
-    logger.info("Sentence rewrite router configured")
+    logger.debug("Sentence rewrite router configured")
     return router
