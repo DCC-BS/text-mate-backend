@@ -19,8 +19,6 @@ class PromptOptions(BaseModel):
 
 
 async def create_streaming_response(generator: AsyncGenerator[str, None]) -> StreamingResponse:
-    logger = get_logger()
-
     async def generate() -> AsyncGenerator[str, None]:
         start_streaming_time = time.time()
         try:

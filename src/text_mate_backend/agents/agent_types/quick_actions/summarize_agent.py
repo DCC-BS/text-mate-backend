@@ -38,7 +38,7 @@ def format_options(options: str) -> str:
                 "Ein Management Summary ist je nach Länge des Textes einen Abschnitt bis eine Seite lang."
             )
         case _:
-            logger.warning("Unknown summarize option, defaulting to concise manner", extra={"options": options})
+            logger.warning("Unknown summarize option, defaulting to concise manner", options=options)
             return "in knapper Form."
 
 

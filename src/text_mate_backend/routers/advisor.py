@@ -5,6 +5,7 @@ from typing import Annotated
 
 from dcc_backend_common.fastapi_error_handling import ApiErrorCodes, api_error_exception
 from dcc_backend_common.logger import get_logger
+from dcc_backend_common.usage_tracking import UsageTrackingService
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request
 from fastapi.params import Security
@@ -20,8 +21,7 @@ from text_mate_backend.models.rule_models import RuleDocumentDescription, RulesV
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.fix_service import FixService
 from text_mate_backend.utils.auth import AuthSchema
-from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
+from text_mate_backend.utils.usage_tracking import get_user_id
 
 logger = get_logger("advisor_router")
 
@@ -36,9 +36,9 @@ def create_router(
     advisor_service: AdvisorService = Provide[Container.advisor_service],
     fix_service: FixService = Provide[Container.fix_service],
     auth_scheme: AuthSchema = Provide[Container.auth_scheme],
-    config: Configuration = Provide[Container.config],
+    usage_tracking_service: UsageTrackingService = Provide[Container.usage_tracking_service],
 ) -> APIRouter:
-    logger.info("Creating advisor router")
+    logger.debug("Creating advisor router")
     router: APIRouter = APIRouter(prefix="/advisor", tags=["advisor"])
 
     @router.get("/docs", dependencies=[Security(auth_scheme)])
@@ -52,16 +52,12 @@ def create_router(
         request: Request,
         data: AdvisorInput,
         current_user: Annotated[User, Depends(auth_scheme)],
-    ) -> AsyncIterable[RulesValidationContainer]:
-        pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
-
-        logger.info(
-            "app_event",
-            extra={
-                "pseudonym_id": pseudonymized_user_id,
-                "event": validate_advisor.__name__,
-                "text_length": len(data.text),
-            },
+    ) -> StreamingResponse:
+        usage_tracking_service.log_event(
+            "advisor",
+            validate_advisor.__name__,
+            get_user_id(current_user),
+            text_length=len(data.text),
         )
 
         try:
@@ -135,5 +131,5 @@ def create_router(
 
         return FileResponse(path=file_path, media_type="application/pdf", filename=name)
 
-    logger.info("Advisor router configured")
+    logger.debug("Advisor router configured")
     return router

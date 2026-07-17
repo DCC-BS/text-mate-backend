@@ -40,10 +40,11 @@ FUZZY_MATCH_THRESHOLD = 0.85
 @final
 class AdvisorService:
     def __init__(self, config: Configuration) -> None:
-        logger.info("Initializing AdvisorService")
+        logger.debug("Initializing AdvisorService")
 
         self.config = config
         self.rule_container = self._merge_rules_files(Path("assets/docs/rules"))
+        self.doc_descriptions = self._merge_meta_files(Path("assets/docs/meta"))
         self.detection_agent = ViolationDetectionAgent(config)
         self.proposal_agent = ProposalAgent(config)
 
@@ -53,7 +54,7 @@ class AdvisorService:
         Each file must be a valid RulesContainer with a 'rules' key.
         """
         if not directory.exists() or not directory.is_dir():
-            logger.error(f"Rules directory not found: {directory}")
+            logger.error("Rules directory not found", directory=str(directory))
             raise ApiErrorException(
                 {
                     "status": 500,
@@ -66,18 +67,18 @@ class AdvisorService:
         json_files = sorted(directory.glob("*.json"))
 
         if not json_files:
-            logger.warn(f"No JSON files found in rules directory: {directory}")
+            logger.warning("No JSON files found in rules directory", directory=str(directory))
             return RulesContainer(rules=[])
 
-        logger.info(f"Loading {len(json_files)} rules files from {directory}")
+        logger.debug("Loading rules files", file_count=len(json_files), directory=str(directory))
 
         for json_file in json_files:
             try:
                 container = RulesContainer.model_validate_json(json_file.read_text())
                 all_rules.extend(container.rules)
-                logger.info(f"Loaded {len(container.rules)} rules from {json_file.name}")
+                logger.debug("Loaded rules from file", rule_count=len(container.rules), file=json_file.name)
             except Exception as e:
-                logger.error(f"Error loading rules from {json_file}: {e}")
+                logger.exception("Error loading rules file", file=str(json_file))
                 raise ApiErrorException(
                     {
                         "status": 500,
@@ -86,7 +87,7 @@ class AdvisorService:
                     }
                 ) from e
 
-        logger.info(f"Total rules loaded: {len(all_rules)}")
+        logger.debug("Total rules loaded", rule_count=len(all_rules))
         return RulesContainer(rules=all_rules)
 
     def _merge_meta_files(self, directory: Path) -> list[RuleDocumentDescription]:
@@ -96,7 +97,7 @@ class AdvisorService:
         Raises an error if duplicate file names are found.
         """
         if not directory.exists() or not directory.is_dir():
-            logger.error(f"Meta directory not found: {directory}")
+            logger.error("Meta directory not found", directory=str(directory))
             raise ApiErrorException(
                 {
                     "status": 500,
@@ -110,10 +111,10 @@ class AdvisorService:
         json_files = sorted(directory.glob("*.json"))
 
         if not json_files:
-            logger.warn(f"No JSON files found in meta directory: {directory}")
+            logger.warning("No JSON files found in meta directory", directory=str(directory))
             return []
 
-        logger.info(f"Loading {len(json_files)} meta files from {directory}")
+        logger.debug("Loading meta files", file_count=len(json_files), directory=str(directory))
 
         for json_file in json_files:
             try:
@@ -124,7 +125,7 @@ class AdvisorService:
 
                 for doc in descriptions:
                     if doc.id in seen_files:
-                        logger.error(f"Duplicate file found: {doc.id} in {json_file.name}")
+                        logger.error("Duplicate document file found", doc_id=doc.id, file=json_file.name)
                         raise ApiErrorException(
                             {
                                 "status": 500,
@@ -135,9 +136,13 @@ class AdvisorService:
                     seen_files.add(doc.id)
 
                 all_descriptions.extend(descriptions)
-                logger.info(f"Loaded {len(descriptions)} document descriptions from {json_file.name}")
+                logger.debug(
+                    "Loaded document descriptions from file", description_count=len(descriptions), file=json_file.name
+                )
+            except ApiErrorException:
+                raise
             except Exception as e:
-                logger.error(f"Error loading meta from {json_file}: {e}")
+                logger.exception("Error loading meta file", file=str(json_file))
                 raise ApiErrorException(
                     {
                         "status": 500,
@@ -146,16 +151,14 @@ class AdvisorService:
                     }
                 ) from e
 
-        logger.info(f"Total document descriptions loaded: {len(all_descriptions)}")
+        logger.debug("Total document descriptions loaded", description_count=len(all_descriptions))
         return all_descriptions
 
     def get_docs(self, user: User | None) -> list[RuleDocumentDescription]:
         """
         Returns the documentation file names available for the advisor service.
         """
-        doc_descriptions = self._merge_meta_files(Path("assets/docs/meta"))
-
-        doc_descriptions = list(filter(lambda doc: self._has_access(user, doc), doc_descriptions))
+        doc_descriptions = list(filter(lambda doc: self._has_access(user, doc), self.doc_descriptions))
 
         doc_names = self.rule_container.document_names
 
@@ -195,7 +198,7 @@ class AdvisorService:
             logger.info("check_text_stream cancelled (client disconnect)")
             raise
         except Exception as e:
-            logger.error(f"Error checking text (stream): {e}")
+            logger.exception("Error checking text (stream)")
             raise ApiErrorException(
                 {
                     "status": 500,
@@ -225,7 +228,8 @@ class AdvisorService:
         rules = self.filter_rules(docs)
 
         if not rules:
-            logger.warn(f"No rules found for the documents {docs}")
+            logger.warning("No rules found for the selected documents", docs=list(docs))
+            # Maintain parity with the non-streaming API by yielding a single empty container
             yield RulesValidationContainer(violations=[], checked=0, total=0)
             return
 

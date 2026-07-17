@@ -43,15 +43,17 @@ def get_mimetype(path_source: Path) -> str:
     }
 
     logger.debug(
-        f"""Determined MIME type '{mimetypes.get(extension, "invalid")}'
-        for extension '{extension}' and path '{path_source}'"""
+        "Determined MIME type",
+        mime_type=mimetypes.get(extension, "invalid"),
+        extension=extension,
+        path=str(path_source),
     )
     return mimetypes.get(extension, "invalid")
 
 
 def validate_mimetype(mimetype: str, logger_context: dict[str, Any]) -> None:
     if len(mimetype) == 0:
-        logger.error("MIME type is empty", extra=logger_context)
+        logger.error("MIME type is empty", **logger_context)
 
         raise ApiErrorException(
             {
@@ -62,7 +64,7 @@ def validate_mimetype(mimetype: str, logger_context: dict[str, Any]) -> None:
         )
 
     if mimetype == "invalid":
-        logger.error("Invalid MIME type", extra=logger_context)
+        logger.error("Invalid MIME type", **logger_context)
         raise ApiErrorException(
             {
                 "errorId": INVALID_MIME_TYPE,
@@ -138,7 +140,7 @@ class DocumentConversionService:
         files: Mapping[str, tuple[str, bytes, str]],
         options: dict[str, str | list[str] | bool],
     ) -> httpx.Response:
-        logger.debug(f"Fetching docling file convert with URL: {self.config.docling_url}/convert/file")
+        logger.debug("Fetching docling file convert", url=f"{self.config.docling_url}/convert/file")
         response = await self.client.post(
             self.config.docling_url + "/convert/file",
             headers={"Authorization": f"Bearer {self.config.docling_api_key}"},
@@ -152,7 +154,9 @@ class DocumentConversionService:
             # For error responses, safely handle potential binary content
             try:
                 error_text = response.text
-                logger.error(f"Error response: {error_text}")
+                logger.error(
+                    "Docling conversion returned error response", status_code=response.status_code, body=error_text
+                )
 
                 raise ApiErrorException(
                     {
@@ -162,7 +166,7 @@ class DocumentConversionService:
                     }
                 )
             except UnicodeDecodeError as e:
-                logger.exception(f"Error response contains binary data (status: {response.status_code})")
+                logger.exception("Docling error response contained binary data", status_code=response.status_code)
                 raise ApiErrorException(
                     {
                         "errorId": UNEXPECTED_ERROR,
@@ -179,7 +183,7 @@ class DocumentConversionService:
     ) -> ConversionResult:
         languages = ["de", "en", "fr", "it"]
 
-        logger.debug(f"type of file: {type(file)}")
+        logger.debug("Received file for conversion", file_type=type(file).__name__)
 
         # Prepare file data using common helper (single bytes copy, no extra BytesIO)
         content, filename, content_type = await self._prepare_file_data(
@@ -187,7 +191,7 @@ class DocumentConversionService:
             filename,
             content_type,
         )
-        logger.debug(f"Resolved filename: {filename}")
+        logger.debug("Resolved filename", filename=filename)
 
         # Pass raw bytes to httpx; this aligns with what the docling API expects
         files = {"files": (filename, content, content_type)}

@@ -1,3 +1,4 @@
+from dcc_backend_common.usage_tracking import UsageTrackingService
 from dependency_injector import containers, providers
 
 from text_mate_backend.services.actions.quick_action_service import QuickActionService
@@ -15,6 +16,11 @@ from text_mate_backend.utils.configuration import Configuration
 class Container(containers.DeclarativeContainer):
     config: providers.Object[Configuration] = providers.Object(Configuration.from_env())
     auth_settings: providers.Singleton[AuthSettings] = providers.Singleton(AuthSettings, config=config)
+
+    usage_tracking_service: providers.Singleton[UsageTrackingService] = providers.Singleton(
+        UsageTrackingService,
+        hmac_secret=config.provided.hmac_secret,
+    )
 
     advisor_service: providers.Singleton[AdvisorService] = providers.Singleton(
         AdvisorService,
