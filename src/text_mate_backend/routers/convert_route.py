@@ -10,6 +10,7 @@ import asyncio
 from typing import Annotated
 
 from dcc_backend_common.logger import get_logger
+from dcc_backend_common.usage_tracking import UsageTrackingService
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request, Security, UploadFile
 from fastapi_azure_auth.user import User
@@ -18,8 +19,7 @@ from text_mate_backend.container import Container
 from text_mate_backend.models.conversion_result import ConversionResult
 from text_mate_backend.services.document_conversion_service import DocumentConversionService
 from text_mate_backend.utils.auth import AuthSchema
-from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
+from text_mate_backend.utils.usage_tracking import get_user_id
 
 logger = get_logger("convert_router")
 
@@ -28,7 +28,7 @@ logger = get_logger("convert_router")
 def create_router(
     document_conversion_service: DocumentConversionService = Provide[Container.document_conversion_service],
     auth_scheme: AuthSchema = Provide[Container.auth_scheme],
-    config: Configuration = Provide[Container.config],
+    usage_tracking_service: UsageTrackingService = Provide[Container.usage_tracking_service],
 ) -> APIRouter:
     """
     Create and configure the document conversion API router.
@@ -39,7 +39,7 @@ def create_router(
     Returns:
         APIRouter: Configured router with conversion endpoints
     """
-    logger.info("Creating convert router")
+    logger.debug("Creating convert router")
     router: APIRouter = APIRouter(prefix="/convert", tags=["convert"])
 
     @router.post("/doc", summary="Convert document to markdown", dependencies=[Security(auth_scheme)])
@@ -61,15 +61,12 @@ def create_router(
             ConversionResult: Conversion result with markdown content and images
         """
 
-        pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
-        logger.info(
-            "app_event",
-            extra={
-                "pseudonym_id": pseudonymized_user_id,
-                "event": convert.__name__,
-                "file_size": file.size,
-                "content_type": file.content_type,
-            },
+        usage_tracking_service.log_event(
+            "convert",
+            convert.__name__,
+            get_user_id(current_user),
+            file_size=file.size,
+            content_type=file.content_type,
         )
 
         task = asyncio.create_task(document_conversion_service.convert(file))
@@ -83,5 +80,5 @@ def create_router(
         result = task.result()
         return ConversionResult(html=result.html)
 
-    logger.info("Conversion router configured")
+    logger.debug("Conversion router configured")
     return router

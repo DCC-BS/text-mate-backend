@@ -16,7 +16,13 @@ def handle_exception(exp: Exception, request_id: str | None = None):
     error_type = type(exp).__name__
     error_message = str(exp)
 
-    logger.error(f"Operation failed: {error_type}", error_message=error_message, error_type=error_type, **log_context)
+    logger.error(
+        f"Operation failed: {error_type}",
+        error_message=error_message,
+        error_type=error_type,
+        exc_info=exp,
+        **log_context,
+    )
 
     raise ApiErrorException(
         {
@@ -50,7 +56,11 @@ def handle_result(result: Result[T, Exception], request_id: str | None = None) -
             error_message = str(error)
 
             logger.error(
-                f"Operation failed: {error_type}", error_message=error_message, error_type=error_type, **log_context
+                f"Operation failed: {error_type}",
+                error_message=error_message,
+                error_type=error_type,
+                exc_info=error,
+                **log_context,
             )
 
             raise ApiErrorException(

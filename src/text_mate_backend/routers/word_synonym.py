@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from dcc_backend_common.logger import get_logger
+from dcc_backend_common.usage_tracking import UsageTrackingService
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Request, Security
 from fastapi_azure_auth.user import User
@@ -12,7 +13,7 @@ from text_mate_backend.routers.utils import handle_exception
 from text_mate_backend.utils.auth import AuthSchema
 from text_mate_backend.utils.cancel_on_disconnect import CancelOnDisconnect
 from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
+from text_mate_backend.utils.usage_tracking import get_user_id
 
 logger = get_logger("word_synonym_router")
 
@@ -21,6 +22,7 @@ logger = get_logger("word_synonym_router")
 def create_router(
     auth_scheme: AuthSchema = Provide[Container.auth_scheme],
     config: Configuration = Provide[Container.config],
+    usage_tracking_service: UsageTrackingService = Provide[Container.usage_tracking_service],
 ) -> APIRouter:
     """
     Create and configure the word-synonym API router.
@@ -28,7 +30,7 @@ def create_router(
     Returns:
         APIRouter: Configured FastAPI router with the word-synonym endpoint.
     """
-    logger.info("Creating word synonym router")
+    logger.debug("Creating word synonym router")
     router: APIRouter = APIRouter(prefix="/word-synonym", tags=["word-synonym"])
     agent = WordSynonymAgent(config)
 
@@ -38,14 +40,11 @@ def create_router(
         data: WordSynonymInput,
         current_user: Annotated[User, Depends(auth_scheme)],
     ) -> WordSynonymResult:
-        pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
-        logger.info(
-            "app_event",
-            extra={
-                "pseudonym_id": pseudonymized_user_id,
-                "event": get_word_synonyms.__name__,
-                "context_length": len(data.context),
-            },
+        usage_tracking_service.log_event(
+            "word_synonym",
+            get_word_synonyms.__name__,
+            get_user_id(current_user),
+            context_length=len(data.context),
         )
 
         try:
@@ -55,5 +54,5 @@ def create_router(
             handle_exception(err)
             raise err
 
-    logger.info("Word synonym router configured")
+    logger.debug("Word synonym router configured")
     return router

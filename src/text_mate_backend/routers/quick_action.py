@@ -1,6 +1,7 @@
 from typing import Annotated, Optional
 
 from dcc_backend_common.logger import get_logger
+from dcc_backend_common.usage_tracking import UsageTrackingService
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
@@ -12,8 +13,7 @@ from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.quick_actions_models import CurrentUser, QuickActionRequest
 from text_mate_backend.services.actions.quick_action_service import QuickActionService
 from text_mate_backend.utils.auth import AuthSchema
-from text_mate_backend.utils.configuration import Configuration
-from text_mate_backend.utils.usage_tracking import get_pseudonymized_user_id
+from text_mate_backend.utils.usage_tracking import get_user_id
 
 logger = get_logger("quick_action_router")
 
@@ -22,9 +22,9 @@ logger = get_logger("quick_action_router")
 def create_router(
     quick_action_service: QuickActionService = Provide[Container.quick_action_service],
     auth_scheme: AuthSchema = Provide[Container.auth_scheme],
-    config: Configuration = Provide[Container.config],
+    usage_tracking_service: UsageTrackingService = Provide[Container.usage_tracking_service],
 ) -> APIRouter:
-    logger.info("Creating quick action router")
+    logger.debug("Creating quick action router")
     router: APIRouter = APIRouter(prefix="/quick-action", tags=["quick-action"])
 
     @router.post("", dependencies=[Depends(auth_scheme)])
@@ -47,22 +47,19 @@ def create_router(
         }
 
         if current_user is not None:
-            pseudonymized_user_id = get_pseudonymized_user_id(current_user, config.hmac_secret)
-            logger.info(
-                "app_event",
-                extra={
-                    "pseudonym_id": pseudonymized_user_id,
-                    "event": quick_action.__name__,
-                    "action": request.action,
-                    "options": request.options,
-                    "text_length": text_length,
-                },
+            usage_tracking_service.log_event(
+                "quick_action",
+                quick_action.__name__,
+                get_user_id(current_user),
+                quick_action_name=request.action,
+                options=str(request.options),
+                text_length=text_length,
             )
 
         try:
             return await quick_action_service.run(request.action, request.text, request.options, user)
         except Exception as e:
-            logger.error(f"Quick action '{request.action}' failed", error=str(e))
+            logger.exception("Quick action failed", action=request.action)
             raise ApiErrorException(
                 {
                     "status": 500,
@@ -71,5 +68,5 @@ def create_router(
                 }
             ) from e
 
-    logger.info("Quick action router configured")
+    logger.debug("Quick action router configured")
     return router

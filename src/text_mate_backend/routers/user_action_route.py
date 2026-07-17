@@ -20,7 +20,7 @@ def create_router(
     auth_scheme: AuthSchema = Provide[Container.auth_scheme],
     config: Configuration = Provide[Container.config],
 ) -> APIRouter:
-    logger.info("Creating user action router")
+    logger.debug("Creating user action router")
     router: APIRouter = APIRouter(prefix="/user-action", tags=["user-action"])
 
     @router.get("", dependencies=[Depends(auth_scheme)])
@@ -31,12 +31,12 @@ def create_router(
             if config.disable_auth:
                 return UserActionGetResponse(actions=[])
 
-            logger.error("User is None")
+            logger.warning("Authenticated user missing on user-action request despite auth being enabled")
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not Authorized")
 
         actions = user_action_service.get_actions(current_user)
 
         return UserActionGetResponse(actions=list(map(lambda x: UserActionMeta(id=x.id, name=x.name), actions)))
 
-    logger.info("User action router configured")
+    logger.debug("User action router configured")
     return router
