@@ -1,4 +1,0 @@
-uv run --env-file=.env.preprocess ./src/text_mate_tools/preprocess_document_rules.py ./assets/docs/empfehlungen-anglizismen-maerz-2020.pdf ./assets/docs/schreibweisungen.pdf ./assets/docs/rechtschreibleitfaden-2017.pdf ./assets/docs/leitfaden_geschlechtergerechte_sprache_3aufl.pdf --output ./assets/docs/ruels2 --collection bundeskanzlei
-
-uv run --env-file .env src/text_mate_tools/consolidate_rules.py \
-    staging/rules/schreibweisungen.json --output staging/rules/consolidated.json

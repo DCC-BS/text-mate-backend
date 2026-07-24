@@ -86,6 +86,12 @@ cython_debug/
 # uv
 .uv/
 
+# ruff
+.ruff_cache/
+
+# logfifee
+.logfire/
+
 assets/docs/private/
 assets/actions/private/
 !.env.schema

@@ -1,0 +1,59 @@
+[tools]
+"http:pass-cli" = { version = "1.0.0", url = "https://proton.me/download/pass-cli/install.sh" }
+"npm:varlock" = "1.13.0"
+usage = "3.5.6"
+uv = "0.11.31"
+
+[hooks]
+postinstall = { task = "install" }
+enter = { task = "enter-checks"}
+
+[tasks.install]
+description = "🚀 Creating virtual environment using uv"
+run = [
+    "uv sync",
+    "uv run pre-commit install"
+]
+
+[tasks.pass-login]
+run = '''
+if pass-cli info >/dev/null 2>&1; then
+    echo "Already logged in, skipping login"
+    exit 0
+fi
+pass-cli login
+'''
+
+[tasks.check]
+description = ""
+run = [
+    "uv lock --locked",
+    "uv run ruff format",
+    "uv run ruff check --fix",
+    "uv run ty check ./src/text_mate_backend",
+    "varlock scan"
+]
+
+[tasks.env-check]
+depends = ['pass-login']
+run = "varlock load"
+
+[tasks.test]
+env = { APP_MODE = 'ci' }
+run = "uv run python -m pytest --doctest-modules"
+
+[tasks.docker-up]
+depends = ['pass-login']
+run = "./scripts/run-varlock.sh run -- docker compose up -d"
+
+[tasks.docker-down]
+run = "docker compose down"
+
+[tasks.docker-logs]
+run = "docker compose logs -f"
+
+[tasks.run]
+run = "./scripts/run-varlock.sh run -- uv run uvicorn text_mate_backend.app:app --port 8000 --no-access-log"
+
+[tasks.dev]
+run = "./scripts/run-varlock.sh run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000"
