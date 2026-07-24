@@ -1,7 +1,6 @@
 from dcc_backend_common.llm_agent import BaseAgent, Preprocessor
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
-from pydantic_ai.models.openai import OpenAIResponsesModelSettings
 
 from text_mate_backend.agents.agent_utils import build_agent_metadata
 from text_mate_backend.models.rule_models import DetectionResult, RulesContainer

@@ -7,13 +7,13 @@ from dcc_backend_common.fastapi_error_handling import ApiErrorCodes, api_error_e
 from dcc_backend_common.logger import get_logger
 from dcc_backend_common.usage_tracking import UsageTrackingService
 from dependency_injector.wiring import Provide, inject
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.params import Security
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi_azure_auth.user import User
 from pydantic import BaseModel, Field
-
 from starlette.status import HTTP_403_FORBIDDEN
+
 from text_mate_backend.container import Container
 from text_mate_backend.models.error_codes import NO_DOCUMENT
 from text_mate_backend.models.error_response import ApiErrorException
@@ -83,7 +83,7 @@ def create_router(
             fix_text.__name__,
             get_user_id(current_user),
             text_length=len(data.text),
-            thread_count=len(data.threads)
+            thread_count=len(data.threads),
         )
 
         async def text_generator() -> AsyncGenerator[str, None]:
@@ -119,10 +119,7 @@ def create_router(
         Get the document description by name.
         """
         usage_tracking_service.log_event(
-            "advisor",
-            get_document.__name__,
-            get_user_id(current_user),
-            document_name=name
+            "advisor", get_document.__name__, get_user_id(current_user), document_name=name
         )
 
         file_path = path.join("assets/docs", name)
