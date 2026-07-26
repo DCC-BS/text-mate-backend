@@ -45,14 +45,16 @@ class ProposalRequest(BaseModel):
 
 
 class ViolationRange(BaseModel):
-    start: int = Field(
-        description="Start position (0-based) of the violating text, "
-        "as a UTF-16 code-unit index (JavaScript-compatible)"
-    )
-    end: int = Field(
-        description="End position (exclusive) of the violating text, "
-        "as a UTF-16 code-unit index (JavaScript-compatible)"
-    )
+    """Half-open character range into the source text.
+
+    The indexing scheme depends on the consumer: internally (e.g.
+    ``ResolvedDetection.range``) the offsets are Python code points; at the API
+    boundary (``ViolationResult.range``) they are UTF-16 code units. See
+    ``advisor._to_utf16_offset`` for the translation between the two.
+    """
+
+    start: int = Field(description="Start position (0-based, inclusive) of the violating text")
+    end: int = Field(description="End position (exclusive) of the violating text")
 
 
 class ResolvedDetection(BaseModel):
@@ -78,7 +80,9 @@ class ViolationResult(BaseModel):
     source: str = Field(description="Exact text snippet from the input that violates the rule")
     file_name: str = Field(description="Filename of the source PDF document for this rule")
     page_number: int = Field(description="Page number in the source document for this rule")
-    range: ViolationRange = Field(description="Character range of the violating text")
+    range: ViolationRange = Field(
+        description="Character range of the violating text, as UTF-16 code-unit indices (JavaScript-compatible)"
+    )
     collection: str = Field(
         description="Logical collection key used for filtering (matches RuleDocumentDescription.id)"
     )
