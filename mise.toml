@@ -10,22 +10,17 @@ enter = { task = "enter-checks"}
 
 [tasks.install]
 description = "🚀 Creating virtual environment using uv"
+alias = "i"
+sources = ["pyproject.toml", "uv.lock"]
+outputs = [".venv"]
 run = [
     "uv sync",
     "uv run pre-commit install"
 ]
 
-[tasks.pass-login]
-run = '''
-if pass-cli info >/dev/null 2>&1; then
-    echo "Already logged in, skipping login"
-    exit 0
-fi
-pass-cli login
-'''
-
 [tasks.check]
-description = ""
+description = "🧪 Verify lockfile, format code, lint, and type-check"
+alias = "c"
 run = [
     "uv lock --locked",
     "uv run ruff format",
@@ -35,25 +30,45 @@ run = [
 ]
 
 [tasks.env-check]
+description = "🔑 Load secrets into the environment via varlock"
+alias = "env"
 depends = ['pass-login']
 run = "varlock load"
 
 [tasks.test]
+description = "🧪 Run the test suite (including doctests)"
+alias = "t"
 env = { APP_MODE = 'ci' }
 run = "uv run python -m pytest --doctest-modules"
 
 [tasks.docker-up]
+description = "🐳 Start docker compose services in the background"
+alias = "up"
 depends = ['pass-login']
 run = "./scripts/run-varlock.sh run -- docker compose up -d"
 
 [tasks.docker-down]
+description = "🐳 Stop and remove docker compose containers"
+alias = "down"
 run = "docker compose down"
 
 [tasks.docker-logs]
+description = "🐳 Tail docker compose logs (follow mode)"
+alias = "logs"
 run = "docker compose logs -f"
 
 [tasks.run]
+description = "🚀 Run the production ASGI server (uvicorn)"
+alias = "r"
+depends = ['env-check', 'docker-up']
 run = "./scripts/run-varlock.sh run -- uv run uvicorn text_mate_backend.app:app --port 8000 --no-access-log"
 
 [tasks.dev]
+description = "🛠️  Run the FastAPI dev server with auto-reload"
+alias = "d"
+depends = ['env-check', 'docker-up']
 run = "./scripts/run-varlock.sh run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000"
+
+[tasks.ci]
+description = "🤖 Run all CI checks (lock, format, lint, types, tests)"
+depends = ['check', 'test']
