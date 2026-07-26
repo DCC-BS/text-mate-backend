@@ -4,6 +4,7 @@ from dcc_backend_common.llm_agent import BaseAgent
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 
+from text_mate_backend.agents.agent_utils import build_agent_metadata
 from text_mate_backend.models.word_synonym_models import WordSynonymInput, WordSynonymResult
 from text_mate_backend.utils.configuration import Configuration
 
@@ -35,7 +36,17 @@ class WordSynonymAgent(BaseAgent):
     @override
     def create_agent(self, model: Model) -> Agent[WordSynonymInput, WordSynonymResult]:
         agent = Agent[WordSynonymInput, WordSynonymResult](
-            model=model, deps_type=WordSynonymInput, output_type=WordSynonymResult
+            model=model,
+            deps_type=WordSynonymInput,
+            output_type=WordSynonymResult,
+            name="Word Synonym Agent",
+            description="Finds 1-5 synonyms for a word in the context of a document",
+            metadata=lambda ctx: build_agent_metadata(
+                "word_synonym",
+                output_type="WordSynonymResult",
+                word_length=len(ctx.deps.word),
+                has_context=bool(ctx.deps.context),
+            ),
         )
 
         @agent.instructions

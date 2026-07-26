@@ -4,6 +4,7 @@ from dcc_backend_common.llm_agent import BaseAgent
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 
+from text_mate_backend.agents.agent_utils import build_agent_metadata
 from text_mate_backend.models.sentence_rewrite_model import SentenceRewriteInput, SentenceRewriteResult
 from text_mate_backend.utils.configuration import Configuration
 
@@ -40,7 +41,17 @@ class SentenceRewriteAgent(BaseAgent):
     @override
     def create_agent(self, model: Model) -> Agent[SentenceRewriteInput, SentenceRewriteResult]:
         agent = Agent[SentenceRewriteInput, SentenceRewriteResult](
-            model=model, deps_type=SentenceRewriteInput, output_type=SentenceRewriteResult
+            model=model,
+            deps_type=SentenceRewriteInput,
+            output_type=SentenceRewriteResult,
+            name="Sentence Rewrite Agent",
+            description="Generates 1-5 alternative reformulations for a sentence in context",
+            metadata=lambda ctx: build_agent_metadata(
+                "sentence_rewrite",
+                output_type="SentenceRewriteResult",
+                sentence_length=len(ctx.deps.sentence),
+                has_context=bool(ctx.deps.context),
+            ),
         )
 
         @agent.instructions

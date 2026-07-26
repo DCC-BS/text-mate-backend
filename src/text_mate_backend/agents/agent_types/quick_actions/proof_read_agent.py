@@ -10,6 +10,14 @@ class ProofReadAgent(QuickActionBaseAgent):
     def __init__(self, config):
         super().__init__(config)
 
+    @property
+    def agent_name(self) -> str:
+        return "Proof Read Agent"
+
+    @property
+    def agent_description(self) -> str:
+        return "Proofreads German text according to Swiss spelling conventions"
+
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext]) -> str:
         return """

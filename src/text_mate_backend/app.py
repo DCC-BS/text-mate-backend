@@ -4,7 +4,6 @@ from contextlib import asynccontextmanager
 from dcc_backend_common.fastapi_error_handling import inject_api_error_handler
 from dcc_backend_common.fastapi_health_probes import health_probe_router
 from dcc_backend_common.fastapi_health_probes.router import ServiceDependency
-from dcc_backend_common.fastapi_logging_middleware import add_logging_middleware
 from dcc_backend_common.logger import get_logger, init_logger
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -99,9 +98,6 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
     logger.debug("CORS configured", origin=config.client_url)
-
-    # Add logging middleware
-    add_logging_middleware(app)
 
     # Include routers
     logger.debug("Registering API routers")

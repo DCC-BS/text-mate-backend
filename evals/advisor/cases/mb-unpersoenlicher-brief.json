@@ -1,0 +1,31 @@
+{
+  "id": "mb-unpersoenlicher-brief",
+  "description": "Semantic violations in an impersonal Behördenbrief: third-person address, impersonal passive, Amtsjargon, a Floskel, and a demanded action without deadline or consequences. Sibling rules accepted as alternatives where attributions legitimately overlap.",
+  "collections": ["merkblatt_behoerdenbriefe"],
+  "text": "Sehr geehrte Damen und Herren\n\nDem Gesuchsteller wird mitgeteilt, dass das Gesuch vom 12. Mai 2026 geprüft worden ist. Es wird darauf hingewiesen, dass die Unterlagen unvollständig waren. Die fehlenden Dokumente sind der Behörde zur Einreichung zu bringen. Zur Beantwortung allfälliger Fragen steht Ihnen unser Sachbearbeiter gerne zur Verfügung.\n\nFreundliche Grüsse",
+  "expected": [
+    {
+      "rule_name": "Persönliche Anrede mit «Sie»",
+      "source": "Dem Gesuchsteller wird mitgeteilt",
+      "alt_rule_names": ["Persönlicher Stil mit «ich» und «wir»"]
+    },
+    {
+      "rule_name": "Persönlicher Stil mit «ich» und «wir»",
+      "source": "Es wird darauf hingewiesen",
+      "alt_rule_names": ["Persönliche Anrede mit «Sie»"]
+    },
+    {
+      "rule_name": "Kein Amtsjargon",
+      "source": "zur Einreichung zu bringen"
+    },
+    {
+      "rule_name": "Konkrete Handlungsaufforderung mit Frist",
+      "source": "Die fehlenden Dokumente sind der Behörde zur Einreichung zu bringen."
+    },
+    {
+      "rule_name": "Keine Floskeln",
+      "source": "Zur Beantwortung allfälliger Fragen steht Ihnen unser Sachbearbeiter gerne zur Verfügung.",
+      "alt_rule_names": ["Kein Amtsjargon"]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "mixed-collections",
+  "description": "Both collections selected: one mechanical violation (straight quotes) and one semantic violation (Amtsjargon/Floskel) in the same letter.",
+  "collections": ["bundeskanzlei", "merkblatt_behoerdenbriefe"],
+  "text": "Sehr geehrter Herr Weber\n\nWir haben Ihr Gesuch \"Erneuerung der Betriebsbewilligung\" am 5. Mai 2026 erhalten. Wir bitten um Kenntnisnahme, dass die Bearbeitung rund vier Wochen dauert. Rufen Sie uns an, wenn Sie Fragen haben.\n\nFreundliche Grüsse",
+  "expected": [
+    {
+      "rule_name": "Guillemets als Anführungszeichen verwenden",
+      "source": "\"Erneuerung der Betriebsbewilligung\""
+    },
+    {
+      "rule_name": "Kein Amtsjargon",
+      "source": "Wir bitten um Kenntnisnahme",
+      "alt_rule_names": ["Keine Floskeln"]
+    }
+  ]
+}

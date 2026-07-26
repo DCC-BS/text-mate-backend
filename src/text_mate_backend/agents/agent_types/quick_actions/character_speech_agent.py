@@ -66,6 +66,14 @@ class CharacterSpeechAgent(QuickActionBaseAgent):
     def __init__(self, config: Configuration):
         super().__init__(config, enable_thinking=False)
 
+    @property
+    def agent_name(self) -> str:
+        return "Character Speech Agent"
+
+    @property
+    def agent_description(self) -> str:
+        return "Converts text between direct and indirect speech"
+
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext]) -> str:
         sub_instructions = DIRECT_INSTRUCTION if ctx.deps.options == "direct_speech" else INDIRECT_INSTRUCTIONS

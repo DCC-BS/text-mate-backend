@@ -13,6 +13,14 @@ class BulletPointAgent(QuickActionBaseAgent):
     def __init__(self, config: Configuration):
         super().__init__(config)
 
+    @property
+    def agent_name(self) -> str:
+        return "Bullet Point Agent"
+
+    @property
+    def agent_description(self) -> str:
+        return "Converts text into a structured bullet point list highlighting the key statements"
+
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext]):
         return """

@@ -13,6 +13,14 @@ class CustomAgent(QuickActionBaseAgent):
     def __init__(self, config: Configuration):
         super().__init__(config)
 
+    @property
+    def agent_name(self) -> str:
+        return "Custom Agent"
+
+    @property
+    def agent_description(self) -> str:
+        return "Rewrites text according to a user-defined instruction"
+
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext]) -> str:
         return f"""

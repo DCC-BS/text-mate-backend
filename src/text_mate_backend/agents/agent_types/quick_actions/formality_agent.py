@@ -12,6 +12,14 @@ class FormalityAgent(QuickActionBaseAgent):
     def __init__(self, config: Configuration):
         super().__init__(config)
 
+    @property
+    def agent_name(self) -> str:
+        return "Formality Agent"
+
+    @property
+    def agent_description(self) -> str:
+        return "Adjusts the formality level of a text while preserving its meaning"
+
     @override
     def create_instruction(self, ctx: RunContext[QuickActionContext]) -> str:
         return f"""

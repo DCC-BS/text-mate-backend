@@ -42,6 +42,14 @@ class MediumAgent(QuickActionBaseAgent):
     def __init__(self, config: Configuration):
         super().__init__(config, enable_thinking=False)
 
+    @property
+    def agent_name(self) -> str:
+        return "Medium Agent"
+
+    @property
+    def agent_description(self) -> str:
+        return "Drafts medium-specific text (email, official letter, presentation or report)"
+
     @override
     def create_agent(self, model: Model) -> Agent[QuickActionContext, str]:
         agent = super().create_agent(model)
