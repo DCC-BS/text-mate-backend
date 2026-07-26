@@ -118,19 +118,21 @@ def create_router(
         """
         Get the document description by name.
         """
+        safe_name = path.basename(name)
+
         usage_tracking_service.log_event(
-            "advisor", get_document.__name__, get_user_id(current_user), document_name=name
+            "advisor", get_document.__name__, get_user_id(current_user), document_name=safe_name
         )
 
-        file_path = path.join("assets/docs", name)
+        file_path = path.join("assets/docs", safe_name)
+
+        if not advisor_service.can_access_document(safe_name, current_user):
+            raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="User does not have access to this document")
 
         if not path.exists(file_path):
             raise ApiErrorException({"status": 404, "errorId": NO_DOCUMENT, "debugMessage": "Document not found"})
 
-        if not advisor_service.can_access_document(name, current_user):
-            raise HTTPException(status_code=HTTP_403_FORBIDDEN, detail="User does not have access to this document")
-
-        return FileResponse(path=file_path, media_type="application/pdf", filename=name)
+        return FileResponse(path=file_path, media_type="application/pdf", filename=safe_name)
 
     logger.debug("Advisor router configured")
     return router
