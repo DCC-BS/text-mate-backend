@@ -11,11 +11,11 @@ resolution-markers = [
 ]
 
 [options]
-exclude-newer = "2026-07-09T08:01:11.488665712Z"
+exclude-newer = "2026-07-20T12:19:43.420220608Z"
 exclude-newer-span = "P1W"
 
 [options.exclude-newer-package]
-dcc-backend-common = { timestamp = "2026-07-16T08:01:11.488676472Z", span = "PT0S" }
+dcc-backend-common = { timestamp = "2026-07-27T12:19:43.420237107Z", span = "PT0S" }
 
 [[package]]
 name = "ag-ui-protocol"
@@ -4171,7 +4171,7 @@ wheels = [
 
 [[package]]
 name = "text-mate-backend"
-version = "1.6.0"
+version = "1.6.1"
 source = { editable = "." }
 dependencies = [
     { name = "dcc-backend-common", extra = ["fastapi"] },
