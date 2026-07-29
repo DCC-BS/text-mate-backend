@@ -72,6 +72,26 @@ def validate_cases(cases: list[EvalCase], service: AdvisorService) -> None:
         raise SystemExit("Eval case validation failed:\n  " + "\n  ".join(errors))
 
 
+def _utf16_to_codepoint_offset(text: str, utf16_offset: int) -> int:
+    """Inverse of AdvisorService._to_utf16_offset.
+
+    check_text_stream emits ranges in JavaScript UTF-16 code units (see
+    advisor._build_violation_result), but the evaluator works in Python code
+    points (resolve_expected_span uses str.find / len). This maps a UTF-16
+    code-unit index back to a code-point index so predictions share the same
+    offset basis as the expected spans. The two agree for all BMP characters
+    and diverge only for code points >= U+10000 (surrogate pairs).
+    """
+    codepoint = 0
+    units = 0
+    for ch in text:
+        if units >= utf16_offset:
+            break
+        units += 2 if ord(ch) >= 0x10000 else 1
+        codepoint += 1
+    return codepoint
+
+
 async def run_case_once(service: AdvisorService, case: EvalCase) -> list[PredictedViolation]:
     predictions: list[PredictedViolation] = []
     async for container in service.check_text_stream(case.text, set(case.collections)):
@@ -79,8 +99,8 @@ async def run_case_once(service: AdvisorService, case: EvalCase) -> list[Predict
             predictions.append(
                 PredictedViolation(
                     rule_name=violation.rule_name,
-                    start=violation.range.start,
-                    end=violation.range.end,
+                    start=_utf16_to_codepoint_offset(case.text, violation.range.start),
+                    end=_utf16_to_codepoint_offset(case.text, violation.range.end),
                     source=violation.source,
                 )
             )

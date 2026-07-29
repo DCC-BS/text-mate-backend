@@ -51,6 +51,7 @@ class UserActionService:
                     id=meta["id"],
                     name=meta["name"],
                     groups=meta.get("groups", []),
+                    tooltip=meta.get("tooltip", None),
                     content=parts[2].strip(),
                 )
             )

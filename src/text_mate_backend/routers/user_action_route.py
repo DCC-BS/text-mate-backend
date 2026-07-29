@@ -23,7 +23,7 @@ def create_router(
     logger.debug("Creating user action router")
     router: APIRouter = APIRouter(prefix="/user-action", tags=["user-action"])
 
-    @router.get("", dependencies=[Depends(auth_scheme)])
+    @router.get("", dependencies=[Depends(auth_scheme)], response_model_exclude_none=True)
     async def user_actions(
         current_user: Annotated[User | None, Depends(auth_scheme)],
     ) -> UserActionGetResponse:
@@ -36,7 +36,7 @@ def create_router(
 
         actions = user_action_service.get_actions(current_user)
 
-        return UserActionGetResponse(actions=list(map(lambda x: UserActionMeta(id=x.id, name=x.name), actions)))
+        return UserActionGetResponse(actions=list(map(lambda x: UserActionMeta(id=x.id, name=x.name, tooltip=x.tooltip), actions)))
 
     logger.debug("User action router configured")
     return router
