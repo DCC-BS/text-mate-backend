@@ -16,7 +16,7 @@ enter = { task = "enter-checks"}
 description = "🚀 Creating virtual environment using uv"
 alias = "i"
 sources = ["pyproject.toml", "uv.lock"]
-outputs = [".venv"]
+outputs = [".venv", ".git/hooks/pre-commit"]
 run = [
     "uv sync",
     "uv run pre-commit install"
