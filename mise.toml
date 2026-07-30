@@ -1,12 +1,16 @@
 [tools]
-"http:pass-cli" = { version = "1.0.0", url = "https://proton.me/download/pass-cli/install.sh" }
 "npm:varlock" = "1.13.0"
+pass-cli = "latest"
 usage = "3.5.6"
 uv = "0.11.31"
+
+[plugins]
+pass-cli = "https://github.com/DCC-BS/mise-proton-pass-cli"
 
 [hooks]
 postinstall = { task = "install" }
 enter = { task = "enter-checks"}
+
 
 [tasks.install]
 description = "🚀 Creating virtual environment using uv"
@@ -60,13 +64,13 @@ run = "docker compose logs -f"
 [tasks.run]
 description = "🚀 Run the production ASGI server (uvicorn)"
 alias = "r"
-depends = ['env-check', 'docker-up']
+depends = ['env-check']
 run = "./scripts/run-varlock.sh run -- uv run uvicorn text_mate_backend.app:app --port 8000 --no-access-log"
 
 [tasks.dev]
 description = "🛠️  Run the FastAPI dev server with auto-reload"
 alias = "d"
-depends = ['env-check', 'docker-up']
+depends = ['env-check']
 run = "./scripts/run-varlock.sh run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000"
 
 [tasks.ci]
