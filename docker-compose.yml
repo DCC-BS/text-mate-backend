@@ -40,6 +40,7 @@ services:
     docling-serve:
         image: ghcr.io/docling-project/docling-serve-cu130:main
         container_name: docling-serve-text-mate
+        runtime: nvidia
         deploy:
             resources:
                 reservations:
