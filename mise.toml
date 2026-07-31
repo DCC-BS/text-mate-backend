@@ -11,6 +11,7 @@ pass-cli = "https://github.com/DCC-BS/mise-proton-pass-cli"
 postinstall = { task = "install" }
 enter = { task = "enter-checks"}
 
+# ── Setup ───────────────────────────────────────────────────────────────────
 
 [tasks.install]
 description = "🚀 Creating virtual environment using uv"
@@ -21,6 +22,28 @@ run = [
     "uv sync",
     "uv run pre-commit install"
 ]
+
+[tasks.env-check]
+description = "🔑 Load secrets into the environment via varlock"
+alias = "env"
+depends = ['pass-login']
+run = "varlock load"
+
+# ── Run ─────────────────────────────────────────────────────────────────────
+
+[tasks.dev]
+description = "🛠️  Run the FastAPI dev server with auto-reload"
+alias = "d"
+depends = ['env-check']
+run = "./scripts/run-varlock.sh run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000"
+
+[tasks.run]
+description = "🚀 Run the production ASGI server (uvicorn)"
+alias = "r"
+depends = ['env-check']
+run = "./scripts/run-varlock.sh run -- uv run uvicorn text_mate_backend.app:app --port 8000 --no-access-log"
+
+# ── Quality ─────────────────────────────────────────────────────────────────
 
 [tasks.check]
 description = "🧪 Verify lockfile, format code, lint, and type-check"
@@ -33,7 +56,13 @@ run = [
     "varlock scan"
 ]
 
-[tasls.ci-check]
+[tasks.test]
+description = "🧪 Run the test suite (including doctests)"
+alias = "t"
+env = { APP_MODE = 'ci' }
+run = "uv run python -m pytest --doctest-modules"
+
+[tasks.ci-check]
 description = "🧪 Verify lockfile, format code, lint, and type-check without any file modification"
 run = [
     "uv lock --locked",
@@ -43,17 +72,11 @@ run = [
     "varlock scan"
 ]
 
-[tasks.env-check]
-description = "🔑 Load secrets into the environment via varlock"
-alias = "env"
-depends = ['pass-login']
-run = "varlock load"
+[tasks.ci]
+description = "🤖 Run all CI checks (lock, format, lint, types, tests)"
+depends = ['ci-check', 'test']
 
-[tasks.test]
-description = "🧪 Run the test suite (including doctests)"
-alias = "t"
-env = { APP_MODE = 'ci' }
-run = "uv run python -m pytest --doctest-modules"
+# ── Docker ──────────────────────────────────────────────────────────────────
 
 [tasks."docker:up"]
 description = "🐳 Start docker compose services in the background"
@@ -61,7 +84,7 @@ alias = "up"
 depends = ['pass-login']
 run = "./scripts/run-varlock.sh run -- docker compose up -d"
 
-[tasks"docker:down"]
+[tasks."docker:down"]
 description = "🐳 Stop and remove docker compose containers"
 alias = "down"
 run = "docker compose down"
@@ -70,19 +93,3 @@ run = "docker compose down"
 description = "🐳 Tail docker compose logs (follow mode)"
 alias = "logs"
 run = "docker compose logs -f"
-
-[tasks.run]
-description = "🚀 Run the production ASGI server (uvicorn)"
-alias = "r"
-depends = ['env-check']
-run = "./scripts/run-varlock.sh run -- uv run uvicorn text_mate_backend.app:app --port 8000 --no-access-log"
-
-[tasks.dev]
-description = "🛠️  Run the FastAPI dev server with auto-reload"
-alias = "d"
-depends = ['env-check']
-run = "./scripts/run-varlock.sh run -- uv run fastapi dev ./src/text_mate_backend/app.py --port 8000"
-
-[tasks.ci]
-description = "🤖 Run all CI checks (lock, format, lint, types, tests)"
-depends = ['ci-check', 'test']
