@@ -44,6 +44,7 @@ Many specialized AI-powered text transformations:
 
 - **Framework**: [FastAPI](https://fastapi.tiangolo.com/) with Python 3.13+
 - **Package Manager**: [uv](https://github.com/astral-sh/uv)
+- **Tool Manager**: [mise](https://mise.jdx.dev/) — pins and installs `uv`, `varlock`, and `pass-cli`, and provides project tasks
 - **Dependency Injection**: Dependency-Injector
 - **LLM Integration**: pydantic-ai for AI model integration
 - **AI Model**: Qwen3 32B served via vLLM
@@ -54,14 +55,15 @@ Many specialized AI-powered text transformations:
 ## Prerequisites
 
 - **Python**: 3.13 or higher
-- **uv package manager**: [Installation guide](https://github.com/astral-sh/uv)
+- **mise**: [Installation guide](https://mise.jdx.dev/getting-started.html) — recommended. It automatically installs and pins the project tools (`uv`, `varlock`, `pass-cli`, `usage`) as declared in [`mise.toml`](mise.toml). With mise you do **not** need to install these tools manually.
+- **uv package manager**: [Installation guide](https://github.com/astral-sh/uv) — only needed if you are not using mise
 - **Docker & Docker Compose**: For containerized deployment
 - **NVIDIA GPU** with CUDA support:
   - Minimum 2 GPUs recommended (one for vLLM, one for Docling)
   - GPU memory: ~20GB for Qwen3-32B-AWQ model
   - CUDA toolkit installed
-- **varlock**: For environment variables validation (optional but recommended)
-- **pass-cli**: For varlock with Proton Pass integration
+- **varlock**: For environment variables validation (installed automatically by mise)
+- **pass-cli**: For varlock with Proton Pass integration (installed automatically by mise via the [`DCC-BS/mise-proton-pass-cli`](https://github.com/DCC-BS/mise-proton-pass-cli) plugin)
 
 ## Setup
 
@@ -127,13 +129,15 @@ varlock load
 
 ### Install Dependencies
 
-Install dependencies and pre-commit hooks:
+Using mise (recommended) — this installs the pinned tools and then runs the project's `install` task automatically via the `postinstall` hook:
 
 ```bash
-make install
+mise install
 ```
 
-Or manually:
+> **Note:** `mise install` installs both tools **and** tasks. A `postinstall` hook in `mise.toml` triggers the `install` task, which runs `uv sync` and installs the pre-commit hooks. An `enter` hook runs `enter-checks`, which warns you if you are not logged into `pass-cli`.
+
+Or manually (without mise):
 
 ```bash
 uv sync
@@ -160,10 +164,10 @@ The application consists of four main services:
 
 ```bash
 # Start all required services with Docker
-make docker-up
+mise docker-up    # or: make docker-up
 
 # Start the development server
-make dev
+mise dev          # or: make dev
 ```
 
 The API will be available at `http://localhost:8000`
@@ -179,10 +183,10 @@ Access the interactive API documentation:
 
 ```bash
 # Run code quality checks (format, lint, type check)
-make check
+mise check        # or: make check
 
 # Run tests
-make test
+mise test         # or: make test
 
 # Run tests with coverage
 uv run pytest --cov=src/text_mate_backend tests/
@@ -191,26 +195,56 @@ uv run pytest --cov=src/text_mate_backend tests/
 uv run pytest tests/test_example.py
 ```
 
-### Makefile Commands
+### Mise Tasks
 
-| Command | Description |
-|---------|-------------|
-| `make install` | Install dependencies and pre-commit hooks |
-| `make dev` | Start development server with hot reload |
-| `make run` | Start production server |
-| `make test` | Run test suite |
-| `make check` | Run format, lint, type check, and varlock scan |
-| `make docker-up` | Start all Docker services |
-| `make docker-down` | Stop all Docker services |
-| `make docker-logs` | View Docker service logs |
-| `make help` | Show all available commands |
+The project's commands are defined as [mise tasks](mise.toml) and can be run with `mise <task>` or via their short alias (`mise <alias>`). The [`Makefile`](Makefile) mirrors the same commands if you prefer `make`.
+
+| Task | Alias | Description |
+|------|-------|-------------|
+| `mise install` | `mise i` | Install dependencies and pre-commit hooks (also runs automatically via the `postinstall` hook) |
+| `mise dev` | `mise d` | Start development server with hot reload |
+| `mise run` | `mise r` | Start production server |
+| `mise test` | `mise t` | Run test suite (including doctests) |
+| `mise check` | `mise c` | Run lockfile check, format, lint, type check, and varlock scan |
+| `mise ci` | — | Run all CI checks (`check` + `test`) |
+| `mise env-check` | `mise env` | Load secrets into the environment via varlock |
+| `mise docker-up` | `mise up` | Start all Docker services |
+| `mise docker-down` | `mise down` | Stop and remove Docker services |
+| `mise docker-logs` | `mise logs` | Tail Docker service logs |
+| `mise pass-login` | `mise login` | Login to Proton Pass CLI for secret access |
+| `mise help` | — | Show all available tasks |
+
+> **Makefile equivalents:** `make install`, `make dev`, `make run`, `make test`, `make check`, `make docker-up`, `make docker-down`, `make docker-logs`, `make help`.
+
+### Tool Management with mise
+
+[`mise.toml`](mise.toml) declares everything mise needs to set up a working environment:
+
+- **Pinned tools** (under `[tools]`): `varlock`, `pass-cli`, `usage`, and `uv`. Running `mise install` fetches the exact versions, so every contributor gets the same toolchain without manual setup.
+- **Custom plugin** (under `[plugins]`): `pass-cli` is installed from the [`DCC-BS/mise-proton-pass-cli`](https://github.com/DCC-BS/mise-proton-pass-cli) plugin.
+- **Hooks** (under `[hooks]`):
+  - `postinstall` → runs the `install` task after tools are installed, so `uv sync` and pre-commit hooks are set up automatically.
+  - `enter` → runs the `enter-checks` task, which warns you to log into `pass-cli` when entering the project directory.
+
+#### Custom task scripts
+
+Additional tasks live in [`.mise-tasks/`](.mise-tasks) as executable shell scripts with frontmatter metadata:
+
+| Script | Description |
+|--------|-------------|
+| `.mise-tasks/enter-checks` | Hidden check that warns if you are not logged into `pass-cli` (runs via the `enter` hook) |
+| `.mise-tasks/pass-login` | Logs into Proton Pass CLI (exposed as the `pass-login` task / `login` alias) |
+
+#### mise in Docker
+
+[`mise-Dokerfile`](mise-Dokerfile) is a base image that installs mise itself (with isolated `MISE_*` directories and shims on `PATH`) so the same tool-pinning workflow can be used inside containers.
 
 ## Production
 
 ### Run Production Server
 
 ```bash
-make run
+mise run    # or: make run
 ```
 
 Or manually:
