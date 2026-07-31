@@ -89,7 +89,7 @@ cython_debug/
 # ruff
 .ruff_cache/
 
-# logfifee
+# logfire
 .logfire/
 
 assets/docs/private/

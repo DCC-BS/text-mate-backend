@@ -33,6 +33,16 @@ run = [
     "varlock scan"
 ]
 
+[tasls.ci-check]
+description = "🧪 Verify lockfile, format code, lint, and type-check without any file modification"
+run = [
+    "uv lock --locked",
+    "uv run ruff format --check",
+    "uv run ruff check",
+    "uv run ty check ./src/text_mate_backend",
+    "varlock scan"
+]
+
 [tasks.env-check]
 description = "🔑 Load secrets into the environment via varlock"
 alias = "env"
@@ -75,4 +85,4 @@ run = "./scripts/run-varlock.sh run -- uv run fastapi dev ./src/text_mate_backen
 
 [tasks.ci]
 description = "🤖 Run all CI checks (lock, format, lint, types, tests)"
-depends = ['check', 'test']
+depends = ['ci-check', 'test']

@@ -235,10 +235,6 @@ Additional tasks live in [`.mise-tasks/`](.mise-tasks) as executable shell scrip
 | `.mise-tasks/enter-checks` | Hidden check that warns if you are not logged into `pass-cli` (runs via the `enter` hook) |
 | `.mise-tasks/pass-login` | Logs into Proton Pass CLI (exposed as the `pass-login` task / `login` alias) |
 
-#### mise in Docker
-
-[`mise-Dokerfile`](mise-Dokerfile) is a base image that installs mise itself (with isolated `MISE_*` directories and shims on `PATH`) so the same tool-pinning workflow can be used inside containers.
-
 ## Production
 
 ### Run Production Server
