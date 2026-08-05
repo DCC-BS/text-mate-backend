@@ -47,13 +47,19 @@ def create_router(
         }
 
         if current_user is not None:
-            action_name = request.action.value if isinstance(request.action, Actions) else request.action
-            usage_tracking_service.log_event(
-                f"quick_action.{action_name}",
-                get_user_id(current_user),
-                options=request.options or None,
-                text_length=text_length,
-            )
+            try:
+                action = request.action if isinstance(request.action, Actions) else Actions(request.action)
+            except ValueError:
+                # Unknown actions raise in the service below; logging them would
+                # put arbitrary user strings into the low-cardinality action field.
+                action = None
+            if action is not None:
+                usage_tracking_service.log_event(
+                    f"quick_action.{action.value}",
+                    get_user_id(current_user),
+                    options=request.options or None,
+                    text_length=text_length,
+                )
 
         try:
             return await quick_action_service.run(request.action, request.text, request.options, user)
