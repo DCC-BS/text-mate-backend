@@ -42,8 +42,7 @@ def create_router(
         current_user: Annotated[User, Depends(auth_scheme)],
     ) -> SentenceRewriteResult:
         usage_tracking_service.log_event(
-            "sentence_rewrite",
-            rewrite_sentence.__name__,
+            "sentence.rewrite",
             get_user_id(current_user),
             sentence_length=len(data.sentence),
             context_length=len(data.context),

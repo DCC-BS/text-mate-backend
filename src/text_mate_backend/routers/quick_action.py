@@ -10,7 +10,7 @@ from fastapi_azure_auth.user import User
 from text_mate_backend.container import Container
 from text_mate_backend.models.error_codes import UNEXPECTED_ERROR
 from text_mate_backend.models.error_response import ApiErrorException
-from text_mate_backend.models.quick_actions_models import CurrentUser, QuickActionRequest
+from text_mate_backend.models.quick_actions_models import Actions, CurrentUser, QuickActionRequest
 from text_mate_backend.services.actions.quick_action_service import QuickActionService
 from text_mate_backend.utils.auth import AuthSchema
 from text_mate_backend.utils.usage_tracking import get_user_id
@@ -47,12 +47,11 @@ def create_router(
         }
 
         if current_user is not None:
+            action_name = request.action.value if isinstance(request.action, Actions) else request.action
             usage_tracking_service.log_event(
-                "quick_action",
-                quick_action.__name__,
+                f"quick_action.{action_name}",
                 get_user_id(current_user),
-                quick_action_name=request.action,
-                options=str(request.options),
+                options=request.options or None,
                 text_length=text_length,
             )
 

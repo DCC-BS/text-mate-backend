@@ -62,8 +62,7 @@ def create_router(
         """
 
         usage_tracking_service.log_event(
-            "convert",
-            convert.__name__,
+            "document.convert",
             get_user_id(current_user),
             file_size=file.size,
             content_type=file.content_type,

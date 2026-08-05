@@ -25,7 +25,7 @@ from text_mate_backend.routers import (
 
 
 def create_app() -> FastAPI:
-    init_logger()
+    init_logger(app_name="textmate")
 
     logger: BoundLogger = get_logger("app")
     logger.info("Starting Text Mate API application")

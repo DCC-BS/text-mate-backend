@@ -39,8 +39,7 @@ def create_router(
         current_user: Annotated[User, Depends(auth_scheme)],
     ) -> TextAnalysisResult:
         usage_tracking_service.log_event(
-            "text_analysis",
-            analyze_text.__name__,
+            "text.analyze",
             get_user_id(current_user),
             text_length=len(data.text),
         )
