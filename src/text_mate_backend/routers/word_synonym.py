@@ -41,8 +41,7 @@ def create_router(
         current_user: Annotated[User, Depends(auth_scheme)],
     ) -> WordSynonymResult:
         usage_tracking_service.log_event(
-            "word_synonym",
-            get_word_synonyms.__name__,
+            "synonym.lookup",
             get_user_id(current_user),
             context_length=len(data.context),
         )

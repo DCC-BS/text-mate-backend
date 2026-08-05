@@ -54,8 +54,7 @@ def create_router(
         current_user: Annotated[User, Depends(auth_scheme)],
     ) -> AsyncIterable[RulesValidationContainer]:
         usage_tracking_service.log_event(
-            "advisor",
-            validate_advisor.__name__,
+            "advisor.validate",
             get_user_id(current_user),
             text_length=len(data.text),
         )
@@ -79,8 +78,7 @@ def create_router(
         current_user: Annotated[User, Depends(auth_scheme)],
     ) -> StreamingResponse:
         usage_tracking_service.log_event(
-            "advisor",
-            fix_text.__name__,
+            "advisor.fix",
             get_user_id(current_user),
             text_length=len(data.text),
             thread_count=len(data.threads),
@@ -120,9 +118,7 @@ def create_router(
         """
         safe_name = path.basename(name)
 
-        usage_tracking_service.log_event(
-            "advisor", get_document.__name__, get_user_id(current_user), document_name=safe_name
-        )
+        usage_tracking_service.log_event("advisor.get_document", get_user_id(current_user), document_name=safe_name)
 
         file_path = path.join("assets/docs", safe_name)
 
