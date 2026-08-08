@@ -20,7 +20,7 @@ dependencies = [
     "dcc-backend-common[fastapi]>=0.1.16",
     "zix @ git+https://github.com/machinelearningZH/zix_understandability-index",
     # Pin scikit-learn to match the version zix's bundled pickles were built with.
-    "scikit-learn>=1.8,<1.9",
+    "scikit-learn>=1.9,<1.10",
 ]
 
 [dependency-groups]
