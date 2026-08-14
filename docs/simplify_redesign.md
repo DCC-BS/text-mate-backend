@@ -1068,3 +1068,63 @@ decisions.
 
 Worth noting how it surfaced: not from a failing test, but from two lines of pytest warning
 output that had been printing all along under a passing suite.
+
+### 14.9 Four UI defects: what the stream said vs. what the user saw
+
+Reported from the running app on a 26,019-char Grosser-Rat document. The loop itself was
+correct in all four; every defect was in what the client was told, or what it did with it.
+
+**1. The progress panel froze on the wrong label.** `SimplifyProgressEvent` was emitted once
+per *round*, after every unit in that round had come back. On a 23-unit document that is the
+entire wall-clock. Until then the client held its initial state — attempt 1, `stage`
+undefined, 0 in target — and `SimplifyProgress.vue` falls back to the readability label when
+`stage` is absent, so the panel read *"Lesbarkeit wird gemessen…"* with a spinner and a
+frozen `0 von 23` for minutes while the model was in fact rewriting. A working run and a hung
+one were indistinguishable.
+
+Fixed by making the phase explicit: `SimplifyStage` gains `"rewriting"`, announced *before*
+the call that spends the time, and CHUNKED mode now emits one progress event **per unit that
+lands** rather than one per round. Failures and misses emit too, so a round where nothing
+converges still looks alive.
+
+**2. The streaming preview was assembled in the wrong coordinate space.** `useSimplify`
+built a running preview by splicing each `chunk_done` into `source.split("\n\n")` at the
+event's `index`. But `index` addresses **merged** units (§14.2) while the split is over raw
+blank-line blocks — 23 against 40-plus on this document. Every finished unit landed at an
+unrelated position, so the preview showed text that had never existed. `useWorkspace` then
+entered the Diff Review on the *first* one, mid-run: the user was pulled out of the editor,
+watched the mis-placed preview grow, and had it replaced again at `done`. That is the
+"flicker" in the report.
+
+Fixed by deleting the preview. A client cannot place a unit without its source span, and the
+span is only known at `done` — where the authoritative assembly already is. The Diff Review
+is entered exactly once, when the run is over; the (now live) progress panel is what reports
+the run in flight.
+
+**3. A failed run was reported as a success.** With vLLM down every rewrite returned `None`,
+so `replacements` stayed empty and `done.text` came back byte-identical to the source. The
+DiffViewer has no way to tell that from a genuine no-op and rendered *"TextMate hat nichts zu
+ändern gefunden."* — the most misleading thing available, since the text was never looked at.
+
+Fixed by putting the distinction on the wire: `_rewrite` is the single funnel for "produced
+nothing usable" (timeout, exception, empty generation alike), so it counts, and
+`rewrite_failures` rides on `done` and `SimplifyOutcome`. A non-zero count swaps the
+reassuring message for an explicit failure notice.
+
+**4. The unconverged marks had no way out.** `useSimplifyRanges.clear()` existed and was
+exported, but nothing in the UI reached it: the only way to lose a mark was to edit its text
+until the range collapsed. 23 amber highlights, no dismiss. `SimplifyRangeNav` now carries a
+close button.
+
+**Verified** by driving the real app (Playwright, `channel: "chromium"`): against the dummy
+backend for 1, 2 and 4, and against the live backend with vLLM down for 3 — the exact
+condition in the report. Regression cover: 4 backend tests for the progress sequence, 4 for
+the failure count, 6 frontend tests on the stream folding. The two that pin defect 2 were
+confirmed to fail against the old code before being kept.
+
+**The pattern, again.** Not one of these came from a failing test, and all four were live in
+a suite that passed. Three are the same shape as §13.2 and §14.7: *a number or a label that
+does not mean what its name says*. `chunk_done.index` reads like a paragraph index and is
+not; `stage` defaulting to `readability` reads like a measurement and was not; an unchanged
+`text` reads like "no changes needed" and was not. The frontend contract now names the
+merged-unit space explicitly wherever an index or a count crosses it.

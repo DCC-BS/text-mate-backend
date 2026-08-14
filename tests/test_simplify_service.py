@@ -22,6 +22,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import fields as dataclass_fields
 from typing import Any, cast, final
 
+import httpx
 import pytest
 from dcc_backend_common.llm_agent.postprocessing import replace_eszett
 from pydantic_ai.models.test import TestModel
@@ -772,6 +773,229 @@ class TestChunkedMode:
 
 
 # =============================================================================
+# PROGRESS REPORTING
+#
+# The loop spends minutes inside one round. What the client is told *during* that
+# round is the whole of the user's evidence that anything is happening, so it is
+# tested as behaviour rather than left to the events that happen to fall out.
+# =============================================================================
+
+
+class TestProgressReporting:
+    def test_rewriting_is_announced_before_the_first_llm_call(self, monkeypatch: Any) -> None:
+        """The bug: `start` was followed by nothing until the entire round finished.
+
+        The client showed its initial state -- attempt 1, the measurement label, zero
+        units in target -- for the full duration of the rewrite, so a working run was
+        indistinguishable from a hung one.
+        """
+        analyzer = StubAnalyzer()
+        patch_language(monkeypatch, analyzer)
+        hard = "Dieser Absatz ist deutlich zu schwer verstaendlich."
+        source = long_document([hard])
+        scoring = StubScoring(scores({source: -4.0}, default=2.5))
+        service = make_service(StubRewriter(["Jetzt ist der Absatz einfach."]), scoring)
+
+        events = run_stream(service, source)
+        kinds = [type(event).__name__ for event in events]
+        first_progress = kinds.index("SimplifyProgressEvent")
+
+        assert first_progress == 1, "a progress event must directly follow `start`"
+        assert cast(SimplifyProgressEvent, events[1]).stage == "rewriting"
+        assert first_progress < kinds.index("SimplifyChunkDoneEvent"), (
+            "the phase must be announced before the first unit lands, not with it"
+        )
+
+    def test_the_unit_counter_moves_as_each_unit_lands(self, monkeypatch: Any) -> None:
+        """One event per unit, not one per round: a 23-unit round froze the bar at 0."""
+        analyzer = StubAnalyzer()
+        patch_language(monkeypatch, analyzer)
+        hard = ["Dieser Absatz Nummer eins ist deutlich zu schwer verstaendlich formuliert."]
+        hard += [f"Absatz Nummer {n} ist ebenfalls viel zu schwer verstaendlich geschrieben." for n in range(2, 5)]
+        source = long_document(hard)
+        units = source.split("\n\n")
+
+        rewriter = StubRewriter([f"Einfacher Absatz Nummer {n}." for n in range(1, 5)])
+        scoring = StubScoring(scores({unit: -4.0 for unit in units}, default=2.5))
+        service = make_service(rewriter, scoring)
+
+        events = run_stream(service, source)
+        counts = [
+            event.units_in_target
+            for event in cast(list[SimplifyProgressEvent], only(events, SimplifyProgressEvent))
+            if event.stage == "rewriting"
+        ]
+
+        assert len(units) == 4, "the fixture must have several units to report progress over"
+        assert counts == [0, 1, 2, 3, 4], "the announcement, then one event per unit that lands"
+
+    def test_progress_is_reported_even_when_a_unit_fails(self, monkeypatch: Any) -> None:
+        """A round where nothing converges must still look alive, not frozen."""
+
+        @final
+        class AlwaysFails(StubRewriter):
+            async def rewrite(self, request: RewriteRequest, temperature: float = 0.0) -> str:
+                self.requests.append(request)
+                raise RuntimeError("vLLM went away")
+
+        analyzer = StubAnalyzer()
+        patch_language(monkeypatch, analyzer)
+        source = long_document(["Dieser Absatz ist deutlich zu schwer verstaendlich."])
+        service = make_service(AlwaysFails([]), StubScoring(scores({}, default=-4.0)))
+
+        events = run_stream(service, source)
+        rewriting = [
+            event
+            for event in cast(list[SimplifyProgressEvent], only(events, SimplifyProgressEvent))
+            if event.stage == "rewriting"
+        ]
+
+        assert len(rewriting) > 1, "the failing unit must still produce a progress event"
+        assert all(event.units_in_target == 0 for event in rewriting), "nothing converged, and it says so"
+
+
+class TestRewriteFailuresAreReported:
+    """`text` unchanged means two different things, and the diff cannot tell them apart.
+
+    Either the model read the text and left it alone, or it was never reached. The
+    frontend rendered both as "nothing to change", which is a lie in the second case.
+    """
+
+    def test_a_clean_run_reports_no_failures(self, monkeypatch: Any) -> None:
+        analyzer = StubAnalyzer()
+        patch_language(monkeypatch, analyzer)
+        service = make_service(StubRewriter(["Kurz und klar."]), StubScoring(scores({SOURCE: -3.8}, default=1.5)))
+
+        assert done_of(run_stream(service, SOURCE)).rewrite_failures == 0
+
+    def test_an_unreachable_model_is_counted_not_hidden(self, monkeypatch: Any) -> None:
+        @final
+        class AlwaysFails(StubRewriter):
+            async def rewrite(self, request: RewriteRequest, temperature: float = 0.0) -> str:
+                self.requests.append(request)
+                raise RuntimeError("vLLM went away")
+
+        analyzer = StubAnalyzer()
+        patch_language(monkeypatch, analyzer)
+        service = make_service(AlwaysFails([]), StubScoring(scores({SOURCE: -6.0})))
+
+        done = done_of(run_stream(service, SOURCE))
+
+        assert done.text == SOURCE
+        assert done.rewrite_failures == 1, "an unchanged text plus a failure count is an error, not a no-op"
+
+    def test_an_empty_generation_counts_as_a_failure(self, monkeypatch: Any) -> None:
+        """It produces the same unchanged output as a crash and must read the same way."""
+        analyzer = StubAnalyzer()
+        patch_language(monkeypatch, analyzer)
+        service = make_service(StubRewriter(["   "]), StubScoring(scores({SOURCE: -6.0})))
+
+        done = done_of(run_stream(service, SOURCE))
+
+        assert done.text == SOURCE
+        assert done.rewrite_failures == 1
+
+    def test_an_unreachable_model_ends_the_run_instead_of_failing_every_unit(
+        self, monkeypatch: Any
+    ) -> None:
+        """The reported symptom: ~2 minutes of waiting, then "nothing to change".
+
+        One unreachable rewrite costs ~10s of stacked client retries. Absorbed per unit,
+        a 23-unit document pays that for every unit, twice (pass 1 and the retry round),
+        and arrives at the unchanged text it could have reported after the first call.
+        """
+
+        @final
+        class Unreachable(StubRewriter):
+            async def rewrite(self, request: RewriteRequest, temperature: float = 0.0) -> str:
+                self.requests.append(request)
+                # A real unreachable call takes ~10s; the yield here is what lets the
+                # abort overtake the units that have not started, as it does in
+                # production. Without it every task in the wave runs to completion
+                # before the first exception propagates, and the test would be
+                # measuring the event loop rather than the behaviour.
+                await asyncio.sleep(0.01)
+                # The shape pydantic-ai actually produces: the transport error is two
+                # levels down the cause chain, not the exception that surfaces.
+                connect_error = httpx.ConnectError("All connection attempts failed")
+                raise RuntimeError("Connection error.") from connect_error
+
+        analyzer = StubAnalyzer()
+        patch_language(monkeypatch, analyzer)
+        hard = [f"Absatz Nummer {n} ist viel zu schwer verstaendlich geschrieben worden." for n in range(1, 13)]
+        source = long_document(hard)
+        units = len(source.split("\n\n"))
+        rewriter = Unreachable([])
+        service = make_service(rewriter, StubScoring(scores({}, default=-4.0)))
+
+        with pytest.raises(service_module.ModelUnavailableError):
+            run_stream(service, source)
+
+        assert units == 12, "the fixture must have more units than the parallelism, to have some to abandon"
+        # Calls already dispatched cannot be retracted, and the semaphore hands off to
+        # the next unit the moment one releases it, so a wave or two is still paid for.
+        # What must not happen is the part that costs the minutes: working through the
+        # whole document, and then doing it again for the retry round.
+        assert len(rewriter.requests) < units, "units that had not started must be abandoned, not attempted"
+        assert [request.attempt for request in rewriter.requests] == [1] * len(rewriter.requests), (
+            "no unit may be retried once the model is known to be unreachable"
+        )
+
+    def test_a_bad_answer_is_absorbed_but_an_unreachable_model_is_not(self, monkeypatch: Any) -> None:
+        """The two failures need opposite handling, so they must not be one branch."""
+
+        @final
+        class Broken(StubRewriter):
+            async def rewrite(self, request: RewriteRequest, temperature: float = 0.0) -> str:
+                self.requests.append(request)
+                raise RuntimeError("the model replied with nonsense")
+
+        analyzer = StubAnalyzer()
+        patch_language(monkeypatch, analyzer)
+        service = make_service(Broken([]), StubScoring(scores({SOURCE: -6.0})))
+
+        # No transport error anywhere in the chain: counted, run completes.
+        done = done_of(run_stream(service, SOURCE))
+
+        assert done.text == SOURCE
+        assert done.rewrite_failures == 1
+
+    def test_a_timeout_deep_in_the_cause_chain_still_counts_as_unreachable(self, monkeypatch: Any) -> None:
+        """`__context__` links too: a re-raise inside `except` sets that, not `__cause__`."""
+
+        @final
+        class Unreachable(StubRewriter):
+            async def rewrite(self, request: RewriteRequest, temperature: float = 0.0) -> str:
+                self.requests.append(request)
+                try:
+                    raise httpx.ConnectTimeout("timed out")
+                except httpx.ConnectTimeout:
+                    raise RuntimeError("Connection error.")  # noqa: B904 — the shape under test
+
+        analyzer = StubAnalyzer()
+        patch_language(monkeypatch, analyzer)
+        service = make_service(Unreachable([]), StubScoring(scores({SOURCE: -6.0})))
+
+        with pytest.raises(service_module.ModelUnavailableError):
+            run_stream(service, SOURCE)
+
+    def test_the_outcome_carries_the_same_count_as_the_event(self, monkeypatch: Any) -> None:
+        @final
+        class AlwaysFails(StubRewriter):
+            async def rewrite(self, request: RewriteRequest, temperature: float = 0.0) -> str:
+                self.requests.append(request)
+                raise RuntimeError("vLLM went away")
+
+        analyzer = StubAnalyzer()
+        patch_language(monkeypatch, analyzer)
+        service = make_service(AlwaysFails([]), StubScoring(scores({SOURCE: -6.0})))
+
+        outcome = asyncio.run(service.simplify(SOURCE))
+
+        assert outcome.rewrite_failures == 1, "stream and non-streaming caller must not disagree"
+
+
+# =============================================================================
 # UNIT MERGING (section 14.2) -- the real, unpatched default
 # =============================================================================
 
@@ -851,19 +1075,21 @@ class TestUnitPopulationConsistency:
 
         events = run_stream(service, source)
         start = cast(SimplifyStartEvent, events[0])
-        progress_events = only(events, SimplifyProgressEvent)
+        # Round outcomes only. `stage="rewriting"` events are per-unit liveness for the
+        # progress bar and say nothing about a round having been measured.
+        measured = [event for event in only(events, SimplifyProgressEvent) if event.stage == "readability"]
         done = done_of(events)
 
         # The bug: `start` used to report `raw_block_count` (200) here.
         assert start.units == 20, "20 merged, scorable units -- not 200 raw blank-line blocks"
         assert start.units != raw_block_count, "the fixture must actually exercise merging"
 
-        assert len(progress_events) == 1, "the one failing merged unit converges on pass 1, no retry needed"
-        assert progress_events[0].units_in_target == 20, (
+        assert len(measured) == 1, "the one failing merged unit converges on pass 1, no retry needed"
+        assert measured[0].units_in_target == 20, (
             "19 units were already in target; the 20th converged this attempt -- both counted "
             "over the same population `start.units` reports, not the 200 raw blocks"
         )
-        assert progress_events[0].units_in_target == start.units, (
+        assert measured[0].units_in_target == start.units, (
             "when every unit is in target, units_in_target must equal units -- the same "
             "population, read as one fraction ('X of Y units'), never two different ones"
         )
@@ -889,7 +1115,10 @@ class TestUnsupportedLanguage:
 
         assert len(rewriter.requests) == 1, "no loop without a metric to close it"
         assert scoring.scored == [], "a number here would look authoritative and mean nothing"
-        assert only(events, SimplifyProgressEvent) == []
+        # The phase marker is emitted (the client needs to know the model is working),
+        # but never a measurement: there is no metric behind this run to report.
+        assert [event.stage for event in only(events, SimplifyProgressEvent)] == ["rewriting"]
+        assert all(event.units_in_target is None for event in only(events, SimplifyProgressEvent))
         assert start.scored is False
         assert start.score_label is None
         assert start.language == "es"

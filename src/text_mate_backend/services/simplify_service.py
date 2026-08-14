@@ -76,6 +76,7 @@ from collections.abc import AsyncIterator, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from typing import final
 
+import httpx
 from dcc_backend_common.logger import get_logger
 
 from text_mate_backend.agents.agent_types.quick_actions.plain_language_agent import PlainLanguageAgent
@@ -192,6 +193,56 @@ SIMPLIFY_SUMMARY_MAX_CHARS = 180
 
 
 # =============================================================================
+# FAILURE CLASSIFICATION
+# =============================================================================
+
+
+@final
+class ModelUnavailableError(RuntimeError):
+    """The model could not be reached at all -- not "it answered badly".
+
+    Raised instead of being counted, because the two need opposite handling. A bad
+    answer is a per-unit problem: count it, keep the original for that unit, carry on
+    with the rest. An unreachable model is a property of the *run*: every remaining
+    unit will fail the same way, so continuing only burns wall-clock before arriving
+    at the same unchanged text.
+
+    That was measured, not assumed. One unreachable rewrite takes ~10s, because the
+    OpenAI client's own retries stack on top of the tenacity transport in
+    ``dcc_backend_common.llm_agent.base_agent`` (``llm_max_retries=2`` -> 3 transport
+    attempts, times the SDK's own, with exponential backoff between). On a 23-unit
+    document at 4 parallel calls that is ~1 minute for pass 1 and ~1 minute for the
+    retry round -- two minutes of waiting to be told nothing changed. Aborting on the
+    first one costs the ~10s of that single call's retries, which is the resilience
+    against a transient blip that those retries exist for.
+    """
+
+
+def _is_unreachable(error: BaseException) -> bool:
+    """True when ``error`` was caused by not reaching the model, at any depth.
+
+    pydantic-ai wraps the transport failure twice (``ModelAPIError`` ->
+    ``openai.APIConnectionError`` -> ``httpx.ConnectError``), so the cause chain is
+    what carries the signal, not the type of the exception that surfaced. Both
+    ``__cause__`` and ``__context__`` are followed, since a re-raise inside an
+    ``except`` block links via the latter.
+
+    ``httpx.TransportError`` is the whole family of "the request never got an answer":
+    connect refused, DNS failure, connect/read/pool timeout, protocol error. A read
+    timeout is included deliberately -- with ``llm_timeout`` at 300s it means five
+    minutes of silence, which is as fatal to the run as a refused connection.
+    """
+    seen: set[int] = set()
+    current: BaseException | None = error
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        if isinstance(current, httpx.TransportError):
+            return True
+        current = current.__cause__ or current.__context__
+    return False
+
+
+# =============================================================================
 # INTERNAL STATE
 # =============================================================================
 
@@ -220,6 +271,9 @@ class SimplifyRunState:
     """
 
     llm_calls: int = 0
+    #: Calls that returned nothing usable. Distinguishes "the model left this text
+    #: alone" from "the model never answered", which are the same bytes on the wire.
+    rewrite_failures: int = 0
     attempts: int = 0
     outcome: SimplifyOutcome | None = None
 
@@ -487,10 +541,11 @@ class SimplifyService:
         threshold and every retry decision downstream is calibrated per language, and
         an uncalibrated score would look authoritative while meaning nothing.
         """
-        # No analyzer means no gate and no `progress` event at all -- `units` has no
-        # numerator anywhere in this run to stay consistent with, unlike the scored
-        # path. Still reported as the merged count (not the raw block count) so the
-        # field means the same thing on every event the client ever sees, scored or not.
+        # No analyzer means no gate, so the only `progress` event here is the phase
+        # marker below -- `units_in_target` has no numerator anywhere in this run to
+        # stay consistent with, unlike the scored path. `units` is still reported as
+        # the merged count (not the raw block count) so the field means the same thing
+        # on every event the client ever sees, scored or not.
         units = merge_units(split_units(text, DEFAULT_MIN_WORDS), SIMPLIFY_MIN_UNIT_WORDS, DEFAULT_MIN_WORDS)
         yield SimplifyStartEvent(
             language=prompt_language,
@@ -499,6 +554,8 @@ class SimplifyService:
             mode="whole",
             units=len(rewritable_units(units)),
         )
+
+        yield SimplifyProgressEvent(attempt=1, stage="rewriting")
 
         state.attempts = 1
         rewritten = await self._rewrite(RewriteRequest(text=text, language=prompt_language, attempt=1), state)
@@ -529,6 +586,10 @@ class SimplifyService:
         state: SimplifyRunState,
     ) -> AsyncIterator[SimplifyEvent]:
         # --- Pass 1: exactly one whole-document call (section 14.3) --------------
+        # Announced before the call, not after: this one call is the whole wall-clock
+        # of pass 1 and nothing else reaches the client until it returns.
+        yield SimplifyProgressEvent(attempt=1, stage="rewriting", units_in_target=0)
+
         state.attempts = 1
         request = RewriteRequest(
             text=text,
@@ -583,6 +644,9 @@ class SimplifyService:
         if unconverged and self.max_attempts > 1 and rewritten is not None:
             state.attempts = 2
             retried = len(unconverged)
+            # The retry round is another silent stretch of LLM time; say so before it
+            # starts rather than only reporting its outcome afterwards.
+            yield SimplifyProgressEvent(attempt=2, stage="rewriting", units_in_target=pass1_in_target)
             replacements, unconverged = await self._retry_units_once(
                 units, unit_scores, analyzer, prompt_language, state, attempt=2
             )
@@ -652,6 +716,16 @@ class SimplifyService:
 
         semaphore = asyncio.Semaphore(SIMPLIFY_MAX_PARALLEL_LLM_CALLS)
 
+        # The units already in target are the counter's starting value, and this is the
+        # first event after `start`. Without it the client would show its initial state
+        # -- attempt 1, "measuring readability", 0 in target -- for the entire first
+        # round, which on a long document is minutes of the model actively rewriting.
+        yield SimplifyProgressEvent(
+            attempt=1,
+            stage="rewriting",
+            units_in_target=already_in_target,
+        )
+
         # ``self.max_attempts`` (2 by construction, section 14.3) bounds this to pass 1
         # plus exactly one retry round; the eval harness's single-shot baseline (1)
         # stops after pass 1.
@@ -682,21 +756,30 @@ class SimplifyService:
             try:
                 for completed in asyncio.as_completed(tasks):
                     index, result = await completed
-                    if result is None:
+                    if result is not None:
+                        history[index].append(result)
+                        if result.in_target:
+                            replacements[index] = result.text
+                            yield self._chunk_done(
+                                by_index[index],
+                                scores_by_index[index],
+                                result,
+                                attempts=len(history[index]),
+                                converged=True,
+                            )
+                        else:
+                            still_pending.append(index)
+                    else:
                         still_pending.append(index)
-                        continue
-                    history[index].append(result)
-                    if not result.in_target:
-                        still_pending.append(index)
-                        continue
 
-                    replacements[index] = result.text
-                    yield self._chunk_done(
-                        by_index[index],
-                        scores_by_index[index],
-                        result,
-                        attempts=len(history[index]),
-                        converged=True,
+                    # One event per unit that lands, not one per round: the counter is
+                    # the only evidence the user has that a multi-minute round is
+                    # progressing at all. Emitted for failures and misses too, so the
+                    # attempt/stage stay live even in a round where nothing converges.
+                    yield SimplifyProgressEvent(
+                        attempt=attempt,
+                        stage="rewriting",
+                        units_in_target=already_in_target + len(replacements),
                     )
             finally:
                 # The consumer stopping (client disconnect -> CancelledError) must not
@@ -904,6 +987,10 @@ class SimplifyService:
         "Nothing usable" covers a timeout, an exception and an empty generation alike:
         resolution ships the best attempt, so an empty string must never be allowed to
         become one -- it would score as unscorable and delete the text.
+
+        The one failure that is *not* absorbed this way is an unreachable model, which
+        raises :class:`ModelUnavailableError` and ends the run -- see that class for why
+        continuing is only a way of spending two minutes to reach the same answer.
         """
         state.llm_calls += 1
         temperature = SIMPLIFY_TEMPERATURE_FIRST if request.attempt == 1 else SIMPLIFY_TEMPERATURE_RETRY
@@ -914,13 +1001,19 @@ class SimplifyService:
             )
         except asyncio.TimeoutError:
             logger.error("Rewrite timed out", attempt=request.attempt, timeout=SIMPLIFY_REWRITE_TIMEOUT_SECONDS)
+            state.rewrite_failures += 1
             return None
         except Exception as exc:
+            state.rewrite_failures += 1
+            if _is_unreachable(exc):
+                logger.error("Model unreachable, aborting run", attempt=request.attempt, error=str(exc))
+                raise ModelUnavailableError(str(exc)) from exc
             logger.error("Rewrite failed", attempt=request.attempt, error=str(exc))
             return None
 
         if not rewritten or not rewritten.strip():
             logger.error("Rewrite returned empty output", attempt=request.attempt)
+            state.rewrite_failures += 1
             return None
         return rewritten
 
@@ -1041,6 +1134,7 @@ class SimplifyService:
             text=text,
             attempts=max(state.attempts, 1),
             llm_calls=state.llm_calls,
+            rewrite_failures=state.rewrite_failures,
             converged=converged,
             mode=mode,
             unconverged_units=indices,
@@ -1059,6 +1153,7 @@ class SimplifyService:
             mode=mode,
             attempts=state.attempts,
             llm_calls=state.llm_calls,
+            rewrite_failures=state.rewrite_failures,
             converged=converged,
             unconverged_units=len(indices),
         )
@@ -1074,4 +1169,5 @@ class SimplifyService:
             converged=converged,
             unconverged_units=indices,
             unconverged_ranges=ranges,
+            rewrite_failures=state.rewrite_failures,
         )

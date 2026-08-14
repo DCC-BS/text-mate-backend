@@ -36,7 +36,7 @@ from fastapi_azure_auth.user import User
 
 from text_mate_backend.container import Container
 from text_mate_backend.models.simplify_models import SimplifyInput
-from text_mate_backend.services.simplify_service import SimplifyService
+from text_mate_backend.services.simplify_service import ModelUnavailableError, SimplifyService
 from text_mate_backend.utils.auth import AuthSchema
 from text_mate_backend.utils.usage_tracking import get_user_id
 
@@ -45,6 +45,30 @@ logger = get_logger("simplify_router")
 #: JSON Lines: one compact JSON object per line, UTF-8, never ASCII-escaped
 #: (the payload is German, French and Italian prose).
 LINE_SEPARATOR = "\n"
+
+
+def _failure_done(text: str, language: str | None) -> str:
+    """The terminal ``done`` for a run that broke: the original back, marked as failed.
+
+    ``rewrite_failures`` is what stops this from reading as a success. Without it the
+    client sees an unchanged text, finds no diff hunks, and reports "nothing to change"
+    — a reassuring message for a run that never produced anything. The exact count is
+    unknown here (the exception ended the run), so it is reported as at least one, which
+    is what the field is used for: zero or not zero.
+    """
+    return json.dumps(
+        {
+            "event": "done",
+            "text": text,
+            "language": language,
+            "scored": False,
+            "converged": False,
+            "unconverged_units": [],
+            "unconverged_ranges": [],
+            "rewrite_failures": 1,
+        },
+        ensure_ascii=False,
+    )
 
 
 @inject
@@ -88,6 +112,14 @@ def create_router(
             except asyncio.CancelledError:
                 logger.info("Client disconnected from simplify JSON Lines stream")
                 raise
+            except ModelUnavailableError:
+                # The model could not be reached. The service aborts the run on the
+                # first one rather than failing every remaining unit the same way; see
+                # `ModelUnavailableError`. Reported exactly like any other failure
+                # below, but logged as infrastructure rather than a bug: there is no
+                # stack worth keeping, and it is not this code that broke.
+                logger.error("Simplify aborted: the model is unreachable")
+                yield _failure_done(data.text, detected_language) + LINE_SEPARATOR
             except Exception:
                 # The 200 and the leading lines are already on the wire, so the failure
                 # cannot be signalled as a status code without corrupting the stream.
@@ -101,21 +133,7 @@ def create_router(
                 # marker, so there an abort is the only signal available; here the
                 # protocol has one, and it is worth more than a truncated connection.
                 logger.exception("Unhandled error during simplify JSON Lines stream")
-                yield (
-                    json.dumps(
-                        {
-                            "event": "done",
-                            "text": data.text,
-                            "language": detected_language,
-                            "scored": False,
-                            "converged": False,
-                            "unconverged_units": [],
-                            "unconverged_ranges": [],
-                        },
-                        ensure_ascii=False,
-                    )
-                    + LINE_SEPARATOR
-                )
+                yield _failure_done(data.text, detected_language) + LINE_SEPARATOR
 
         return StreamingResponse(
             event_stream(),

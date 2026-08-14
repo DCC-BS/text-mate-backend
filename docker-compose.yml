@@ -37,16 +37,8 @@ services:
             --disable_chunked_mm_input
 
     docling-serve:
-        image: ghcr.io/dcc-bs/dcc-docling-serve-cu130:v1.30.0
+        image: ghcr.io/dcc-bs/dcc-docling-serve-cpu:v1.30.0
         container_name: docling-serve-text-mate
-        runtime: nvidia
-        deploy:
-            resources:
-                reservations:
-                    devices:
-                        - driver: nvidia
-                          device_ids: ["0"]
-                          capabilities: [gpu]
         ports:
             - ${DOCLING_API_PORT:-5001}:5001
         environment:

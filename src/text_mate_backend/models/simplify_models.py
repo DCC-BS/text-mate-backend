@@ -46,12 +46,17 @@ SimplifyMode = Literal["whole", "chunked"]
 ``chunked`` per-paragraph rewrites, used only above the chunking threshold.
 """
 
-SimplifyStage = Literal["readability"]
-"""Which gate a ``progress`` event reports on.
+SimplifyStage = Literal["rewriting", "readability"]
+"""What a ``progress`` event reports on.
 
-One member, deliberately. There used to be a second (``"fidelity"``, an LLM claim
-check) which measurement retired; the field stays so the event keeps its shape and a
-future gate does not have to be a breaking change for the client parser.
+``rewriting``   the model is producing text; the unit counter moves as units land,
+``readability`` a round finished and its result has been measured.
+
+The two are *phases*, not gates. Readability is still the only gate (there used to be
+a second, ``"fidelity"``, an LLM claim check which measurement retired). ``rewriting``
+exists because it is the phase that takes the wall-clock: without it the client had no
+event between ``start`` and the end of the whole first round, so it sat on the
+measurement label for minutes while the model was in fact rewriting.
 """
 
 
@@ -233,6 +238,16 @@ class SimplifyDoneEvent(BaseModel):
             "indices it cannot map back to the rewritten text itself."
         ),
     )
+    rewrite_failures: int = Field(
+        default=0,
+        description=(
+            "LLM rewrite calls that produced nothing usable (timeout, error, empty output). "
+            "Non-zero means part of this result is unchanged source because the model could "
+            "not be reached or did not answer -- NOT because the text needed no change. The "
+            "two look identical in the diff, so the client needs this number to tell the user "
+            "which one happened."
+        ),
+    )
 
 
 SimplifyEvent = Annotated[
@@ -258,6 +273,7 @@ class SimplifyOutcome:
     text: str
     attempts: int = 1
     llm_calls: int = 0
+    rewrite_failures: int = 0
     converged: bool = True
     mode: SimplifyMode | None = None
     unconverged_units: list[int] = field(default_factory=list)
