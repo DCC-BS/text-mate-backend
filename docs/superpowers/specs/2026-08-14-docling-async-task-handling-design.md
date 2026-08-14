@@ -78,30 +78,33 @@ FastAPI Client              DocumentConversionService                     Doclin
      |<-- 200 ConversionResult(html) --|                                           |
 ```
 
-### 4.1 Step Details
+### 4.1 Component Design
 
-1. **Submission (`POST /convert/file/async`)**:
-   - Sends multipart form payload (`files={"files": (filename, content, content_type)}` + `data=options`).
-   - Headers: `Authorization: Bearer <docling_api_key>`.
-   - Response: JSON `TaskStatusResponse` containing `task_id` and initial `task_status`.
-   - If HTTP status != 200 or `task_id` is missing: raise `ApiErrorException(DOCUMENT_CONVERSION_ERROR)`.
+All HTTP calls are routed through a single helper `_request(method, path, **kwargs)` that handles headers, URL building, logging, and error conversion.
 
-2. **Status Polling Loop (`GET /status/poll/{task_id}`)**:
-   - Executes inside an `asyncio` loop with `await asyncio.sleep(self.config.docling_poll_interval_seconds)`.
-   - Checks cumulative elapsed time. If `elapsed > self.config.docling_conversion_timeout_seconds`, raises `ApiErrorException(DOCUMENT_CONVERSION_TIMEOUT)`.
-   - Evaluates `task_status`:
-     - `"pending"` or `"started"`: continues loop.
-     - `"success"` or `"partial_success"`: breaks out of polling loop.
-     - `"failure"` or `"skipped"`: extracts `error_message` and raises `ApiErrorException(DOCUMENT_CONVERSION_ERROR)`.
-   - Transient network/HTTP errors during polling (e.g. temporary connection reset) are retried up to 3 times before failing.
+1. **Unified Request Helper (`_request`)**:
+   - Sends HTTP requests with `Authorization: Bearer <docling_api_key>`.
+   - Calls `response.raise_for_status()`.
+   - Converts any `httpx.HTTPStatusError` or `httpx.RequestError` into `ApiErrorException(DOCUMENT_CONVERSION_ERROR)`.
 
-3. **Result Fetching (`GET /result/{task_id}`)**:
-   - Calls `GET {docling_url}/result/{task_id}`.
-   - Extracts `document.html_content` from `ConvertDocumentResponse`.
-   - Returns `ConversionResult(html=html_content)`.
+2. **Submission (`submit_async_task`)**:
+   - Calls `_request("POST", "/convert/file/async", files=files, data=options)`.
+   - Returns `task_id`.
 
-4. **Task Cancellation on Client Disconnect**:
-   - `convert_route.py` continues monitoring `request.is_disconnected()`. If the user disconnects or cancels, the asyncio task is cleanly cancelled.
+3. **Status Polling Loop (`poll_task_status`)**:
+   - Simple `while True` loop:
+     - Checks elapsed time; if `elapsed > timeout`, raises `ApiErrorException(DOCUMENT_CONVERSION_TIMEOUT)`.
+     - Calls `_request("GET", f"/status/poll/{task_id}")`.
+     - If `task_status` in `("success", "partial_success")`: returns.
+     - If `task_status` in `("failure", "skipped")`: raises `ApiErrorException(DOCUMENT_CONVERSION_ERROR)`.
+     - `await asyncio.sleep(poll_interval)`.
+
+4. **Result Fetching (`fetch_task_result`)**:
+   - Calls `_request("GET", f"/result/{task_id}")`.
+   - Returns `ConversionResult(html=...)`.
+
+5. **Orchestrator (`convert`)**:
+   - Prepares file -> submits task -> polls until completion -> returns result.
 
 ---
 

@@ -6,7 +6,7 @@
 
 **Architecture:** `DocumentConversionService` submits document files to Docling-serve's `/v1/convert/file/async` endpoint, polls `/v1/status/poll/{task_id}` until completion or timeout, and fetches converted HTML from `/v1/result/{task_id}`. Structured error codes (`document_conversion_error`, `document_conversion_timeout`, `invalid_mime_type`) are propagated to the frontend and displayed with localized i18n messages.
 
-**Tech Stack:** Python 3.13, FastAPI, httpx, pytest, pytest-asyncio/anyio, Nuxt/Vue 3 i18n.
+**Tech Stack:** Python 3.13, FastAPI, httpx, pytest, pytest-asyncio/anyio, Nuxt/Vue 4 i18n.
 
 ## Global Constraints
 - Target container image: `ghcr.io/dcc-bs/dcc-docling-serve-cu130:1.30.0`
@@ -280,7 +280,7 @@ async def test_convert_invalid_mimetype(service_config):
 Run: `uv run pytest tests/test_document_conversion_service.py -v`
 Expected: FAIL
 
-- [ ] **Step 3: Implement Async Task Polling in `DocumentConversionService`**
+- [ ] **Step 3: Implement Clean Async Task Polling in `DocumentConversionService`**
 
 Update `src/text_mate_backend/services/document_conversion_service.py`:
 ```python
@@ -326,45 +326,42 @@ class DocumentConversionService:
 
     # [Keep existing _prepare_file_data helper]
 
+    async def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
+        url = f"{self.config.docling_url}{path}"
+        headers = {"Authorization": f"Bearer {self.config.docling_api_key}", **kwargs.pop("headers", {})}
+        try:
+            response = await self.client.request(method, url, headers=headers, **kwargs)
+            response.raise_for_status()
+            return response
+        except httpx.HTTPStatusError as e:
+            logger.error("Docling API HTTP error", url=url, status_code=e.response.status_code, body=e.response.text)
+            raise ApiErrorException(
+                {
+                    "errorId": DOCUMENT_CONVERSION_ERROR,
+                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "debugMessage": f"Docling request failed with status {e.response.status_code}",
+                }
+            ) from e
+        except httpx.RequestError as e:
+            logger.error("Docling connection error", url=url, error=str(e))
+            raise ApiErrorException(
+                {
+                    "errorId": DOCUMENT_CONVERSION_ERROR,
+                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "debugMessage": f"Docling connection error: {str(e)}",
+                }
+            ) from e
+
     async def submit_async_task(
         self,
         files: Mapping[str, tuple[str, bytes, str]],
         options: dict[str, Any],
     ) -> str:
-        url = f"{self.config.docling_url}/convert/file/async"
-        logger.debug("Submitting docling async file convert task", url=url)
-
-        try:
-            response = await self.client.post(
-                url,
-                headers={"Authorization": f"Bearer {self.config.docling_api_key}"},
-                files=files,
-                data=options,
-            )
-        except httpx.HTTPError as e:
-            logger.error("HTTP error during docling task submission", error=str(e))
-            raise ApiErrorException(
-                {
-                    "errorId": DOCUMENT_CONVERSION_ERROR,
-                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    "debugMessage": f"Failed to submit conversion task: {str(e)}",
-                }
-            ) from e
-
-        if not (200 <= response.status_code < 300):
-            logger.error("Docling task submission returned error response", status_code=response.status_code, body=response.text)
-            raise ApiErrorException(
-                {
-                    "errorId": DOCUMENT_CONVERSION_ERROR,
-                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    "debugMessage": "Docling task submission failed",
-                }
-            )
-
-        data = response.json()
-        task_id = data.get("task_id")
+        logger.debug("Submitting docling async file convert task")
+        response = await self._request("POST", "/convert/file/async", files=files, data=options)
+        task_id = response.json().get("task_id")
         if not task_id:
-            logger.error("Docling response missing task_id", response=data)
+            logger.error("Docling response missing task_id")
             raise ApiErrorException(
                 {
                     "errorId": DOCUMENT_CONVERSION_ERROR,
@@ -375,11 +372,8 @@ class DocumentConversionService:
         return str(task_id)
 
     async def poll_task_status(self, task_id: str) -> None:
-        url = f"{self.config.docling_url}/status/poll/{task_id}"
-        logger.debug("Starting docling task polling", task_id=task_id, url=url)
+        logger.debug("Starting docling task polling", task_id=task_id)
         start_time = time.monotonic()
-        consecutive_errors = 0
-        max_consecutive_errors = 3
 
         while True:
             elapsed = time.monotonic() - start_time
@@ -393,53 +387,14 @@ class DocumentConversionService:
                     }
                 )
 
-            try:
-                response = await self.client.get(
-                    url,
-                    headers={"Authorization": f"Bearer {self.config.docling_api_key}"},
-                )
-                consecutive_errors = 0
-            except httpx.HTTPError as e:
-                consecutive_errors += 1
-                logger.warning(
-                    "Transient HTTP error while polling docling status",
-                    task_id=task_id,
-                    consecutive_errors=consecutive_errors,
-                    error=str(e),
-                )
-                if consecutive_errors >= max_consecutive_errors:
-                    logger.error("Max polling consecutive errors reached", task_id=task_id)
-                    raise ApiErrorException(
-                        {
-                            "errorId": DOCUMENT_CONVERSION_ERROR,
-                            "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            "debugMessage": f"Polling docling task failed after {consecutive_errors} attempts",
-                        }
-                    ) from e
-                await asyncio.sleep(self.config.docling_poll_interval_seconds)
-                continue
-
-            if not (200 <= response.status_code < 300):
-                consecutive_errors += 1
-                logger.warning("Docling status poll returned non-200", status_code=response.status_code, task_id=task_id)
-                if consecutive_errors >= max_consecutive_errors:
-                    raise ApiErrorException(
-                        {
-                            "errorId": DOCUMENT_CONVERSION_ERROR,
-                            "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            "debugMessage": f"Docling status poll failed with status {response.status_code}",
-                        }
-                    )
-                await asyncio.sleep(self.config.docling_poll_interval_seconds)
-                continue
-
+            response = await self._request("GET", f"/status/poll/{task_id}")
             poll_data = response.json()
             task_status = poll_data.get("task_status")
             logger.debug("Polled docling task status", task_id=task_id, task_status=task_status)
 
             if task_status in ("success", "partial_success"):
                 return
-            elif task_status in ("failure", "skipped"):
+            if task_status in ("failure", "skipped"):
                 error_msg = poll_data.get("error_message") or "Conversion task failed"
                 logger.error("Docling task failed", task_id=task_id, task_status=task_status, error=error_msg)
                 raise ApiErrorException(
@@ -453,34 +408,8 @@ class DocumentConversionService:
             await asyncio.sleep(self.config.docling_poll_interval_seconds)
 
     async def fetch_task_result(self, task_id: str) -> ConversionResult:
-        url = f"{self.config.docling_url}/result/{task_id}"
-        logger.debug("Fetching docling task result", task_id=task_id, url=url)
-
-        try:
-            response = await self.client.get(
-                url,
-                headers={"Authorization": f"Bearer {self.config.docling_api_key}"},
-            )
-        except httpx.HTTPError as e:
-            logger.error("HTTP error fetching docling result", task_id=task_id, error=str(e))
-            raise ApiErrorException(
-                {
-                    "errorId": DOCUMENT_CONVERSION_ERROR,
-                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    "debugMessage": f"Failed to fetch task result: {str(e)}",
-                }
-            ) from e
-
-        if not (200 <= response.status_code < 300):
-            logger.error("Docling result fetch returned non-200", status_code=response.status_code, task_id=task_id)
-            raise ApiErrorException(
-                {
-                    "errorId": DOCUMENT_CONVERSION_ERROR,
-                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    "debugMessage": "Failed to fetch task result from docling",
-                }
-            )
-
+        logger.debug("Fetching docling task result", task_id=task_id)
+        response = await self._request("GET", f"/result/{task_id}")
         json_response = response.json()
         html = json_response.get("document", {}).get("html_content", "")
         return ConversionResult(html=html)
