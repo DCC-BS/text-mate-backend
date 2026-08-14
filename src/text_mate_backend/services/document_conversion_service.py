@@ -1,3 +1,5 @@
+import asyncio
+import time
 from collections.abc import Mapping
 from io import BytesIO
 from pathlib import Path
@@ -10,8 +12,9 @@ from starlette.datastructures import UploadFile
 
 from text_mate_backend.models.conversion_result import ConversionResult
 from text_mate_backend.models.error_codes import (
+    DOCUMENT_CONVERSION_ERROR,
+    DOCUMENT_CONVERSION_TIMEOUT,
     INVALID_MIME_TYPE,
-    UNEXPECTED_ERROR,
 )
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.utils.configuration import Configuration
@@ -76,14 +79,14 @@ def validate_mimetype(mimetype: str, logger_context: dict[str, Any]) -> None:
 
 @final
 class DocumentConversionService:
-    def __init__(self, config: Configuration) -> None:
+    def __init__(self, config: Configuration, transport: httpx.AsyncBaseTransport | None = None) -> None:
         self.config = config
-        self.client = httpx.AsyncClient(timeout=60.0)
+        self.client = httpx.AsyncClient(timeout=self.config.docling_http_timeout_seconds, transport=transport)
 
     async def __aenter__(self) -> "DocumentConversionService":
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+    async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         await self.close()
 
     async def close(self) -> None:
@@ -135,45 +138,93 @@ class DocumentConversionService:
 
         return content, resolved_filename, content_type
 
-    async def fetch_docling_file_convert(
+    async def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
+        url = f"{self.config.docling_url}{path}"
+        headers = {"Authorization": f"Bearer {self.config.docling_api_key}", **kwargs.pop("headers", {})}
+        try:
+            response = await self.client.request(method, url, headers=headers, **kwargs)
+            response.raise_for_status()
+            return response
+        except httpx.HTTPStatusError as e:
+            logger.error("Docling API HTTP error", url=url, status_code=e.response.status_code, body=e.response.text)
+            raise ApiErrorException(
+                {
+                    "errorId": DOCUMENT_CONVERSION_ERROR,
+                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "debugMessage": f"Docling request failed with status {e.response.status_code}",
+                }
+            ) from e
+        except httpx.RequestError as e:
+            logger.error("Docling connection error", url=url, error=str(e))
+            raise ApiErrorException(
+                {
+                    "errorId": DOCUMENT_CONVERSION_ERROR,
+                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "debugMessage": f"Docling connection error: {str(e)}",
+                }
+            ) from e
+
+    async def submit_async_task(
         self,
         files: Mapping[str, tuple[str, bytes, str]],
-        options: dict[str, str | list[str] | bool],
-    ) -> httpx.Response:
-        logger.debug("Fetching docling file convert", url=f"{self.config.docling_url}/convert/file")
-        response = await self.client.post(
-            self.config.docling_url + "/convert/file",
-            headers={"Authorization": f"Bearer {self.config.docling_api_key}"},
-            files=files,
-            data=options,
-        )
+        options: dict[str, Any],
+    ) -> str:
+        logger.debug("Submitting docling async file convert task")
+        response = await self._request("POST", "/convert/file/async", files=files, data=options)
+        task_id = response.json().get("task_id")
+        if not task_id:
+            logger.error("Docling response missing task_id")
+            raise ApiErrorException(
+                {
+                    "errorId": DOCUMENT_CONVERSION_ERROR,
+                    "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    "debugMessage": "Docling response missing task_id",
+                }
+            )
+        return str(task_id)
 
-        if 200 <= response.status_code < 300:
-            return response
-        else:
-            # For error responses, safely handle potential binary content
-            try:
-                error_text = response.text
-                logger.error(
-                    "Docling conversion returned error response", status_code=response.status_code, body=error_text
-                )
+    async def poll_task_status(self, task_id: str) -> None:
+        logger.debug("Starting docling task polling", task_id=task_id)
+        start_time = time.monotonic()
 
+        while True:
+            elapsed = time.monotonic() - start_time
+            if elapsed > self.config.docling_conversion_timeout_seconds:
+                logger.error("Docling task conversion timed out", task_id=task_id, elapsed=elapsed)
                 raise ApiErrorException(
                     {
-                        "errorId": UNEXPECTED_ERROR,
-                        "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        "debugMessage": "Unexpected error occurred",
+                        "errorId": DOCUMENT_CONVERSION_TIMEOUT,
+                        "status": status.HTTP_504_GATEWAY_TIMEOUT,
+                        "debugMessage": f"Docling conversion timed out after {elapsed:.1f}s",
                     }
                 )
-            except UnicodeDecodeError as e:
-                logger.exception("Docling error response contained binary data", status_code=response.status_code)
+
+            response = await self._request("GET", f"/status/poll/{task_id}")
+            poll_data = response.json()
+            task_status = poll_data.get("task_status")
+            logger.debug("Polled docling task status", task_id=task_id, task_status=task_status)
+
+            if task_status in ("success", "partial_success"):
+                return
+            if task_status in ("failure", "skipped"):
+                error_msg = poll_data.get("error_message") or "Conversion task failed"
+                logger.error("Docling task failed", task_id=task_id, task_status=task_status, error=error_msg)
                 raise ApiErrorException(
                     {
-                        "errorId": UNEXPECTED_ERROR,
+                        "errorId": DOCUMENT_CONVERSION_ERROR,
                         "status": status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        "debugMessage": "Binary data in error response",
+                        "debugMessage": f"Docling task failed: {error_msg}",
                     }
-                ) from e
+                )
+
+            await asyncio.sleep(self.config.docling_poll_interval_seconds)
+
+    async def fetch_task_result(self, task_id: str) -> ConversionResult:
+        logger.debug("Fetching docling task result", task_id=task_id)
+        response = await self._request("GET", f"/result/{task_id}")
+        json_response = response.json()
+        html = json_response.get("document", {}).get("html_content", "")
+        return ConversionResult(html=html)
 
     async def convert(
         self,
@@ -182,10 +233,8 @@ class DocumentConversionService:
         content_type: str | None = None,
     ) -> ConversionResult:
         languages = ["de", "en", "fr", "it"]
-
         logger.debug("Received file for conversion", file_type=type(file).__name__)
 
-        # Prepare file data using common helper (single bytes copy, no extra BytesIO)
         content, filename, content_type = await self._prepare_file_data(
             file,
             filename,
@@ -193,19 +242,17 @@ class DocumentConversionService:
         )
         logger.debug("Resolved filename", filename=filename)
 
-        # Pass raw bytes to httpx; this aligns with what the docling API expects
         files = {"files": (filename, content, content_type)}
-        options: dict[str, str | list[str] | bool] = {
+        options: dict[str, Any] = {
             "to_formats": ["html"],
             "image_export_mode": "placeholder",
             "do_ocr": True,
-            "ocr_engine": "easyocr",
+            "ocr_preset": "rapidocr",
             "ocr_lang": languages,
             "table_mode": "accurate",
-            "pdf_backend": "pypdfium2",
+            "pdf_backend": "docling_parse",
         }
 
-        response = await self.fetch_docling_file_convert(files, options)
-        json_response = response.json()
-        html = json_response.get("document", {}).get("html_content", "")
-        return ConversionResult(html=html)
+        task_id = await self.submit_async_task(files, options)
+        await self.poll_task_status(task_id)
+        return await self.fetch_task_result(task_id)

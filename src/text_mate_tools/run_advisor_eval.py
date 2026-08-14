@@ -73,7 +73,7 @@ def validate_cases(cases: list[EvalCase], service: AdvisorService) -> None:
 
 
 def _utf16_to_codepoint_offset(text: str, utf16_offset: int) -> int:
-    """Inverse of AdvisorService._to_utf16_offset.
+    """Inverse of utils.text_offsets.to_utf16_offset.
 
     check_text_stream emits ranges in JavaScript UTF-16 code units (see
     advisor._build_violation_result), but the evaluator works in Python code

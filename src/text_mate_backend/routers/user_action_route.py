@@ -36,7 +36,9 @@ def create_router(
 
         actions = user_action_service.get_actions(current_user)
 
-        return UserActionGetResponse(actions=list(map(lambda x: UserActionMeta(id=x.id, name=x.name, tooltip=x.tooltip), actions)))
+        return UserActionGetResponse(
+            actions=list(map(lambda x: UserActionMeta(id=x.id, name=x.name, tooltip=x.tooltip), actions))
+        )
 
     logger.debug("User action router configured")
     return router

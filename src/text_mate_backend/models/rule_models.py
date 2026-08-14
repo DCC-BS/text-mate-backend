@@ -50,7 +50,7 @@ class ViolationRange(BaseModel):
     The indexing scheme depends on the consumer: internally (e.g.
     ``ResolvedDetection.range``) the offsets are Python code points; at the API
     boundary (``ViolationResult.range``) they are UTF-16 code units. See
-    ``advisor._to_utf16_offset`` for the translation between the two.
+    ``utils.text_offsets.to_utf16_offset`` for the translation between the two.
     """
 
     start: int = Field(description="Start position (0-based, inclusive) of the violating text")

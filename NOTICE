@@ -1,0 +1,72 @@
+text-mate-backend
+Copyright (c) 2025 Data Competence Center Basel-Stadt
+
+This product includes software developed by third parties, as listed below.
+The project's own licence is in the LICENSE file.
+
+--------------------------------------------------------------------------------
+blokkli/editor — MIT License
+https://github.com/blokkli/editor
+--------------------------------------------------------------------------------
+
+`src/text_mate_backend/readability/` is a Python port of the built-in
+readability analyzer of blokkli/editor:
+
+  - src/modules/readability/runtime/analyzers/builtin.ts
+  - src/modules/readability/runtime/analyzers/builtin.spec.ts
+  - src/runtime/editor/features/analyze/readability/types.ts
+
+Ported: the analyzer contract; the tokenization helpers (`getWords`,
+`getSentences`, `sentenceCount`, `wordCount`, `longWordCount`, `charCount`,
+`avgSentenceLength`, `avgSyllablesPerWord`, `polysyllableCount`); the Flesch
+Reading Ease, LIX and Gulpease formulas; the `fleschToCefr` mapping; and the
+per-language `SCORE_CONFIGS` calibration (bands, impact thresholds, minimum word
+counts and score reference tables) for `en`, `fr` and `it`. The expectations of
+`builtin.spec.ts` are ported as test vectors in `tests/test_readability_*.py`.
+
+Not ported: the Wiener Sachtextformel and the `countSyllablesDe` heuristic —
+German is scored with ZIX instead (see below).
+
+Copyright (c) blokkli
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+--------------------------------------------------------------------------------
+@lunarisapp/readability and @lunarisapp/language — MIT License
+https://github.com/LunarisApp/text-tools
+--------------------------------------------------------------------------------
+
+The readability formulas and the tokenization rules above reached this project
+through blokkli/editor, which copied them verbatim from @lunarisapp/readability
+and @lunarisapp/language. Their MIT licence terms are identical to the text
+reproduced above.
+
+Copyright (c) LunarisApp
+
+--------------------------------------------------------------------------------
+zix (Zurich Understandability Index) — MIT License
+https://github.com/machinelearningZH/zix_understandability-index
+--------------------------------------------------------------------------------
+
+German readability is scored with ZIX, a trained model published by the
+Statistisches Amt des Kantons Zürich. It is used as a dependency (see
+`pyproject.toml`), not vendored. The German target band (ZIX >= 0, i.e. CEFR
+A1/A2/B1) follows the calibration in `machinelearningZH/simply-simplify-language`
+(`config.yaml`: `limit_hard: 0`, `limit_medium: -2`).
+
+Copyright (c) Statistisches Amt Kanton Zürich

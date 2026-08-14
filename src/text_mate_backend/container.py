@@ -6,6 +6,7 @@ from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.azure_service import AzureService
 from text_mate_backend.services.document_conversion_service import DocumentConversionService
 from text_mate_backend.services.fix_service import FixService
+from text_mate_backend.services.simplify_service import SimplifyService
 from text_mate_backend.services.text_analysis_service import TextAnalysisService
 from text_mate_backend.services.user_actions_service import UserActionService
 from text_mate_backend.utils.auth import AuthSchema, create_auth_scheme
@@ -43,6 +44,14 @@ class Container(containers.DeclarativeContainer):
     )
 
     text_analysis_service: providers.Singleton[TextAnalysisService] = providers.Singleton(TextAnalysisService)
+
+    # Shares the one TextAnalysisService so the readability thread pool stays bounded
+    # process-wide and the per-text score cache is warm across endpoints.
+    simplify_service: providers.Singleton[SimplifyService] = providers.Singleton(
+        SimplifyService,
+        config=config,
+        text_analysis_service=text_analysis_service,
+    )
 
     azure_service: providers.Singleton[AzureService] = providers.Singleton(AzureService, auth_settings=auth_settings)
 

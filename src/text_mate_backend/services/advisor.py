@@ -27,6 +27,7 @@ from text_mate_backend.models.rule_models import (
     ViolationResult,
 )
 from text_mate_backend.utils.configuration import Configuration
+from text_mate_backend.utils.text_offsets import to_utf16_offset
 
 logger = get_logger("advisor_service")
 MAX_RULES_PER_REQUEST = 5
@@ -436,7 +437,7 @@ class AdvisorService:
         # API boundary: the frontend is JavaScript, which indexes strings by
         # UTF-16 code units. All internal work (resolution, dedup, slicing) runs
         # on Python code points, so we translate the range to UTF-16 here, on the
-        # way out. See ``_to_utf16_offset`` for the rationale.
+        # way out. See ``utils.text_offsets.to_utf16_offset`` for the rationale.
         return ViolationResult(
             rule_name=resolved.rule_name,
             reason=resolved.reason,
@@ -445,31 +446,11 @@ class AdvisorService:
             file_name=resolved.file_name,
             page_number=resolved.page_number,
             range=ViolationRange(
-                start=self._to_utf16_offset(text, resolved.range.start),
-                end=self._to_utf16_offset(text, resolved.range.end),
+                start=to_utf16_offset(text, resolved.range.start),
+                end=to_utf16_offset(text, resolved.range.end),
             ),
             collection=resolved.collection,
         )
-
-    @staticmethod
-    def _to_utf16_offset(text: str, codepoint_offset: int) -> int:
-        """Translate a Python code-point index into a JavaScript UTF-16 code-unit index.
-
-        Python ``str`` is a sequence of Unicode code points; ``str.find`` /
-        slicing / regex offsets are therefore code-point based. JavaScript, by
-        contrast, stores strings as UTF-16 and indexes them by **code unit**.
-        The two indexing schemes agree for every Basic Multilingual Plane (BMP)
-        character — that covers all of Latin, umlauts, ``ß``, accented letters,
-        Cyrillic, CJK, etc. They diverge only for code points >= U+10000
-        (supplementary plane: emoji, some symbols, historic scripts), which are
-        a single Python code point but two UTF-16 code units (a surrogate pair).
-
-        For each character before ``codepoint_offset`` we add 2 when it lies
-        outside the BMP and 1 otherwise, yielding the offset a JS consumer would
-        compute. This keeps UTF-16 translation at the API boundary only; all
-        internal resolution logic continues to operate on code points.
-        """
-        return sum(2 if ord(ch) >= 0x10000 else 1 for ch in text[:codepoint_offset])
 
     def _find_source(
         self, source: str, text: str, consumed: list[tuple[int, int]] | None = None
@@ -616,6 +597,8 @@ class AdvisorService:
 
         return None
 
+    # See also utils/simplify_chunker.py: paragraph-level, offset-preserving splitting for the
+    # simplify pipeline. Advisor Phase 3 should adopt it (docs/simplify_redesign.md section 4.4).
     def _split_into_search_units(self, text: str) -> list[tuple[str, int]]:
         """Split text into sentences/segments with their character offsets."""
         units: list[tuple[str, int]] = []
