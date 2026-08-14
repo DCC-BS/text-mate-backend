@@ -1128,3 +1128,79 @@ does not mean what its name says*. `chunk_done.index` reads like a paragraph ind
 not; `stage` defaulting to `readability` reads like a measurement and was not; an unchanged
 `text` reads like "no changes needed" and was not. The frontend contract now names the
 merged-unit space explicitly wherever an index or a count crosses it.
+
+### 14.10 Failing fast when the model is unreachable
+
+Follow-up to §14.9: with the model down, the run took **two minutes and 47 seconds** to
+arrive at "nothing changed". Measured on `bs-gr-anfrage-steuervermeidung` (22,870 chars),
+model pointed at a closed port:
+
+| | time to fail | LLM calls |
+|---|---|---|
+| Before | **167.4 s** | 62, all failed, reported as "nothing to change" |
+| Abort only (published `dcc-backend-common`) | **12.3 s** | ~4 |
+| Abort + the retry fixes below | **2.0 s** | ~4 |
+
+Two independent causes, at two layers.
+
+**One unreachable call took 10.4 s, not milliseconds.** `dcc-backend-common`'s
+`BaseAgent` wraps its httpx client in an `AsyncTenacityTransport`, and then hands that
+client to `OpenAIProvider` — which builds an `AsyncOpenAI` whose own `max_retries`
+defaults to 2. The two layers **multiply**: `llm_max_retries=2` means 3 transport
+attempts × 3 SDK attempts = 9 requests, with exponential backoff between. That silently
+falsifies the library's own test, `test_retry_stop_is_max_retries_plus_one`. Measured
+against a closed port: 10.3 s at `llm_max_retries=2`, 4.3 s at 1, 1.4 s at 0 — the last
+being the SDK's retries alone, with tenacity switched off entirely.
+
+Fixed in `/home/yanick/code/backend-common` by constructing the `AsyncOpenAI` client
+explicitly with `max_retries=0`: retrying is tenacity's job, since it is the layer that
+honours `Retry-After`.
+
+**A refused connection was being retried at all.** The predicate was
+`httpx.HTTPStatusError | httpx.TransportError`, and `TransportError` covers
+`ConnectError`. Nothing is listening; backoff cannot change that. Narrowed to
+`TransportError` *minus* `ConnectError` — subtracting the one case rather than
+enumerating the ones worth keeping, because the family is broad and everything else in
+it is a genuine transient. A first attempt at this enumerated the types instead and
+silently dropped `RemoteProtocolError`, i.e. the dropped-keepalive case that pooled
+connections to a local model hit most often; the test now pins all four.
+`ConnectTimeout` is deliberately unaffected — it derives from `TimeoutException`, not
+`ConnectError`, so a slowly-accepted connection is still retried.
+
+**The run kept going after the first one.** Even at zero cost per call, a doomed run
+worked through every unit and then did it again for the retry round — 62 calls — before
+returning the unchanged text. `ModelUnavailableError` now ends the run at the first
+transport-level failure. The distinction it draws is the point: *the model answered
+badly* is a property of one unit (count it, keep the original, carry on), while *the
+model cannot be reached* is a property of the run.
+
+Classification reads the **cause chain**, not the exception type: pydantic-ai wraps the
+failure twice (`ModelAPIError` → `openai.APIConnectionError` → `httpx.ConnectError`), and
+`__context__` is followed as well as `__cause__` because a re-raise inside `except` links
+via the former.
+
+Calls already dispatched cannot be recalled, and the semaphore admits the next unit the
+moment one releases it, so a wave or two is still paid for — the test asserts the part
+that actually costs the minutes: that units which never started are abandoned, and that
+no unit is ever retried once the model is known to be unreachable.
+
+**The frontend no longer opens a Diff Review for it.** A run that failed *and* returned
+the text unchanged has nothing to review; it raises a toast and leaves the user in the
+editor. Partial failures still open the review — some units were rewritten and deserve a
+decision — with the toast as the warning.
+
+> `dcc-backend-common` is a published dependency (`>=0.1.16`). Until a release carrying
+> these two fixes, textmate gets the 12.3 s column, not the 2.0 s one.
+
+### 14.11 The progress count travelled with the bar
+
+Reported as "very weird": the `n von y Textabschnitten` line slid left-to-right as the bar
+filled. It was in `UProgress`'s `status` slot, whose container is **sized to the
+percentage** — Nuxt UI's intent is a label that tracks the bar's head. Measured at 0 %,
+the text sat 891 px from the panel's right edge; pinned, it sits at the padding, 13 px,
+and stays there. Moved out of the slot to its own right-aligned row.
+
+Worth recording how nearly this one was mis-verified: the first check asserted only that
+the offset was *stable across samples*, which a single sample satisfies trivially — it
+passed against the broken layout. Stability was never the property; sitting at the right
+edge was.

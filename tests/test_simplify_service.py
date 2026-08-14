@@ -895,9 +895,7 @@ class TestRewriteFailuresAreReported:
         assert done.text == SOURCE
         assert done.rewrite_failures == 1
 
-    def test_an_unreachable_model_ends_the_run_instead_of_failing_every_unit(
-        self, monkeypatch: Any
-    ) -> None:
+    def test_an_unreachable_model_ends_the_run_instead_of_failing_every_unit(self, monkeypatch: Any) -> None:
         """The reported symptom: ~2 minutes of waiting, then "nothing to change".
 
         One unreachable rewrite costs ~10s of stacked client retries. Absorbed per unit,
