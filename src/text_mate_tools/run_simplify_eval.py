@@ -25,11 +25,19 @@ sides (``simplify_eval/normalize.py``) so the digit conversions the Bundeskanzle
 require are not reported as losses.
 
 This runner depends on two narrow Protocols — ``Simplifier`` and ``Scorer`` in
-``simplify_eval.models`` — and never on a concrete service. Four simplifiers ship with it:
+``simplify_eval.models`` — and never on a concrete service. Five simplifiers ship with it,
+and the two baselines answer different questions — see each entry:
 
-    --simplifier simplify_single_shot   THE BASELINE. The Phase 4 pipeline with
-                                ``simplify_max_attempts=1``: pass 1 only, no retry.
-                                Needs a live LLM.
+    --simplifier main_single_shot   THE PRE-REDESIGN BASELINE: what shipped on `main`.
+                                One LLM call for the whole document, `main`'s prompt
+                                verbatim, no chunking, no scoring, no retry
+                                (``simplify_eval/main_baseline.py``). Compare against
+                                ``simplify`` to measure what the redesign as a whole
+                                bought. Needs a live LLM.
+    --simplifier simplify_single_shot   The ABLATION baseline. The Phase 4 pipeline with
+                                ``simplify_max_attempts=1``: pass 1 only, no retry —
+                                the new prompt and chunker, without the loop. Needs a
+                                live LLM.
     --simplifier simplify       the full §14 pipeline: pass 1 plus exactly one retry
                                 round per unit still outside the target band, fired
                                 concurrently. Compare against simplify_single_shot to
@@ -61,7 +69,14 @@ Usage (from the repository root, so assets/ and evals/ resolve):
     # Source-side numbers only — no LLM, ZIX runs locally on CPU.
     uv run python -m text_mate_tools.run_simplify_eval --simplifier passthrough
 
-    # THE BASELINE, then the loop. Both require a reachable vLLM endpoint.
+    # What the redesign bought over `main`: the pre-redesign baseline, then the loop.
+    uv run --env-file .env python -m text_mate_tools.run_simplify_eval --simplifier main_single_shot --json-out main.json --texts-out texts_main
+    uv run --env-file .env python -m text_mate_tools.run_simplify_eval --simplifier simplify --json-out loop.json --texts-out texts_loop
+    #   ... then blind the two text sets against each other for a human or LLM read:
+    python -m text_mate_tools.simplify_eval.build_blind_pairs --left texts_main --left-name main_single_shot --right texts_loop --right-name simplify --out blind
+
+    # What the RETRY alone buys: the ablation baseline, then the loop.
+    # Both require a reachable vLLM endpoint.
     #   1. Point .env at the LLM:  LLM_API_KEY, LLM_URL, LLM_MODEL (plus AUTH_MODE,
     #      which Configuration.from_env requires; AUTH_MODE=none needs APP_MODE!=prod).
     #   2. From the repository root:
@@ -74,10 +89,12 @@ Options:
     --cases DIR         Directory with eval case JSON files (default: evals/simplify/cases)
     --runs N            Runs per case (default: 1); metrics are meaned over runs
     --case-id ID        Only run the given case id(s); repeatable
-    --simplifier NAME   simplify | simplify_single_shot | passthrough | none
-                        (default: passthrough)
+    --simplifier NAME   simplify | simplify_single_shot | main_single_shot | passthrough
+                        | none (default: passthrough)
     --threshold N       Chunking threshold in characters (default: 10000, §14.5)
     --json-out FILE     Also write the full per-run results as JSON
+    --texts-out DIR     Also write each run's simplified text as <case_id>.run<N>.txt —
+                        the input to a side-by-side read or an LLM judge
 
 Environment:
     Same .env as the backend (LLM_API_KEY, LLM_URL, LLM_MODEL, AUTH_MODE, ...), and only
@@ -237,6 +254,12 @@ def build_simplifier(name: str) -> Simplifier | None:
         return PassthroughSimplifier()
     if name == "simplify":
         return SimplifyServiceSimplifier(name, build_simplify_service(max_attempts=SIMPLIFY_MAX_ATTEMPTS))
+    if name == "main_single_shot":
+        # The pre-redesign baseline. Imported lazily so a corpus check or a passthrough
+        # run never has to construct an LLM configuration to reach it.
+        from text_mate_tools.simplify_eval.main_baseline import MainSingleShotSimplifier
+
+        return MainSingleShotSimplifier(Configuration.from_env())
     if name == "simplify_single_shot":
         # The baseline: one rewrite, no retry. Compared against `simplify`, the difference
         # is the loop; compared against `passthrough`, the difference is the rewrite. Both
@@ -331,6 +354,7 @@ async def run_case_once(
         llm_calls=output.llm_calls,
         wall_clock_seconds=elapsed,
         error=error,
+        result_text=output.text,
     )
 
 
@@ -538,11 +562,18 @@ async def main() -> None:
     # argparse "invalid choice" would not explain where the baseline went.
     parser.add_argument(
         "--simplifier",
-        choices=["simplify", "simplify_single_shot", "passthrough", "none", "quick_action"],
+        choices=["simplify", "simplify_single_shot", "main_single_shot", "passthrough", "none", "quick_action"],
         default="passthrough",
     )
     parser.add_argument("--threshold", type=int, default=CHUNKING_THRESHOLD_CHARS)
     parser.add_argument("--json-out", type=Path, default=None)
+    parser.add_argument(
+        "--texts-out",
+        type=Path,
+        default=None,
+        help="Directory to write each run's simplified text to, as <case_id>.run<N>.txt. "
+        "What a side-by-side reading, or an LLM judge, is given.",
+    )
     args = parser.parse_args()
 
     try:
@@ -567,11 +598,18 @@ async def main() -> None:
     scorer = GermanZixScorer()
     print(f"Running {len(cases)} case(s) × {args.runs} run(s) through '{simplifier.name}'")
 
+    if args.texts_out:
+        args.texts_out.mkdir(parents=True, exist_ok=True)
+
     results: list[CaseRunResult] = []
     for case in cases:
         for run_index in range(args.runs):
             result = await run_case_once(case, simplifier, scorer, run_index, args.threshold)
             results.append(result)
+            if args.texts_out:
+                # Written per run rather than at the end, so an interrupted run still
+                # leaves behind everything it had already produced.
+                (args.texts_out / f"{case.id}.run{run_index + 1}.txt").write_text(result.result_text, encoding="utf-8")
             print(
                 f"  {case.id} run {run_index + 1}/{args.runs}: "
                 f"{_format_score(result.score_before)} -> {_format_score(result.score_after)} "

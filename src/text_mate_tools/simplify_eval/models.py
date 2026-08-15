@@ -257,6 +257,16 @@ class CaseRunResult(BaseModel):
     llm_calls: int = 1
     wall_clock_seconds: float = 0.0
     error: str | None = Field(default=None, description="Set when the simplifier raised; the run still counts")
+    result_text: str = Field(
+        default="",
+        exclude=True,
+        description=(
+            "The simplified text this run produced. Excluded from `model_dump`, and so from "
+            "`--json-out`: a metrics file that also carries every rewrite of every case is "
+            "megabytes of prose nobody diffs. `--texts-out DIR` writes it to one file per run "
+            "instead, which is what a human or a judge reads."
+        ),
+    )
 
     @property
     def score_delta(self) -> float | None:
