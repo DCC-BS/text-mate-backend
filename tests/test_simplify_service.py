@@ -1,9 +1,9 @@
-"""Unit tests for the simplification loop (docs/simplify_redesign.md section 14).
+"""Unit tests for the simplification loop (docs/simplify_redesign.md sections 2 and 3).
 
 Everything here runs without an LLM and without ZIX: the rewriter and the scoring
 service are stubs, and language detection is patched out. What is under test is the
 orchestration -- which attempt is kept, what the retry is told, when a ``chunk_done``
-may be emitted, and the section 14.1 per-unit gate -- because that is the part that has
+may be emitted, and the per-unit gate -- because that is the part that has
 no other check.
 
 Most tests monkeypatch ``SIMPLIFY_MIN_UNIT_WORDS`` down to 1 so that :func:`merge_units`
@@ -763,10 +763,8 @@ class TestChunkedMode:
         assert done_of(events).text == source
 
     def test_converged_is_per_unit_not_the_whole_document_band(self, monkeypatch: Any) -> None:
-        """Section 14.1's reversal: every unit passing must report converged, even when
-        the assembled document's own band would still read 'ok' rather than 'easy' --
-        exactly the disagreement measured in docs/simplify_redesign.md §13.6 on
-        ``initiative-erben-fuers-wohnen`` (83/83 paragraphs in target, document at -0.16)."""
+        """Every unit passing must report converged, even when the assembled document's
+        own band would still read 'ok' rather than 'easy' (see docs/simplify_redesign.md §2)."""
         analyzer = StubAnalyzer()
         patch_language(monkeypatch, analyzer)
         stubborn = "Dieser Absatz laesst sich jetzt gut vereinfachen."

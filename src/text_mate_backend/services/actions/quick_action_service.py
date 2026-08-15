@@ -35,7 +35,6 @@ class QuickActionService:
         # POST /simplify, where it is a measured, closed loop (readability gate +
         # retry) instead of a single unmeasured call. The enum member stays so an
         # old client gets a clear 400 rather than a 500.
-        # See docs/simplify_redesign.md section 3, "Old action".
         self.agent_mapping: dict[Actions, QuickActionBaseAgent] = {
             Actions.BulletPoints: BulletPointAgent(config),
             Actions.Condense: CondenseAgent(config),

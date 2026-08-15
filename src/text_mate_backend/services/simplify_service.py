@@ -1,7 +1,6 @@
 """The simplification loop: measure -> rewrite -> re-measure -> retry.
 
-Implements the pipeline of ``docs/simplify_redesign.md`` section 14, which supersedes the
-original section 4.1/4.4 mode split after the first real-corpus measurement (section 13.6).
+Implements the pipeline of ``docs/simplify_redesign.md`` section 3.
 The orchestrator is deterministic Python and owns everything that decides; the LLM only
 rewrites.
 
@@ -13,9 +12,9 @@ itself across runs on the same input, and it doubled the call count of the commo
 Fact preservation is still *measured*, in the eval harness against hand-listed must-keep
 facts, where a false positive costs a line in a report instead of a user's rewrite.
 Information loss is therefore a prompt obligation (``REWRITE_COMPLETE``) and an eval metric,
-not a runtime check.
+not a runtime check (see ``docs/simplify_redesign.md`` section 2).
 
-Shape of a run (section 14.3)::
+Shape of a run (section 3)::
 
     detect language ─┬─ no analyzer ──> single rewrite, no scoring, no loop, scored=false
                      │
@@ -24,7 +23,7 @@ Shape of a run (section 14.3)::
                                           else unit-wise: rewrite each merged unit that
                                              already fails, concurrently
                                      score every unit (merged to >= simplify_min_unit_words,
-                                        section 14.2 -- a raw paragraph is too noisy to gate on)
+                                        section 2 -- a raw paragraph is too noisy to gate on)
                                      every unit in target -> done
                                      otherwise: exactly ONE retry per failing unit,
                                         fired concurrently, merged back into the pass-1 result
@@ -40,8 +39,8 @@ Two details are easy to get wrong and are therefore spelled out here:
   median paragraph length (35 words) against bands that are 2 points wide -- gating on
   that would retry on measurement noise. Paragraphs are merged forward to >= 100 words
   (``simplify_min_unit_words``); headings and list items are barriers, never merged into
-  or across (section 14.2). A merged unit that fails is retried as that merged block, not
-  split back apart.
+  or across (see ``docs/simplify_redesign.md`` section 2). A merged unit that fails is
+  retried as that merged block, not split back apart.
 * **Resolution keeps the best attempt, not the last.** A retry is regularly worse than
   pass 1: the escalating instructions push towards shorter sentences, which can overshoot.
   "Best" is the best raw score, read in the analyzer's own direction. An attempt that
@@ -52,11 +51,10 @@ Two details are easy to get wrong and are therefore spelled out here:
   ``DiffViewer`` before it lands, so shipping an improvement is not the same as imposing
   it. The **ORIGINAL** is returned only when no attempt produced usable output at all -- a
   fallback, not a quality judgement.
-* **``converged`` is per-unit** (section 14.1, reversing the mode-independent whole-text
-  definition of the original design): the whole-document band is no longer a gate, only
-  a number that is still computed and reported (the one score the user sees, section
-  14.4). ``converged`` on the ``done`` event is true exactly when no unit is left in
-  ``unconverged_units`` -- it drives that shortfall hint, not the badge.
+* **``converged`` is per-unit** (see ``docs/simplify_redesign.md`` section 2): the
+  whole-document band is no longer a gate, only a number that is still computed and reported
+  (the one score the user sees). ``converged`` on the ``done`` event is true exactly when no
+  unit is left in ``unconverged_units`` -- it drives that shortfall hint, not the badge.
 * **Every count on the wire describes the same population.** ``start.units``,
   ``progress.units_in_target`` and ``done.unconverged_units`` are all counted over
   ``rewritable_units(...)`` of the merged block list. Headings, list items and merged
@@ -122,27 +120,25 @@ logger = get_logger("simplify_service")
 SIMPLIFY_CHUNKING_THRESHOLD_CHARS = 10000
 """Above this many characters, pass 1 rewrites unit by unit instead of in one call.
 
-Raised from 8000 after section 13.6 measured that 12 of 16 real Basel-Stadt documents
-exceed it -- CHUNKED is the normal path on real material, not the exception the original
-8,000-char guess assumed. ``max_model_len`` is 198,944, so context is not the binding
-constraint; T7.1 (docs section 7) owns re-deriving this against wall-clock and quality.
+CHUNKED mode operates on merged units to avoid quality degradation over very long
+single generations (see docs/simplify_redesign.md section 2).
 """
 
 SIMPLIFY_MAX_ATTEMPTS = 2
 """Pass 1, plus exactly one retry round for units still outside the target band.
 
-Fixed at 2 "by construction" (section 14.3): this is no longer a general N-attempt loop.
+Fixed at 2 by construction (docs/simplify_redesign.md section 2): this is not a general N-attempt loop.
 The eval harness's single-shot baseline passes 1, which skips the retry round entirely.
 """
 
 SIMPLIFY_MIN_UNIT_WORDS = DEFAULT_MIN_UNIT_WORDS
-"""Merge paragraphs forward until a unit has this many words before gating (section 14.2).
+"""Merge paragraphs forward until a unit has this many words before gating (docs/simplify_redesign.md section 2).
 
 100 gives ~2:1 merging on the real corpus while landing where the measured ZIX
 prefix/full-text deviation is well under half a 2-point-wide band; at the raw-paragraph
 median (35 words) the deviation is ~1.8 -- almost a full band, which would make the gate
 retry on measurement noise rather than a real readability problem. Do not lower this
-without new measurement (see the table in docs/simplify_redesign.md section 14.2).
+without new measurement (see docs/simplify_redesign.md section 2).
 """
 
 SIMPLIFY_TEMPERATURE_FIRST: float | None = 0.0
@@ -150,7 +146,7 @@ SIMPLIFY_TEMPERATURE_FIRST: float | None = 0.0
 
 ``None`` means "send no ``temperature`` at all and let the server decide". Production
 never uses it; the eval harness does, to compare against a baseline that sets no
-temperature either (``--server-default-temperature``, docs/simplify_redesign.md §15.7).
+temperature either.
 """
 
 SIMPLIFY_TEMPERATURE_RETRY: float | None = None
@@ -160,11 +156,10 @@ SIMPLIFY_TEMPERATURE_RETRY: float | None = None
 """
 
 SIMPLIFY_MAX_PARALLEL_LLM_CALLS = 4
-"""Concurrent unit rewrites, bounded so retries never fire unbounded (section 14.3).
+"""Concurrent unit rewrites, bounded so retries never fire unbounded (docs/simplify_redesign.md section 3).
 
-Production serves with ``--max-num-seqs 256``; the dev box that produced the section 13.6
-wall-clock figures runs ``--max-num-seqs 1``, so those numbers are the serialized worst
-case, not the cost of the architecture.
+Production serves with ``--max-num-seqs 256``; a local dev server with ``--max-num-seqs 1``
+will serialize calls.
 """
 
 SIMPLIFY_REWRITE_TIMEOUT_SECONDS = 300
@@ -324,7 +319,7 @@ def _unconverged_ranges(
     happens here, once, at the API boundary -- via the shared
     :func:`~text_mate_backend.utils.text_offsets.to_utf16_offset` rather than
     reimplementing the BMP/surrogate-pair walk (see its docstring, and
-    ``docs/simplify_redesign.md`` section 4.7).
+    ``docs/simplify_redesign.md`` section 3.1).
 
     A unit index missing from ``spans`` (should not happen -- every index in
     ``indices`` comes from the same ``units`` list ``spans`` was built from) is

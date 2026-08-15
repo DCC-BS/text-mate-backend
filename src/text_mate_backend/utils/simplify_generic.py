@@ -1,7 +1,7 @@
 """Language-neutral simplification instructions for non-German texts.
 
 Used for ``en`` / ``fr`` / ``it`` and for the unscored fallback branch of the
-simplification pipeline (``docs/simplify_redesign.md`` §5.4). Adapted from blokkli's
+simplification pipeline (``docs/simplify_redesign.md`` §2, §5). Adapted from blokkli's
 ``fixReadability`` stream template ``defaultInstructions``
 (``src/modules/agent/runtime/server/templates/definitions/fixReadability.ts``, MIT).
 
@@ -10,10 +10,9 @@ What is deliberately **not** here
 
 No house style, no typography rules, no gendering rules, no orthography rules. We have
 authored and reviewed those for German only (``utils/simplify_style.py``); inventing them
-for English, French or Italian without a reviewer of that language is exactly the
-systematic error that §5.2 of the design guards against. The loop, the fidelity gate and
-the retry feedback are identical across languages — only the rule content differs, and
-that asymmetry is documented for users in the design (§10).
+for English, French or Italian without a reviewer of that language is a systematic error risk.
+The loop and the retry feedback are identical across languages — only the rule content differs,
+and that asymmetry is documented in the design (see ``docs/simplify_redesign.md`` §2).
 
 The instructions are written in English but never name a target language: the model is
 told explicitly to answer in the same language as the input, so the same block serves all

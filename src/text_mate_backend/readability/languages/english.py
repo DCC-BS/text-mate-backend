@@ -7,8 +7,7 @@ FRE >= 60; ok = C1; hard = C2), impact thresholds ``[40, 25, 10]`` and
 
 The one thing blokkli outsources is syllable counting (npm ``syllable``); here
 that is ``pyphen``, which hyphenates rather than syllabifies. FRE is sensitive
-to syllable counts, so English scores are the least trustworthy of the four
-languages -- see ``docs/simplify_redesign.md`` section 11.
+to syllable counts, making English scores approximate.
 """
 
 from collections.abc import Sequence

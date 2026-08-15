@@ -1,12 +1,11 @@
 """Unit tests for the simplification prompt blocks and the reconciled German rules.
 
-Covers Phase 3 of ``docs/simplify_redesign.md``:
+Covers prompt components of ``docs/simplify_redesign.md`` §5:
 
-* T3.1 — the reconciled ``RULES_ES`` no longer contradicts Basel-Stadt / Bundeskanzlei,
-  and ``PlainLanguageAgent``'s imports still work.
-* T3.2 — ``SIMPLIFY_STYLE_DE`` carries the rules of all three sources, deduplicated.
-* T3.3 — the generic prompt is language-neutral and carries no authored style rules.
-* T3.4 — the composable prompt renderers and their assembly.
+* Reconciled ``RULES_ES`` adhering to Basel-Stadt / Bundeskanzlei guidelines.
+* ``SIMPLIFY_STYLE_DE`` deduplicating house style rules.
+* Generic language-neutral prompt for non-German texts.
+* Composable prompt renderers and their assembly.
 
 No LLM, no I/O: everything here is pure string construction.
 """

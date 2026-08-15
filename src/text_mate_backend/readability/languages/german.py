@@ -37,9 +37,7 @@ from text_mate_backend.readability.types import (
 MAX_ZIX_CHARS = 1_000_000
 
 #: ZIX warns that the estimate is unreliable *at or below* five words, so the
-#: floor for scoring is six. (docs/simplify_redesign.md section 4.2 says 5,
-#: taken from blokkli's WSTF config; ZIX's own warning is the better authority
-#: and the eval harness independently landed on 6.)
+#: floor for scoring is six (see docs/simplify_redesign.md section 4).
 MIN_WORDS = 6
 
 #: ZIX is clipped to this range.

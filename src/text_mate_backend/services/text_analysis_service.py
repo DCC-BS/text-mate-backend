@@ -47,7 +47,7 @@ LEGACY_LANGUAGE: LanguageCode = "de"
 
 #: A *confidently* detected language we cannot score gets no score at all — a
 #: ZIX number for Spanish looks authoritative and means nothing
-#: (docs/simplify_redesign.md section 3: "Do not fake a number").
+#: (docs/simplify_redesign.md section 2: "Do not fake a number").
 #:
 #: The threshold is higher than detection's own 0.5 floor because the two
 #: mistakes cost different amounts: wrongly refusing to score German blanks the

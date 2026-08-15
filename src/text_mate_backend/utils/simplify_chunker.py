@@ -15,8 +15,8 @@ Rules that drive the design:
   :func:`merge_units` combines consecutive ``paragraph`` units forward until
   each block has at least ``min_unit_words`` words, because ZIX measured on a
   corpus-median 35-word paragraph deviates from the full-text score by ~1.8, a
-  band and a half; see ``docs/simplify_redesign.md`` section 14.2 for the
-  measurement. Headings and list items are barriers: merging never crosses
+  band and a half; see ``docs/simplify_redesign.md`` section 2 for the
+  measurement rationale. Headings and list items are barriers: merging never crosses
   them and never combines them with a neighbouring paragraph.
 
 Reassembly is 1-in-N-out: a unit's replacement may itself contain blank lines,
@@ -27,8 +27,8 @@ Deliberately simplify-local for now. The advisor's only splitter today is
 ``services/advisor.py`` ``_split_into_search_units`` (sentence-level,
 offset-preserving, built for fuzzy source matching); the paragraph windowing
 both features want is specified in ``docs/advisor_redesign.md`` section 4.2.3
-but unbuilt. Unify in advisor Phase 3 -- see ``docs/simplify_redesign.md``
-section 4.4.
+but unbuilt. Unify in future advisor updates (see ``docs/simplify_redesign.md``
+section 2).
 """
 
 import re

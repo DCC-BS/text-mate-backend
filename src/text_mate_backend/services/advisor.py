@@ -600,7 +600,7 @@ class AdvisorService:
         return None
 
     # See also utils/simplify_chunker.py: paragraph-level, offset-preserving splitting for the
-    # simplify pipeline. Advisor Phase 3 should adopt it (docs/simplify_redesign.md section 4.4).
+    # simplify pipeline (see docs/simplify_redesign.md section 2).
     def _split_into_search_units(self, text: str) -> list[tuple[str, int]]:
         """Split text into sentences/segments with their character offsets."""
         units: list[tuple[str, int]] = []

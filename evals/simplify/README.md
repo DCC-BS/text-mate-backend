@@ -48,7 +48,7 @@ ever be handed.
   requests, so aggregate numbers should be read per mode, never pooled.
 - ~~Every must-keep fact is auto-extracted and unreviewed.~~ **Done:** all 16 cases carry
   `must_keep_facts_reviewed: true`, seven of them corrected in the process
-  (`docs/simplify_redesign.md` §14.7). The paragraph further down that still describes the
+  (see `docs/simplify_redesign.md` §6). The paragraph further down that still describes the
   facts as candidates is about how to add a *new* case.
 
 Nothing here was scraped: the 14 PDFs were supplied directly, downloaded once to a scratch

@@ -16,7 +16,7 @@ One hand-curated, deduplicated German style constant for the ``de`` branch of th
 simplification prompt (``utils/simplify_prompt.py``). It is the Python equivalent of
 blokkli's skill ``streamTemplates`` seam: static, reviewable text — **not** rules injected
 at runtime and **not** rules synthesised offline by an LLM.
-See ``docs/simplify_redesign.md`` §5.2.
+See ``docs/simplify_redesign.md`` §5.
 
 Where each section comes from
 -----------------------------

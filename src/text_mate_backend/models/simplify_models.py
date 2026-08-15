@@ -3,16 +3,12 @@
 Three groups live here, following the convention of ``models/rule_models.py``
 (agent input/output models live next to the wire models, not inside the agents):
 
-* :class:`RewriteRequest` — what the loop's one agent consumes
-  (``docs/simplify_redesign.md`` section 5.3).
-* The four stream events of ``POST /simplify`` (section 4.7). Their field names and
-  their ``event`` discriminator are the wire contract with
+* :class:`RewriteRequest` — what the loop's one agent consumes.
+* The four stream events of ``POST /simplify`` (see ``docs/simplify_redesign.md`` section 3.1).
+  Their field names and their ``event`` discriminator are the wire contract with
   ``app/composables/useSimplify.ts``; a rename here needs a matching, coordinated
-  change on the frontend (as with the ``paragraphs``/``paragraphs_in_target``/
-  ``unconverged_paragraphs`` -> ``units``/``units_in_target``/``unconverged_units``
-  rename below, section 14.4 -- the old names counted raw, unmerged blocks in one
-  event and merged, scorable units in another, which is what let "42 of 258" reach a
-  user as if the tool had barely touched the document).
+  change on the frontend (as with the ``units``/``units_in_target``/``unconverged_units``
+  rename, which aligns counts over merged, scorable units).
 * :class:`SimplifyOutcome` — the collected result of one run, for callers that
   want the answer rather than the stream (the eval harness, tests).
 
@@ -40,7 +36,7 @@ from text_mate_backend.utils.simplify_prompt import (
 )
 
 SimplifyMode = Literal["whole", "chunked"]
-"""Rewrite unit chosen for a text (section 4.1).
+"""Rewrite unit chosen for a text (docs/simplify_redesign.md section 2).
 
 ``whole``   one LLM call over the entire text — the default path,
 ``chunked`` per-paragraph rewrites, used only above the chunking threshold.
@@ -104,7 +100,7 @@ class RewriteRequest:
 
 
 # =============================================================================
-# STREAM EVENTS (section 4.7)
+# STREAM EVENTS (see docs/simplify_redesign.md section 3.1)
 # =============================================================================
 
 
@@ -118,7 +114,7 @@ class SimplifyStartEvent(BaseModel):
     mode: SimplifyMode = Field(description="whole (default) or chunked (above the threshold)")
     units: int = Field(
         description=(
-            "Number of merged, scorable units (docs/simplify_redesign.md section 14.2) the "
+            "Number of merged, scorable units (docs/simplify_redesign.md section 2) the "
             "gate will operate on -- not the count of raw blank-line-separated blocks in the "
             "source, which is typically 2-6x higher and is never itself gated on. This is the "
             "same population SimplifyProgressEvent.units_in_target is counted against."
@@ -145,7 +141,7 @@ class SimplifyProgressEvent(BaseModel):
     units_in_target: int | None = Field(
         default=None,
         description=(
-            "Merged, scorable units (section 14.2) whose band is easy, after this attempt -- "
+            "Merged, scorable units (docs/simplify_redesign.md section 2) whose band is easy, after this attempt -- "
             "counted over the same population SimplifyStartEvent.units reports, so the two "
             "numbers form one fraction ('X of Y units'), never a raw-paragraph numerator over "
             "a merged-unit denominator or vice versa."
@@ -221,7 +217,7 @@ class SimplifyDoneEvent(BaseModel):
         default=True,
         description=(
             "True when no unit is left in unconverged_units (docs/simplify_redesign.md "
-            "section 14.1). The gate lives on the unit, not the document: the whole-document "
+            "section 2). The gate lives on the unit, not the document: the whole-document "
             "band below is reported, never gated on, and converged can be true even when it "
             "reads 'ok' rather than 'easy'."
         ),

@@ -1,6 +1,6 @@
 """Composable building blocks for the simplification rewrite prompt.
 
-Implements ``docs/simplify_redesign.md`` §5.3 (German) and §5.4 (everything else). The
+Implements ``docs/simplify_redesign.md`` §5. The
 prompt is assembled from small, independently testable renderers rather than one giant
 f-string, so that the readability loop can add exactly the blocks it has data for:
 

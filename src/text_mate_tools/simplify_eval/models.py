@@ -4,9 +4,8 @@ Three groups of types live here:
 
 * :class:`SimplifyEvalCase` — the on-disk corpus schema (``evals/simplify/cases/*.json``).
 * :class:`Simplifier` / :class:`Scorer` — the two narrow interfaces the runner is driven
-  through. Nothing in this package imports the simplify pipeline: the pipeline does not
-  exist yet (docs/simplify_redesign.md phases 2-5), so the harness depends only on these
-  Protocols and today's single-shot quick action is injected as one implementation of them.
+  through. Nothing in this package imports the simplify pipeline: the harness depends only on these
+  Protocols and simplifiers are injected.
 * :class:`CaseRunResult` — one simplification of one case, everything
   :mod:`text_mate_tools.simplify_eval.scoring` needs to aggregate.
 
@@ -18,20 +17,17 @@ from typing import Literal, Protocol, final
 from pydantic import BaseModel, Field
 
 SimplifyMode = Literal["whole", "chunked"]
-"""Rewrite unit chosen for a text — docs/simplify_redesign.md §4.1.
+"""Rewrite unit chosen for a text — docs/simplify_redesign.md §2.
 
 ``whole``   one LLM call over the entire text (the default path),
 ``chunked`` per-paragraph rewrites, used only above the chunking threshold.
 """
 
 ReadabilityBand = Literal["easy", "ok", "hard"]
-"""Calibrated band of a readability score — docs/simplify_redesign.md §4.2."""
+"""Calibrated band of a readability score — docs/simplify_redesign.md §2."""
 
 CHUNKING_THRESHOLD_CHARS = 10000
-"""Default ``simplify_chunking_threshold_chars`` (§14.5); the runner exposes ``--threshold``.
-
-Raised from 8000 after §13.6 measured that 12 of 16 real Basel-Stadt documents exceed it.
-"""
+"""Default ``simplify_chunking_threshold_chars``; the runner exposes ``--threshold``."""
 
 PARAGRAPH_SEPARATOR = "\n\n"
 """How the client separates blocks (``useBaseEditor.ts`` ``editor.getText()``)."""
@@ -170,7 +166,7 @@ class SimplifyOutput(BaseModel):
     unconverged_units: list[int] = Field(
         default_factory=list,
         description=(
-            "Indices of merged, scorable units (docs/simplify_redesign.md section 14.2) that "
+            "Indices of merged, scorable units (docs/simplify_redesign.md section 2) that "
             "never reached the target band (CHUNKED mode). Mirrors "
             "``text_mate_backend.models.simplify_models.SimplifyOutcome.unconverged_units``."
         ),
@@ -192,9 +188,9 @@ class Simplifier(Protocol):
 
 
 class Scorer(Protocol):
-    """Readability scoring, as the Phase 2 ``ReadabilityAnalyzer`` Protocol will expose it.
+    """Readability scoring, as the ``ReadabilityAnalyzer`` Protocol exposes it.
 
-    Subset of docs/simplify_redesign.md §4.2, kept async because ZIX is a CPU-bound
+    Subset of docs/simplify_redesign.md §4, kept async because ZIX is a CPU-bound
     spaCy + sklearn call that the backend runs off the event loop.
     """
 

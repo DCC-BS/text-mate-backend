@@ -15,7 +15,7 @@ in :mod:`~text_mate_backend.readability.core`; per-language calibration lives in
 Formulas, bands and impact thresholds for en/fr/it are ported from
 ``blokkli/editor`` (MIT), which took them from ``@lunarisapp/readability``
 (MIT); German uses ZIX instead. See the ``NOTICE`` file for attribution and
-``docs/simplify_redesign.md`` section 4.2 for the design.
+``docs/simplify_redesign.md`` section 4 for the design.
 """
 
 from text_mate_backend.readability.core.bands import (

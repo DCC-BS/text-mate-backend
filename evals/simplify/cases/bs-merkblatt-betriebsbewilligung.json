@@ -4,7 +4,7 @@
   "language": "de",
   "source_score": -3.863,
   "source_band": "hard",
-  "notes": "SYNTHETIC PLACEHOLDER, not a published document. A 12-section Merkblatt written in the same register as the advisor corpus and sized past the 8000-character chunking threshold so CHUNKED mode is exercised (docs/simplify_redesign.md §4.1). Replace with a real bs.ch Merkblatt when the corpus is collected; see evals/simplify/README.md.",
+  "notes": "SYNTHETIC PLACEHOLDER, not a published document. A 12-section Merkblatt written in the same register as the advisor corpus and sized past the chunking threshold so CHUNKED mode is exercised (docs/simplify_redesign.md §2). Replace with a real bs.ch Merkblatt when the corpus is collected; see evals/simplify/README.md.",
   "provenance": "synthetic",
   "source_url": "",
   "source_document": "",

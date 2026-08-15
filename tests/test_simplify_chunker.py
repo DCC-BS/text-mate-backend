@@ -193,7 +193,7 @@ class TestReassembleWithSpans:
 
 
 class TestMergeUnits:
-    """docs/simplify_redesign.md section 14.2: merge paragraphs to >= min_unit_words."""
+    """docs/simplify_redesign.md section 2: merge paragraphs to >= min_unit_words."""
 
     def test_default_is_100_words(self) -> None:
         assert DEFAULT_MIN_UNIT_WORDS == 100

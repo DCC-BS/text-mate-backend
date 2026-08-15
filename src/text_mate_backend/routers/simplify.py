@@ -2,7 +2,7 @@
 
 Replaces ``POST /quick-action`` with ``plain_language``, which was one unverified
 LLM call. The wire format is JSON Lines, one event object per line, exactly as
-``docs/simplify_redesign.md`` section 4.7 specifies and structurally identical to
+``docs/simplify_redesign.md`` section 3.1 specifies and structurally identical to
 ``POST /advisor/validate`` so the frontend's line parser is reused::
 
     {"event":"start","language":"de","score_label":"ZIX","scored":true,"mode":"whole", ...}

@@ -2,20 +2,17 @@
 Run a simplifier against the eval corpus and report readability and fact-preservation metrics.
 
 Measures, per case and aggregated **split by mode** (WHOLE / CHUNKED, docs/simplify_redesign.md
-§4.1): score before/after with spread, band shift, CEFR shift, the **documents-in-target
+§2): score before/after with spread, band shift, CEFR shift, the **documents-in-target
 rate** (primary -- did the assembled text a user gets back reach the target band), the
-**all-units-converged rate** and unconverged-units distribution (secondary -- the §14.1
-per-unit gate diagnostics that drive the shortfall hint, never a verdict on the run), share
+**all-units-converged rate** and unconverged-units distribution (secondary -- the per-unit
+gate diagnostics that drive the shortfall hint, never a verdict on the run), share
 of paragraphs reaching target, attempts-to-converge distribution, must-keep facts lost,
 length ratio, wall-clock p50/p95 and LLM call count. See docs/simplify_redesign.md §6.
 
 The two rate metrics answer different questions and are printed in that order on purpose:
 a big CHUNKED document can have every unit converge while its assembled score still misses
 target (rare), or -- the common real-corpus shape -- reach target as a document while one
-of dozens of units stays short (§13.6). Reporting the per-unit number first, under a name
-that read like the first, previously produced a "total failure" verdict on a run in which
-12 of 16 documents were actually in target (§13.2 and §13.3 record the same trap twice
-before this).
+of dozens of units stays short (docs/simplify_redesign.md §2).
 
 Fact preservation is measured **here and only here**. The pipeline has no runtime fidelity
 gate: one was built and removed after it rejected nothing that was genuinely wrong while
@@ -34,11 +31,11 @@ and the two baselines answer different questions — see each entry:
                                 (``simplify_eval/main_baseline.py``). Compare against
                                 ``simplify`` to measure what the redesign as a whole
                                 bought. Needs a live LLM.
-    --simplifier simplify_single_shot   The ABLATION baseline. The Phase 4 pipeline with
+    --simplifier simplify_single_shot   The ABLATION baseline. The pipeline with
                                 ``simplify_max_attempts=1``: pass 1 only, no retry —
                                 the new prompt and chunker, without the loop. Needs a
                                 live LLM.
-    --simplifier simplify       the full §14 pipeline: pass 1 plus exactly one retry
+    --simplifier simplify       the full pipeline: pass 1 plus exactly one retry
                                 round per unit still outside the target band, fired
                                 concurrently. Compare against simplify_single_shot to
                                 isolate what the RETRY contributes from what the
@@ -50,9 +47,9 @@ and the two baselines answer different questions — see each entry:
 
     --simplifier quick_action   RETIRED, and it fails with an explanation rather than a
                                 confusing 400. It drove ``POST /quick-action`` with
-                                ``plain_language``, which Phase 4 removed: the agent behind
+                                ``plain_language``, which was removed: the agent behind
                                 it is now the loop's internal rewriter and the action is
-                                deregistered (docs/simplify_redesign.md §3, "Old action").
+                                deregistered.
                                 The single-shot baseline it used to provide is
                                 ``simplify_single_shot``, which measures the same shape of
                                 run (one call, no retry) through the live pipeline.
@@ -82,8 +79,6 @@ Usage (from the repository root, so assets/ and evals/ resolve):
     #   2. From the repository root:
     uv run --env-file .env python -m text_mate_tools.run_simplify_eval --simplifier simplify_single_shot --runs 3 --json-out baseline.json
     uv run --env-file .env python -m text_mate_tools.run_simplify_eval --simplifier simplify --runs 3 --json-out loop.json
-    #   3. Record both printed aggregates in docs/simplify_redesign.md. The difference
-    #      between them is the retry's contribution; tune §14.5 knobs against it, not vibes.
 
 Options:
     --cases DIR         Directory with eval case JSON files (default: evals/simplify/cases)
@@ -91,7 +86,7 @@ Options:
     --case-id ID        Only run the given case id(s); repeatable
     --simplifier NAME   simplify | simplify_single_shot | main_single_shot | passthrough
                         | none (default: passthrough)
-    --threshold N       Chunking threshold in characters (default: 10000, §14.5)
+    --threshold N       Chunking threshold in characters (default: 10000)
     --json-out FILE     Also write the full per-run results as JSON
     --texts-out DIR     Also write each run's simplified text as <case_id>.run<N>.txt —
                         the input to a side-by-side read or an LLM judge
@@ -150,17 +145,16 @@ CASE_COLUMN_WIDTH = 34
 CORPUS_CAVEAT = (
     "CAVEAT: the corpus is German. The harness is language-parameterised, but only German is\n"
     "        measured against real data; en/fr/it correctness rests on the ported readability\n"
-    "        unit tests (docs/simplify_redesign.md §4.2 / §6), not on anything measured here."
+    "        unit tests (docs/simplify_redesign.md §4, §6), not on anything measured here."
 )
 
 
 @final
 class GermanZixScorer:
-    """ZIX-backed :class:`Scorer` — the same scorer the pipeline will gate on (§2.1, §4.3).
+    """ZIX-backed :class:`Scorer` — the same scorer the pipeline gates on.
 
     Runs locally on CPU (spaCy + sklearn), so scoring the corpus needs no LLM. Wraps ZIX in
-    try/except because it raises above 1M chars; the Phase 2 ``TextAnalysisService`` gets
-    the same guard (T2.4).
+    try/except because it raises above 1M chars; ``TextAnalysisService`` gets the same guard.
     """
 
     score_label = "ZIX"
@@ -191,7 +185,7 @@ class PassthroughSimplifier:
 
 @final
 class SimplifyServiceSimplifier:
-    """The Phase 4 pipeline (§4.1), in whichever configuration it was built with.
+    """The pipeline in whichever configuration it was built with.
 
     Drives ``SimplifyService.simplify`` — the same orchestration ``POST /simplify``
     streams, minus the streaming — and translates its outcome into the harness's
@@ -223,10 +217,10 @@ class SimplifyServiceSimplifier:
 
 QUICK_ACTION_RETIRED = (
     "--simplifier quick_action is retired. It drove POST /quick-action with "
-    "'plain_language', which Phase 4 removed: that agent is now the simplify loop's "
-    "internal rewriter and the quick action is deregistered "
-    "(docs/simplify_redesign.md §3, 'Old action'). Use --simplifier simplify_single_shot "
-    "for the single-shot baseline, or --simplifier simplify for the full loop."
+    "'plain_language', which was removed: that agent is now the simplify loop's "
+    "internal rewriter and the quick action is deregistered. "
+    "Use --simplifier simplify_single_shot for the single-shot baseline, "
+    "or --simplifier simplify for the full loop."
 )
 
 
@@ -375,11 +369,10 @@ def print_case_table(results: Sequence[CaseRunResult], runs: int) -> None:
     """Per-case table: one row per case, meaned over its runs.
 
     ``inTgt`` is the PRIMARY measure -- did this case's *assembled* text reach the
-    target band (``documents_in_target_rate``, docs/simplify_redesign.md §14.1) -- not
+    target band (``documents_in_target_rate``, docs/simplify_redesign.md §2, §6) -- not
     the per-unit gate result. A large CHUNKED document can read 0 here while every one
     of its units individually converged (see the ``AGGREGATE`` section's
-    ``all units converged`` line); do not conflate the two, that confusion previously
-    produced a "total failure" reading of a run that mostly succeeded.
+    ``all units converged`` line); do not conflate the two.
     """
     print(
         f"{'case':<{CASE_COLUMN_WIDTH}} {'mode':<8} {'chars':>6} {'before':>7} {'after':>7} "
@@ -415,12 +408,10 @@ def print_aggregate(metrics: AggregateMetrics) -> None:
 
     ``documents in target`` leads the block on purpose: it is the PRIMARY success
     measure -- the share of runs whose assembled text is what a user would actually
-    receive as "done" (docs/simplify_redesign.md §14.1/14.4). Everything below it,
+    receive as "done" (docs/simplify_redesign.md §2). Everything below it,
     starting with ``all units converged``, is secondary: diagnostics of the per-unit
     gate that drives the ``unconverged_units`` shortfall hint, not a second verdict
-    on the run. The two can and do disagree on real CHUNKED documents (§13.6) -- printing
-    the per-unit number first, under a name that sounded like the first, is exactly what
-    previously produced a "total failure" reading of a run that mostly succeeded.
+    on the run.
     """
     if not metrics.runs:
         return
