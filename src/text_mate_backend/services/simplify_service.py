@@ -145,11 +145,19 @@ retry on measurement noise rather than a real readability problem. Do not lower 
 without new measurement (see the table in docs/simplify_redesign.md section 14.2).
 """
 
-SIMPLIFY_TEMPERATURE_FIRST = 0.0
-"""Attempt 1 is deterministic."""
+SIMPLIFY_TEMPERATURE_FIRST: float | None = 0.0
+"""Attempt 1 is deterministic.
 
-SIMPLIFY_TEMPERATURE_RETRY = 0.4
-"""The retry samples: a deterministic retry reproduces the failure (section 5.3)."""
+``None`` means "send no ``temperature`` at all and let the server decide". Production
+never uses it; the eval harness does, to compare against a baseline that sets no
+temperature either (``--server-default-temperature``, docs/simplify_redesign.md §15.7).
+"""
+
+SIMPLIFY_TEMPERATURE_RETRY: float | None = None
+"""The retry samples uses models default temperature.
+
+``None`` has the same meaning as on :data:`SIMPLIFY_TEMPERATURE_FIRST`.
+"""
 
 SIMPLIFY_MAX_PARALLEL_LLM_CALLS = 4
 """Concurrent unit rewrites, bounded so retries never fire unbounded (section 14.3).
@@ -358,9 +366,11 @@ class SimplifyService:
         text_analysis_service: TextAnalysisService,
         *,
         max_attempts: int = SIMPLIFY_MAX_ATTEMPTS,
+        temperature_first: float | None = SIMPLIFY_TEMPERATURE_FIRST,
+        temperature_retry: float | None = SIMPLIFY_TEMPERATURE_RETRY,
         name: str | None = None,
     ) -> None:
-        """Build the pipeline. Production passes neither keyword.
+        """Build the pipeline. Production passes none of these keywords.
 
         ``max_attempts`` exists so the eval harness can run the *same* orchestration
         with the retry round switched off (``max_attempts=1`` is the single-shot
@@ -368,6 +378,13 @@ class SimplifyService:
         second code path would measure the fork rather than the loop. It is
         keyword-only and defaults to the section 14.5 constant, so the only way to
         get a degraded pipeline is to ask for one.
+
+        ``temperature_first`` / ``temperature_retry`` exist for the same reason and are
+        set to ``None`` together by ``--server-default-temperature``, which sends no
+        ``temperature`` field at all. Only the eval uses that: the ``main`` baseline it
+        is measured against never set a temperature either, so comparing the shipped
+        schedule (0.0 / 0.4) against it confounds "the loop" with "the loop happens to
+        be the only side running deterministically".
         """
         logger.debug("Initializing SimplifyService", max_attempts=max_attempts)
         if max_attempts < 1:
@@ -377,6 +394,8 @@ class SimplifyService:
         self.text_analysis_service = text_analysis_service
         self.rewriter = PlainLanguageAgent(config)
         self.max_attempts = max_attempts
+        self.temperature_first = temperature_first
+        self.temperature_retry = temperature_retry
         if name is not None:
             # Instance attribute shadowing the class default, so an eval report can
             # tell two configurations of the same service apart.
@@ -879,7 +898,7 @@ class SimplifyService:
     async def _rewrite(self, request: RewriteRequest, state: SimplifyRunState) -> str | None:
         """One rewrite, timeout-bounded. Returns None when it produced nothing usable."""
         state.llm_calls += 1
-        temperature = SIMPLIFY_TEMPERATURE_FIRST if request.attempt == 1 else SIMPLIFY_TEMPERATURE_RETRY
+        temperature = self.temperature_first if request.attempt == 1 else self.temperature_retry
         try:
             rewritten = await asyncio.wait_for(
                 self.rewriter.rewrite(request, temperature),

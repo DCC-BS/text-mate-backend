@@ -231,7 +231,6 @@ class DocumentConversionService:
         html = (json_response.get("document") or {}).get("html_content", "")
         return ConversionResult(html=html)
 
-
     async def convert(
         self,
         file: UploadFile | BytesIO,

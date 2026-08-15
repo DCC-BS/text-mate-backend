@@ -52,6 +52,5 @@ def create_router(
         except Exception as err:
             handle_exception(err)
 
-
     logger.debug("Word synonym router configured")
     return router

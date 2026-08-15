@@ -71,4 +71,3 @@ __all__ = [
     "is_supported",
     "supported_languages",
 ]
-

@@ -250,9 +250,9 @@ class TestConvergence:
         assert len(rewriter.temperatures) == 2, "pass 1 plus exactly one retry"
         assert rewriter.temperatures[0] == service_module.SIMPLIFY_TEMPERATURE_FIRST == 0.0
         assert rewriter.temperatures[1] == service_module.SIMPLIFY_TEMPERATURE_RETRY
-        assert (
-            service_module.SIMPLIFY_TEMPERATURE_RETRY is None or service_module.SIMPLIFY_TEMPERATURE_RETRY > 0
-        ), "a deterministic retry reproduces the failure"
+        assert service_module.SIMPLIFY_TEMPERATURE_RETRY is None or service_module.SIMPLIFY_TEMPERATURE_RETRY > 0, (
+            "a deterministic retry reproduces the failure"
+        )
 
 
 class TestRanking:

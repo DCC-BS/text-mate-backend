@@ -54,6 +54,5 @@ def create_router(
         except Exception as exp:
             handle_exception(exp)
 
-
     logger.debug("Sentence rewrite router configured")
     return router

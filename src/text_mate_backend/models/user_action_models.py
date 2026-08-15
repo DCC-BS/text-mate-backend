@@ -15,4 +15,3 @@ class UserAction(UserActionMeta):
 
 class UserActionGetResponse(BaseModel):
     actions: list[UserActionMeta]
-

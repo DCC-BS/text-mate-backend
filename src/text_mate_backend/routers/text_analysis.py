@@ -49,6 +49,5 @@ def create_router(
         except Exception as exp:
             handle_exception(exp)
 
-
     logger.debug("Text analysis router configured")
     return router

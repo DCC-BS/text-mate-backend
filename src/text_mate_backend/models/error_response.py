@@ -4,4 +4,3 @@ from dcc_backend_common.fastapi_error_handling import (
 )
 
 __all__ = ["ApiErrorException", "ErrorResponse"]
-

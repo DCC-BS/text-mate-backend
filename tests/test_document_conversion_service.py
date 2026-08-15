@@ -346,4 +346,3 @@ async def test_convert_gif_webp_txt_mimetypes_accepted(service_config: Configura
     res = await service.convert(upload)
     assert res.html == "<p>Content</p>"
     await service.close()
-

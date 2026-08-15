@@ -26,7 +26,6 @@ for _key, _value in TEST_ENV.items():
     os.environ.setdefault(_key, _value)
 
 
-
 class StubUsageTracking:
     def log_event(self, action: str, user_id: str | None, **fields: Any) -> None:
         pass

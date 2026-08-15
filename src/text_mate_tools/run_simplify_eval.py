@@ -179,7 +179,6 @@ class GermanZixScorer:
         return self._analyzer.cefr(score)
 
 
-
 @final
 class PassthroughSimplifier:
     """Returns the source unchanged — the do-nothing floor every simplifier must beat."""
@@ -231,20 +230,33 @@ QUICK_ACTION_RETIRED = (
 )
 
 
-def build_simplify_service(*, max_attempts: int) -> SimplifyService:
+def build_simplify_service(*, max_attempts: int, server_default_temperature: bool = False) -> SimplifyService:
     """Build the real service against the environment's LLM configuration."""
     config = Configuration.from_env()
-    return SimplifyService(config, TextAnalysisService(), max_attempts=max_attempts)
+    temperatures: dict[str, float | None] = (
+        {"temperature_first": None, "temperature_retry": None} if server_default_temperature else {}
+    )
+    return SimplifyService(config, TextAnalysisService(), max_attempts=max_attempts, **temperatures)
 
 
-def build_simplifier(name: str) -> Simplifier | None:
-    """Resolve the ``--simplifier`` argument. ``none`` yields ``None`` (corpus check only)."""
+def build_simplifier(name: str, *, server_default_temperature: bool = False) -> Simplifier | None:
+    """Resolve the ``--simplifier`` argument. ``none`` yields ``None`` (corpus check only).
+
+    ``server_default_temperature`` reaches only the two ``simplify`` entries. The
+    baseline and ``passthrough`` have no temperature to drop: ``main`` never set one,
+    which is the whole reason the flag exists.
+    """
     if name == "none":
         return None
     if name == "passthrough":
         return PassthroughSimplifier()
     if name == "simplify":
-        return SimplifyServiceSimplifier(name, build_simplify_service(max_attempts=SIMPLIFY_MAX_ATTEMPTS))
+        return SimplifyServiceSimplifier(
+            name,
+            build_simplify_service(
+                max_attempts=SIMPLIFY_MAX_ATTEMPTS, server_default_temperature=server_default_temperature
+            ),
+        )
     if name == "main_single_shot":
         # The pre-redesign baseline. Imported lazily so a corpus check or a passthrough
         # run never has to construct an LLM configuration to reach it.
@@ -255,7 +267,9 @@ def build_simplifier(name: str) -> Simplifier | None:
         # The baseline: one rewrite, no retry. Compared against `simplify`, the difference
         # is the loop; compared against `passthrough`, the difference is the rewrite. Both
         # comparisons need this to be the same code path as the real one.
-        return SimplifyServiceSimplifier(name, build_simplify_service(max_attempts=1))
+        return SimplifyServiceSimplifier(
+            name, build_simplify_service(max_attempts=1, server_default_temperature=server_default_temperature)
+        )
     if name == "quick_action":
         raise ValueError(QUICK_ACTION_RETIRED)
     raise ValueError(f"Unknown simplifier '{name}'")
@@ -565,6 +579,14 @@ async def main() -> None:
         help="Directory to write each run's simplified text to, as <case_id>.run<N>.txt. "
         "What a side-by-side reading, or an LLM judge, is given.",
     )
+    parser.add_argument(
+        "--server-default-temperature",
+        action="store_true",
+        help="Send no temperature at all, instead of the pipeline's 0.0/0.4 schedule. "
+        "Use it when comparing against main_single_shot, which sets none either — "
+        "otherwise the loop is the only side running deterministically and 'the loop' "
+        "is confounded with 'no sampling'. Ignored by the non-simplify simplifiers.",
+    )
     args = parser.parse_args()
 
     try:
@@ -579,7 +601,7 @@ async def main() -> None:
     print_coverage(cases, args.threshold)
 
     try:
-        simplifier = build_simplifier(args.simplifier)
+        simplifier = build_simplifier(args.simplifier, server_default_temperature=args.server_default_temperature)
     except ValueError as error:
         raise SystemExit(str(error)) from error
     if simplifier is None:
@@ -587,7 +609,15 @@ async def main() -> None:
         return
 
     scorer = GermanZixScorer()
-    print(f"Running {len(cases)} case(s) × {args.runs} run(s) through '{simplifier.name}'")
+    # The label, not `simplifier.name`, is what the report and the JSON record: a saved
+    # run that does not say which temperature regime produced it cannot be compared
+    # against anything later.
+    label = simplifier.name + (
+        " + server-default temperature"
+        if args.server_default_temperature and simplifier.name.startswith("simplify")
+        else ""
+    )
+    print(f"Running {len(cases)} case(s) × {args.runs} run(s) through '{label}'")
 
     if args.texts_out:
         args.texts_out.mkdir(parents=True, exist_ok=True)
@@ -610,11 +640,11 @@ async def main() -> None:
                 f"in {result.wall_clock_seconds:.1f}s"
             )
 
-    print_report(results, args.runs, simplifier.name)
+    print_report(results, args.runs, label)
 
     if args.json_out:
         args.json_out.write_text(
-            json.dumps(build_json_output(results, simplifier.name, args.runs), ensure_ascii=False, indent=2),
+            json.dumps(build_json_output(results, label, args.runs), ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
         print(f"\nJSON results written to {args.json_out}")

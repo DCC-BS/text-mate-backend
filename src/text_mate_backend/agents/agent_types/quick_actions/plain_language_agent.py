@@ -104,15 +104,20 @@ class PlainLanguageAgent(BaseAgent[RewriteRequest, str]):
             exemplar_limit=request.exemplar_limit,
         )
 
-    async def rewrite(self, request: RewriteRequest, temperature: float = 0.0) -> str:
+    async def rewrite(self, request: RewriteRequest, temperature: float | None = 0.0) -> str:
         """Produce one rewrite. ``temperature`` is 0 on attempt 1 and higher on retries.
 
         A deterministic retry reproduces the failure, hence the schedule
         (section 5.3); ``BaseAgent`` merges per-call ``model_settings`` already.
+
+        ``None`` omits the field entirely rather than sending ``temperature: null``,
+        which vLLM rejects — the request then carries the server's own default, which
+        is what the eval's ``--server-default-temperature`` needs in order to compare
+        against a baseline that also sets none.
         """
         output = await self.run(
             self.build_prompt(request),
             deps=request,
-            model_settings={"temperature": temperature},
+            model_settings={} if temperature is None else {"temperature": temperature},
         )
         return to_swiss_orthography(output) if is_german(request.language) else output

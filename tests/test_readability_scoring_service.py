@@ -410,9 +410,3 @@ class TestUnsupportedAndInconclusiveLanguages:
         assert result.score is None
         assert result.score_label is None
         assert result.band is None
-
-
-
-
-
-
