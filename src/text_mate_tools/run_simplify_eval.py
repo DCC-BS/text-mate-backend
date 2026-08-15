@@ -502,16 +502,31 @@ def print_coverage(cases: Sequence[SimplifyEvalCase], threshold: int) -> None:
         f"languages {stats.languages}, modes {stats.modes}, provenance {stats.provenance}"
     )
     gaps = stats.gap_to_target()
-    if stats.scores:
+    total_scored = sum(len(s) for s in stats.scores.values())
+    if total_scored:
         beyond = stats.beyond_single_pass(TYPICAL_SINGLE_PASS_GAIN)
-        print(
-            f"  source bands {stats.bands}   score {stats.scores[0]:+.2f} .. {stats.scores[-1]:+.2f}"
-            f"   gap to target {gaps[0]:.2f} .. {gaps[-1]:.2f}"
-        )
-        print(
-            f"  {beyond}/{len(stats.scores)} case(s) sit further than {TYPICAL_SINGLE_PASS_GAIN:.1f} ZIX below "
-            f"target — only these can separate a single shot from the loop"
-        )
+        if len(stats.scores) == 1:
+            lang, lang_scores = next(iter(stats.scores.items()))
+            metric = "ZIX" if lang == "de" else ("LIX" if lang == "fr" else ("Gulpease" if lang == "it" else "FRE"))
+            print(
+                f"  source bands {stats.bands}   score {lang_scores[0]:+.2f} .. {lang_scores[-1]:+.2f}"
+                f"   gap to target {gaps[0]:.2f} .. {gaps[-1]:.2f}"
+            )
+            print(
+                f"  {beyond}/{total_scored} case(s) sit further than {TYPICAL_SINGLE_PASS_GAIN:.1f} {metric} below "
+                f"target — only these can separate a single shot from the loop"
+            )
+        else:
+            print(f"  source bands {stats.bands}   gap to target {gaps[0]:.2f} .. {gaps[-1]:.2f}")
+            for lang, lang_scores in sorted(stats.scores.items()):
+                lang_gaps = stats.gap_to_target(lang)
+                lang_beyond = stats.beyond_single_pass(TYPICAL_SINGLE_PASS_GAIN, lang)
+                metric = "ZIX" if lang == "de" else ("LIX" if lang == "fr" else ("Gulpease" if lang == "it" else "FRE"))
+                print(
+                    f"    [{lang}] score {lang_scores[0]:+.2f} .. {lang_scores[-1]:+.2f}   "
+                    f"gap {lang_gaps[0]:.2f} .. {lang_gaps[-1]:.2f}   "
+                    f"({lang_beyond}/{len(lang_scores)} sit > {TYPICAL_SINGLE_PASS_GAIN:.1f} {metric} below target)"
+                )
     print(f"  {stats.with_must_keep_facts} case(s) carry must-keep facts, {stats.unreviewed_facts} unreviewed")
     for warning in stats.shortfalls():
         print(f"  WARNING: {warning}")

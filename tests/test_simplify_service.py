@@ -313,6 +313,44 @@ class TestRanking:
     def test_no_attempts_is_no_best(self) -> None:
         assert service_module._best_attempt([], "higher_easier") is None
 
+    def test_examples_higher_easier_picks_highest_score_first(self) -> None:
+        analyzer = StubAnalyzer()
+        service = SimplifyService.__new__(SimplifyService)
+        texts = ["Text A", "Text B", "Text C"]
+        scores_list = [
+            build_score(analyzer, 1.0),
+            build_score(analyzer, 3.5),
+            build_score(analyzer, -2.0),
+        ]
+        examples = service._examples(texts, scores_list, direction="higher_easier")
+        assert len(examples) == 2
+        assert examples[0].index == 1 and examples[0].score == 3.5
+        assert examples[1].index == 0 and examples[1].score == 1.0
+
+    def test_examples_higher_harder_picks_lowest_score_first(self) -> None:
+        @final
+        class LixLike(StubAnalyzer):
+            score_label: str = "LIX"
+
+            def band(self, score: float) -> ReadabilityBand:
+                return "easy" if score <= 40 else ("ok" if score <= 59 else "hard")
+
+            def scale_info(self) -> ScaleInfo:
+                return ScaleInfo(thresholds=(40.0, 59.0), direction="higher_harder", scale_min=20.0, scale_max=80.0)
+
+        analyzer = LixLike()
+        service = SimplifyService.__new__(SimplifyService)
+        texts = ["Text A", "Text B", "Text C"]
+        scores_list = [
+            build_score(analyzer, 35.0),
+            build_score(analyzer, 25.0),
+            build_score(analyzer, 55.0),
+        ]
+        examples = service._examples(texts, scores_list, direction="higher_harder")
+        assert len(examples) == 2
+        assert examples[0].index == 1 and examples[0].score == 25.0
+        assert examples[1].index == 0 and examples[1].score == 35.0
+
 
 class TestResolution:
     def test_the_pass_one_result_ships_even_when_the_retry_makes_it_worse(self, monkeypatch: Any) -> None:

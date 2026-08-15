@@ -19,14 +19,28 @@ from collections import Counter
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 
+from text_mate_backend.readability.languages.english import (
+    BAND_CONFIG as ENGLISH_BAND_CONFIG,
+    EnglishAnalyzer,
+)
+from text_mate_backend.readability.languages.french import (
+    BAND_CONFIG as FRENCH_BAND_CONFIG,
+    FrenchAnalyzer,
+)
 from text_mate_backend.readability.languages.german import (
     BAND_CONFIG as GERMAN_BAND_CONFIG,
     GermanAnalyzer,
 )
+from text_mate_backend.readability.languages.italian import (
+    BAND_CONFIG as ITALIAN_BAND_CONFIG,
+    ItalianAnalyzer,
+)
 from text_mate_tools.simplify_eval.models import CaseRunResult, ReadabilityBand, SimplifyMode
 
 GERMAN_ANALYZER = GermanAnalyzer()
-"""The pipeline's own German analyzer — the single source of the ZIX calibration (§4.2)."""
+FRENCH_ANALYZER = FrenchAnalyzer()
+ITALIAN_ANALYZER = ItalianAnalyzer()
+ENGLISH_ANALYZER = EnglishAnalyzer()
 
 BAND_ORDER: dict[ReadabilityBand, int] = {"hard": 0, "ok": 1, "easy": 2}
 """Ordinal scale for bands, ascending in easiness — a shift of +1 is one band easier."""
@@ -36,6 +50,31 @@ CEFR_ORDER: dict[str, int] = {"C2": 0, "C1": 1, "B2": 2, "B1": 3, "A2": 4, "A1":
 
 GERMAN_EASY_MIN_ZIX = GERMAN_BAND_CONFIG.easy
 """ZIX >= 0 is the ZH/Bundeskanzlei "easy" floor and is exactly CEFR in {A1, A2, B1} (§2.1)."""
+
+FRENCH_EASY_MAX_LIX = FRENCH_BAND_CONFIG.easy
+"""LIX <= 40 is the French "easy" band (higher is harder)."""
+
+ITALIAN_EASY_MIN_GULPEASE = ITALIAN_BAND_CONFIG.easy
+"""Gulpease >= 80 is the Italian "easy" band."""
+
+ENGLISH_EASY_MIN_FRE = ENGLISH_BAND_CONFIG.easy
+"""FRE >= 60 is the English "easy" band."""
+
+EASY_TARGETS: dict[str, tuple[float, str]] = {
+    "de": (GERMAN_EASY_MIN_ZIX, "higher_easier"),
+    "fr": (FRENCH_EASY_MAX_LIX, "higher_harder"),
+    "it": (ITALIAN_EASY_MIN_GULPEASE, "higher_easier"),
+    "en": (ENGLISH_EASY_MIN_FRE, "higher_easier"),
+}
+
+
+def score_gap_to_target(score: float, language: str = "de") -> float:
+    """Distance from score to easy target for the given language (0.0 if already in target)."""
+    target, direction = EASY_TARGETS.get(language, (GERMAN_EASY_MIN_ZIX, "higher_easier"))
+    if direction == "higher_harder":
+        return max(0.0, score - target)
+    return max(0.0, target - score)
+
 
 GERMAN_OK_MIN_ZIX = GERMAN_BAND_CONFIG.ok
 """``limit_medium`` from ``simply-simplify-language``'s config.yaml (§1.1)."""
@@ -251,7 +290,7 @@ def aggregate(results: Sequence[CaseRunResult], label: str = "") -> AggregateMet
         band_after_counts=dict(sorted(Counter(r.band_after for r in results if r.band_after).items())),
         cefr_shift=summarize(_present(cefr_shift(r.cefr_before, r.cefr_after) for r in results)),
         documents_in_target_rate=sum(1 for r in results if r.in_target) / total,
-        all_units_converged_rate=len(converged) / total,
+        all_units_converged_rate=sum(1 for r in results if not r.unconverged_units) / total,
         unconverged_units=summarize(len(r.unconverged_units) for r in results),
         paragraph_target_share_before=summarize(_present(r.paragraph_target_share_before for r in results)),
         paragraph_target_share_after=summarize(_present(r.paragraph_target_share_after for r in results)),

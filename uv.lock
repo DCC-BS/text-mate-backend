@@ -2714,7 +2714,7 @@ requires-dist = [
     { name = "pyyaml", specifier = ">=6.0.2" },
     { name = "scikit-learn", specifier = ">=1.9,<2" },
     { name = "structlog", specifier = ">=25.5.0" },
-    { name = "zix", git = "https://github.com/machinelearningZH/zix_understandability-index" },
+    { name = "zix", git = "https://github.com/machinelearningZH/zix_understandability-index?rev=5ffee0a209339f39923d3f10a047e08412d209e9" },
 ]
 
 [package.metadata.requires-dev]
@@ -3302,7 +3302,7 @@ wheels = [
 [[package]]
 name = "zix"
 version = "0.2.1"
-source = { git = "https://github.com/machinelearningZH/zix_understandability-index#5ffee0a209339f39923d3f10a047e08412d209e9" }
+source = { git = "https://github.com/machinelearningZH/zix_understandability-index?rev=5ffee0a209339f39923d3f10a047e08412d209e9#5ffee0a209339f39923d3f10a047e08412d209e9" }
 dependencies = [
     { name = "de-core-news-sm" },
     { name = "numpy" },

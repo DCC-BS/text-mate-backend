@@ -858,7 +858,10 @@ class SimplifyService:
             ),
             previous_attempt=previous,
             passing_examples=self._examples(
-                [other.text for other in units], [scores_by_index[other.index] for other in units], exclude=unit.index
+                [other.text for other in units],
+                [scores_by_index[other.index] for other in units],
+                direction=analyzer.scale_info().direction,
+                exclude=unit.index,
             ),
             neighbour_context=self._neighbour_context(unit, units, summary),
             exemplar_limit=SIMPLIFY_EXEMPLAR_COUNT,
@@ -957,6 +960,7 @@ class SimplifyService:
         self,
         texts: Sequence[str],
         scores: Sequence[ReadabilityScore | None],
+        direction: ScoreDirection,
         exclude: int | None = None,
     ) -> tuple[PassingExample, ...]:
         """Up to :data:`SIMPLIFY_EXEMPLAR_COUNT` in-target units, best first."""
@@ -965,7 +969,10 @@ class SimplifyService:
             for index, (text, score) in enumerate(zip(texts, scores, strict=True))
             if score is not None and score.in_target and index != exclude
         ]
-        passing.sort(key=lambda item: item[2].score, reverse=True)
+        passing.sort(
+            key=lambda item: item[2].score if direction == "higher_easier" else -item[2].score,
+            reverse=True,
+        )
         return tuple(
             PassingExample(index=index, text=text, score=score.score)
             for index, text, score in passing[:SIMPLIFY_EXEMPLAR_COUNT]

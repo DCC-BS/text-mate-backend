@@ -1,3 +1,4 @@
+import asyncio
 import io
 import os
 from unittest.mock import patch
@@ -346,3 +347,118 @@ async def test_convert_gif_webp_txt_mimetypes_accepted(service_config: Configura
     res = await service.convert(upload)
     assert res.html == "<p>Content</p>"
     await service.close()
+
+
+@pytest.mark.anyio
+async def test_convert_poll_request_timeout(service_config: Configuration):
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST" and request.url.path == "/v1/convert/file/async":
+            return httpx.Response(
+                200, json={"task_id": "task-req-timeout", "task_status": "pending", "task_type": "convert"}
+            )
+        elif request.method == "GET" and request.url.path == "/v1/status/poll/task-req-timeout":
+            raise httpx.ReadTimeout("Request timed out during poll")
+        return httpx.Response(404)
+
+    transport = httpx.MockTransport(handler)
+    service = DocumentConversionService(service_config, transport=transport)
+
+    upload = UploadFile(file=io.BytesIO(b"%PDF-1.4 sample"), filename="sample.pdf")
+    with pytest.raises(ApiErrorException) as exc_info:
+        await service.convert(upload)
+
+    assert exc_info.value.error_response["errorId"] == DOCUMENT_CONVERSION_TIMEOUT
+    assert exc_info.value.error_response["status"] == 504
+    assert "Docling conversion timed out after" in exc_info.value.error_response["debugMessage"]
+    await service.close()
+
+
+@pytest.mark.anyio
+async def test_convert_poll_transient_error_recovery(service_config: Configuration):
+    poll_count = 0
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal poll_count
+        if request.method == "POST" and request.url.path == "/v1/convert/file/async":
+            return httpx.Response(
+                200, json={"task_id": "task-recovery", "task_status": "pending", "task_type": "convert"}
+            )
+        elif request.method == "GET" and request.url.path == "/v1/status/poll/task-recovery":
+            poll_count += 1
+            if poll_count == 1:
+                return httpx.Response(500, text="Internal Server Error")
+            elif poll_count == 2:
+                return httpx.Response(
+                    200, json={"task_id": "task-recovery", "task_status": "pending", "task_type": "convert"}
+                )
+            return httpx.Response(
+                200, json={"task_id": "task-recovery", "task_status": "success", "task_type": "convert"}
+            )
+        elif request.method == "GET" and request.url.path == "/v1/result/task-recovery":
+            return httpx.Response(
+                200,
+                json={
+                    "document": {"html_content": "<p>Recovered Content</p>"},
+                    "status": "success",
+                },
+            )
+        return httpx.Response(404)
+
+    transport = httpx.MockTransport(handler)
+    service = DocumentConversionService(service_config, transport=transport)
+
+    upload = UploadFile(file=io.BytesIO(b"%PDF-1.4 sample"), filename="sample.pdf")
+    res = await service.convert(upload)
+    assert res.html == "<p>Recovered Content</p>"
+    assert poll_count == 3
+    await service.close()
+
+
+@pytest.mark.anyio
+async def test_convert_poll_continuous_error_deadline_timeout(service_config: Configuration):
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST" and request.url.path == "/v1/convert/file/async":
+            return httpx.Response(
+                200, json={"task_id": "task-cont-err", "task_status": "pending", "task_type": "convert"}
+            )
+        elif request.method == "GET" and request.url.path == "/v1/status/poll/task-cont-err":
+            return httpx.Response(500, text="Internal Server Error")
+        return httpx.Response(404)
+
+    transport = httpx.MockTransport(handler)
+    service = DocumentConversionService(service_config, transport=transport)
+
+    upload = UploadFile(file=io.BytesIO(b"%PDF-1.4 sample"), filename="sample.pdf")
+    with pytest.raises(ApiErrorException) as exc_info:
+        await service.convert(upload)
+
+    assert exc_info.value.error_response["errorId"] == DOCUMENT_CONVERSION_TIMEOUT
+    assert exc_info.value.error_response["status"] == 504
+    await service.close()
+
+
+@pytest.mark.anyio
+async def test_convert_cancellation_during_polling(service_config: Configuration):
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST" and request.url.path == "/v1/convert/file/async":
+            return httpx.Response(200, json={"task_id": "task-cancel", "task_status": "pending"})
+        elif request.method == "GET" and request.url.path == "/v1/status/poll/task-cancel":
+            return httpx.Response(200, json={"task_id": "task-cancel", "task_status": "pending"})
+        return httpx.Response(404)
+
+    transport = httpx.MockTransport(handler)
+    service = DocumentConversionService(service_config, transport=transport)
+
+    upload = UploadFile(file=io.BytesIO(b"%PDF-1.4 sample"), filename="sample.pdf")
+    task = asyncio.create_task(service.convert(upload))
+    await asyncio.sleep(0.02)
+    task.cancel()
+
+    with pytest.raises(asyncio.CancelledError):
+        await task
+
+    await service.close()
+
+
+
+

@@ -15,7 +15,10 @@ from pathlib import Path
 from typing import final
 
 from text_mate_tools.simplify_eval.models import CHUNKING_THRESHOLD_CHARS, SimplifyEvalCase
-from text_mate_tools.simplify_eval.scoring import GERMAN_EASY_MIN_ZIX, german_band
+from text_mate_tools.simplify_eval.scoring import (
+    german_band,
+    score_gap_to_target,
+)
 
 DEFAULT_CASES_DIR = Path("evals/simplify/cases")
 
@@ -102,29 +105,37 @@ class CorpusCoverage:
     max_chars: int = 0
     with_must_keep_facts: int = 0
     unreviewed_facts: int = 0
-    scores: tuple[float, ...] = ()
-    """Every recorded source score, ascending — the distribution the harness can measure over."""
+    scores: dict[str, tuple[float, ...]] = field(default_factory=dict)
+    """Every recorded source score grouped by language, ascending — the distribution the harness can measure over."""
 
     @property
     def real_cases(self) -> int:
         return self.provenance.get("real", 0)
 
-    def gap_to_target(self) -> tuple[float, ...]:
-        """How far below the easy floor (ZIX 0) each scored case sits, ascending.
+    def gap_to_target(self, language: str | None = None) -> tuple[float, ...]:
+        """How far below the easy floor each scored case sits, ascending.
 
-        This is the number that decides whether the corpus can discriminate: a case whose
-        gap is smaller than a single rewrite pass already achieves can never separate a
-        one-shot rewrite from a loop, because both reach target.
+        When ``language`` is given, computes gaps only for that language.
+        Otherwise computes gaps across all languages using each language's target threshold.
         """
-        return tuple(sorted(max(0.0, GERMAN_EASY_MIN_ZIX - score) for score in self.scores))
+        if language is not None:
+            return tuple(
+                sorted(score_gap_to_target(score, language) for score in self.scores.get(language, ()))
+            )
+        gaps = [
+            score_gap_to_target(score, lang)
+            for lang, lang_scores in self.scores.items()
+            for score in lang_scores
+        ]
+        return tuple(sorted(gaps))
 
-    def beyond_single_pass(self, typical_pass_gain: float) -> int:
+    def beyond_single_pass(self, typical_pass_gain: float, language: str | None = None) -> int:
         """Cases whose gap to target exceeds what one rewrite pass typically gains.
 
         ``typical_pass_gain`` is an *observed* figure, not a constant: it must be
         re-measured whenever the model or the prompt changes.
         """
-        return sum(1 for gap in self.gap_to_target() if gap > typical_pass_gain)
+        return sum(1 for gap in self.gap_to_target(language) if gap > typical_pass_gain)
 
     def shortfalls(self, target_cases: int = 20, typical_pass_gain: float = TYPICAL_SINGLE_PASS_GAIN) -> list[str]:
         """Human-readable warnings about corpus gaps. Never fatal."""
@@ -143,7 +154,8 @@ class CorpusCoverage:
                 warnings.append(f"no case exercises {mode.upper()} mode")
         if len(self.bands) < 2:
             warnings.append("corpus does not span multiple source bands (easy -> very hard is required)")
-        if self.scores and not self.beyond_single_pass(typical_pass_gain):
+        total_scored = sum(len(s) for s in self.scores.values())
+        if total_scored and not self.beyond_single_pass(typical_pass_gain):
             warnings.append(
                 f"no case sits more than {typical_pass_gain:.1f} ZIX below target, so a single-shot rewrite "
                 "should reach target on all of them — this corpus cannot separate one shot from a loop"
@@ -167,7 +179,7 @@ def coverage(cases: Sequence[SimplifyEvalCase], threshold: int = CHUNKING_THRESH
     modes: dict[str, int] = {}
     bands: dict[str, int] = {}
     provenance: dict[str, int] = {}
-    scores: list[float] = []
+    scores: dict[str, list[float]] = {}
     for case in cases:
         languages[case.language] = languages.get(case.language, 0) + 1
         provenance[case.provenance] = provenance.get(case.provenance, 0) + 1
@@ -179,7 +191,7 @@ def coverage(cases: Sequence[SimplifyEvalCase], threshold: int = CHUNKING_THRESH
         if band is not None:
             bands[band] = bands.get(band, 0) + 1
         if case.source_score is not None:
-            scores.append(case.source_score)
+            scores.setdefault(case.language, []).append(case.source_score)
     lengths = [case.char_count for case in cases]
     return CorpusCoverage(
         cases=len(cases),
@@ -191,5 +203,6 @@ def coverage(cases: Sequence[SimplifyEvalCase], threshold: int = CHUNKING_THRESH
         max_chars=max(lengths, default=0),
         with_must_keep_facts=sum(1 for case in cases if case.must_keep_facts),
         unreviewed_facts=sum(1 for case in cases if case.must_keep_facts and not case.must_keep_facts_reviewed),
-        scores=tuple(sorted(scores)),
+        scores={lang: tuple(sorted(s)) for lang, s in sorted(scores.items())},
     )
+

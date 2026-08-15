@@ -227,14 +227,14 @@ class TestAggregate:
 
     def test_all_units_converged_is_the_per_unit_gate_result(self) -> None:
         """SECONDARY measure: whether every unit reached target."""
-        metrics = aggregate([run(), run(converged=False, band_after="ok")])
+        metrics = aggregate([run(unconverged_units=[]), run(unconverged_units=[1])])
         assert metrics.all_units_converged_rate == 0.5
 
     def test_the_two_rates_can_disagree_in_either_direction(self) -> None:
         """The real corpus shape (§13.6): every unit converges, but the assembled
         document's own score still misses the target band."""
-        all_units_but_not_document = run(converged=True, band_after="ok")
-        document_but_not_all_units = run(converged=False, band_after="easy")
+        all_units_but_not_document = run(unconverged_units=[], band_after="ok")
+        document_but_not_all_units = run(unconverged_units=[1], band_after="easy")
         metrics = aggregate([all_units_but_not_document, document_but_not_all_units])
         assert metrics.documents_in_target_rate == 0.5
         assert metrics.all_units_converged_rate == 0.5
@@ -398,6 +398,30 @@ class TestCoverage:
             for i in range(20)
         ]
         assert coverage(cases).shortfalls() == []
+
+    def test_scores_grouped_by_language_and_language_specific_gaps(self) -> None:
+        cases = [
+            SimplifyEvalCase(id="de_hard", language="de", source_text="x" * 100, source_score=-3.0),
+            SimplifyEvalCase(id="de_easy", language="de", source_text="x" * 100, source_score=1.0),
+            SimplifyEvalCase(id="fr_hard", language="fr", source_text="x" * 100, source_score=55.0),
+            SimplifyEvalCase(id="fr_easy", language="fr", source_text="x" * 100, source_score=35.0),
+            SimplifyEvalCase(id="it_hard", language="it", source_text="x" * 100, source_score=50.0),
+            SimplifyEvalCase(id="it_easy", language="it", source_text="x" * 100, source_score=85.0),
+        ]
+        stats = coverage(cases)
+        assert stats.scores == {
+            "de": (-3.0, 1.0),
+            "fr": (35.0, 55.0),
+            "it": (50.0, 85.0),
+        }
+        assert stats.gap_to_target("de") == (0.0, 3.0)
+        assert stats.gap_to_target("fr") == (0.0, 15.0)
+        assert stats.gap_to_target("it") == (0.0, 30.0)
+        assert stats.gap_to_target() == (0.0, 0.0, 0.0, 3.0, 15.0, 30.0)
+        assert stats.beyond_single_pass(3.2, "de") == 0
+        assert stats.beyond_single_pass(3.2, "fr") == 1
+        assert stats.beyond_single_pass(3.2, "it") == 1
+        assert stats.beyond_single_pass(3.2) == 2
 
 
 class TestSeededCorpusOnDisk:

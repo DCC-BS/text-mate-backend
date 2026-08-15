@@ -159,6 +159,8 @@ class DocumentConversionService:
                     "debugMessage": f"Docling request failed with status {e.response.status_code}",
                 }
             ) from e
+        except httpx.TimeoutException:
+            raise
         except httpx.RequestError as e:
             logger.error("Docling connection error", url=url, error=str(e))
             raise ApiErrorException(
@@ -191,10 +193,13 @@ class DocumentConversionService:
     async def poll_task_status(self, task_id: str) -> None:
         logger.debug("Starting docling task polling", task_id=task_id)
         start_time = time.monotonic()
+        retry_backoff = self.config.docling_poll_interval_seconds
+        max_backoff = max(self.config.docling_poll_interval_seconds, 10.0)
 
         while True:
             elapsed = time.monotonic() - start_time
-            if elapsed > self.config.docling_conversion_timeout_seconds:
+            remaining = self.config.docling_conversion_timeout_seconds - elapsed
+            if remaining <= 0:
                 logger.error("Docling task conversion timed out", task_id=task_id, elapsed=elapsed)
                 raise ApiErrorException(
                     {
@@ -204,7 +209,35 @@ class DocumentConversionService:
                     }
                 )
 
-            response = await self._request("GET", f"/status/poll/{task_id}")
+            try:
+                response = await self._request("GET", f"/status/poll/{task_id}", timeout=remaining)
+            except httpx.TimeoutException as e:
+                elapsed = time.monotonic() - start_time
+                logger.error("Docling task conversion timed out", task_id=task_id, elapsed=elapsed)
+                raise ApiErrorException(
+                    {
+                        "errorId": DOCUMENT_CONVERSION_TIMEOUT,
+                        "status": status.HTTP_504_GATEWAY_TIMEOUT,
+                        "debugMessage": f"Docling conversion timed out after {elapsed:.1f}s",
+                    }
+                ) from e
+            except ApiErrorException as e:
+                if e.error_response.get("errorId") != DOCUMENT_CONVERSION_ERROR:
+                    raise
+                logger.warning(
+                    "Docling polling request encountered transient error, retrying",
+                    task_id=task_id,
+                    error=e.error_response.get("debugMessage"),
+                )
+                sleep_duration = min(
+                    retry_backoff,
+                    max(0.0, self.config.docling_conversion_timeout_seconds - (time.monotonic() - start_time)),
+                )
+                await asyncio.sleep(sleep_duration)
+                retry_backoff = min(retry_backoff * 2, max_backoff)
+                continue
+
+            retry_backoff = self.config.docling_poll_interval_seconds
             poll_data = response.json()
             task_status = poll_data.get("task_status")
             logger.debug("Polled docling task status", task_id=task_id, task_status=task_status)
