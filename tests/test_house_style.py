@@ -1,6 +1,8 @@
 """Tests for Canton Basel-Stadt house style guidelines."""
 
+from text_mate_backend.utils.emails import EMAIL_PROMPT_TEMPLATE
 from text_mate_backend.utils.house_style import BASEL_STADT_HOUSE_STYLE
+from text_mate_backend.utils.offical_letter import OFFICIAL_LETTER_NOTICE
 
 
 class TestBaselStadtHouseStyle:
@@ -37,3 +39,16 @@ class TestBaselStadtHouseStyle:
     def test_fakten_treue(self) -> None:
         assert "Daten, Fristen, Namen, Beträge" in BASEL_STADT_HOUSE_STYLE
         assert "Identifikationszahlen" in BASEL_STADT_HOUSE_STYLE
+
+
+class TestMediumPromptsComposition:
+    def test_email_prompt_includes_house_style_and_email_rules(self) -> None:
+        assert "# HAUSSTIL KANTON BASEL-STADT" in EMAIL_PROMPT_TEMPLATE
+        assert "Betreff:" in EMAIL_PROMPT_TEMPLATE
+        assert "Inhalt:" in EMAIL_PROMPT_TEMPLATE
+        assert "Bildschirm-Lesbarkeit" in EMAIL_PROMPT_TEMPLATE
+
+    def test_official_letter_includes_house_style_and_letter_rules(self) -> None:
+        assert "# HAUSSTIL KANTON BASEL-STADT" in OFFICIAL_LETTER_NOTICE
+        assert "Behördenbrief" in OFFICIAL_LETTER_NOTICE
+        assert "Brückenschlag" in OFFICIAL_LETTER_NOTICE
