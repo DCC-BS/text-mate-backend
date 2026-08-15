@@ -1,5 +1,5 @@
 [tools]
-"npm:varlock" = "1.13.0"
+"npm:varlock" = "1.16.0"
 pass-cli = "latest"
 rust = "1.97.1"
 usage = "3.5.6"
