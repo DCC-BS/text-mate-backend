@@ -104,8 +104,8 @@ class TestRewritableUnits:
 
     def test_headings_and_lists_pass_through(self) -> None:
         units = split_units(DOCUMENT)
-        assert units[0].rewritable is False  # heading
-        assert units[2].rewritable is False  # list
+        assert units[0].rewritable is False
+        assert units[2].rewritable is False
 
 
 class TestReassemble:

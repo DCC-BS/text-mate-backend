@@ -226,10 +226,7 @@ class TestAggregate:
         assert metrics.documents_in_target_rate == 0.5
 
     def test_all_units_converged_is_the_per_unit_gate_result(self) -> None:
-        """SECONDARY measure: whether every unit reached target. Deliberately a
-        different question from documents_in_target_rate, and must never read as the
-        same thing under the same name (§13.2, §13.3: this project has already drawn a
-        wrong conclusion from a metric whose name outran its meaning, twice)."""
+        """SECONDARY measure: whether every unit reached target."""
         metrics = aggregate([run(), run(converged=False, band_after="ok")])
         assert metrics.all_units_converged_rate == 0.5
 

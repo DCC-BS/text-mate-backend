@@ -37,8 +37,7 @@ def get_analyzer(language: str | None) -> ReadabilityAnalyzer | None:
     normalized = language.lower().strip()
     if normalized not in SUPPORTED_LANGUAGES:
         return None
-    # `normalized` is narrowed to LanguageCode by the membership test above.
-    return _ANALYZERS[normalized]
+    return _ANALYZERS[normalized]  # type: ignore[index]
 
 
 def is_supported(language: str | None) -> bool:
@@ -59,5 +58,4 @@ def supported_languages() -> tuple[LanguageCode, ...]:
     return SUPPORTED_LANGUAGES
 
 
-# Guard against SUPPORTED_LANGUAGES and the registry drifting apart.
 assert set(_ANALYZERS) == set(get_args(LanguageCode)), "registry does not cover every LanguageCode"

@@ -85,10 +85,6 @@ def create_router(
         data: SimplifyInput,
         current_user: Annotated[User | None, Depends(auth_scheme)],
     ) -> StreamingResponse:
-        # Both languages are recorded, not just the one that wins: the client's hint
-        # is its UI locale and the detected value comes from the text itself, so the
-        # disagreement rate between them is the measurement that tells us whether the
-        # hint was ever worth anything (section 1, T5.1).
         detected_language, _ = simplify_service.detect(data.text, data.language)
         usage_tracking_service.log_event(
             "text.simplify",
@@ -96,16 +92,11 @@ def create_router(
             text_length=len(data.text),
             detected_language=detected_language,
             hinted_language=data.language,
-            # None when the client sent no hint. Comparing against a missing hint would
-            # report a mismatch on every such request and make the metric meaningless.
             language_mismatch=(detected_language != data.language) if data.language else None,
         )
 
         async def event_stream() -> AsyncGenerator[str, None]:
-            # NOTE: CancelOnDisconnect is not used here because StreamingResponse
-            # evaluation happens after this handler returns; the ASGI server cancels
-            # this task on disconnect and the service cancels its in-flight LLM calls
-            # in response (see SimplifyService._run_chunked's finally block).
+            # StreamingResponse task is cancelled by ASGI server on disconnect
             try:
                 async for event in simplify_service.simplify_stream(data.text, data.language):
                     yield event.model_dump_json() + LINE_SEPARATOR
@@ -113,25 +104,10 @@ def create_router(
                 logger.info("Client disconnected from simplify JSON Lines stream")
                 raise
             except ModelUnavailableError:
-                # The model could not be reached. The service aborts the run on the
-                # first one rather than failing every remaining unit the same way; see
-                # `ModelUnavailableError`. Reported exactly like any other failure
-                # below, but logged as infrastructure rather than a bug: there is no
-                # stack worth keeping, and it is not this code that broke.
                 logger.error("Simplify aborted: the model is unreachable")
                 yield _failure_done(data.text, detected_language) + LINE_SEPARATOR
             except Exception:
-                # The 200 and the leading lines are already on the wire, so the failure
-                # cannot be signalled as a status code without corrupting the stream.
-                # It is signalled in the stream instead: a terminal `done` carrying the
-                # unmodified original and `converged: false`, which leaves the client in
-                # a defined state and loses nothing (the original is what it already has).
-                #
-                # Deliberately NOT re-raised, unlike /advisor/fix. Re-raising aborts the
-                # response body, which would discard this very line — the one that
-                # reports the failure. /advisor/fix streams bare text with no terminal
-                # marker, so there an abort is the only signal available; here the
-                # protocol has one, and it is worth more than a truncated connection.
+                # Emit terminal failure event over open stream without re-raising to avoid stream truncation
                 logger.exception("Unhandled error during simplify JSON Lines stream")
                 yield _failure_done(data.text, detected_language) + LINE_SEPARATOR
 

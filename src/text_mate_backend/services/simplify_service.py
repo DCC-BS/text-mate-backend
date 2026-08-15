@@ -59,16 +59,10 @@ Two details are easy to get wrong and are therefore spelled out here:
   ``unconverged_units`` -- it drives that shortfall hint, not the badge.
 * **Every count on the wire describes the same population.** ``start.units``,
   ``progress.units_in_target`` and ``done.unconverged_units`` are all counted over
-  ``rewritable_units(...)`` of the merged block list (section 14.2) -- never the raw,
-  unmerged ``TextUnit`` list ``split_units`` returns. Headings, list items and merged
+  ``rewritable_units(...)`` of the merged block list. Headings, list items and merged
   blocks still short of the analyzer's ``min_words`` are excluded from all three:
   they are permanent barriers or unscorable (``TextAnalysisService.score`` returns
-  ``None`` for them), so counting them in the denominator would make "every unit in
-  target" unreachable even on a fully-simplified document. This is what the "waaaay
-  too many paragraphs" bug was: ``start`` used to report ``len(raw_units)`` (every
-  blank-line block, unmerged) while ``progress``/``done`` counted merged units --
-  2 to 6x fewer on the real corpus -- so the two numbers on screen described two
-  different documents.
+  ``None`` for them).
 """
 
 import asyncio
@@ -124,14 +118,6 @@ from text_mate_backend.utils.text_offsets import to_utf16_offset
 
 logger = get_logger("simplify_service")
 
-
-# =============================================================================
-# KNOBS (docs/simplify_redesign.md section 14.5)
-#
-# Module constants, not configuration: every one of them is a number to be tuned
-# against the eval harness, not an operator dial. They move when the measurements
-# say they should.
-# =============================================================================
 
 SIMPLIFY_CHUNKING_THRESHOLD_CHARS = 10000
 """Above this many characters, pass 1 rewrites unit by unit instead of in one call.
@@ -190,11 +176,6 @@ SIMPLIFY_FALLBACK_LANGUAGE: LanguageCode = "de"
 
 SIMPLIFY_SUMMARY_MAX_CHARS = 180
 """Length of the one-line document summary supplied as unit-retry context."""
-
-
-# =============================================================================
-# FAILURE CLASSIFICATION
-# =============================================================================
 
 
 @final
@@ -401,10 +382,6 @@ class SimplifyService:
             # tell two configurations of the same service apart.
             self.name = name
 
-    # -------------------------------------------------------------------------
-    # PUBLIC API
-    # -------------------------------------------------------------------------
-
     async def simplify_stream(self, text: str, language_hint: str | None = None) -> AsyncIterator[SimplifyEvent]:
         """Stream the run as section 4.7 events. ``done`` is always the last one."""
         state = SimplifyRunState()
@@ -460,10 +437,6 @@ class SimplifyService:
         )
         return SIMPLIFY_FALLBACK_LANGUAGE, SIMPLIFY_FALLBACK_LANGUAGE
 
-    # -------------------------------------------------------------------------
-    # STAGE 0: dispatch
-    # -------------------------------------------------------------------------
-
     async def _run(
         self,
         text: str,
@@ -479,24 +452,6 @@ class SimplifyService:
             return
 
         raw_units = split_units(text, analyzer.min_words)
-        # `start.units` must report the same population `progress.units_in_target` is
-        # later counted against (section 14.2/14.4) -- the merged, scorable blocks the
-        # gate actually operates on, not the raw blank-line blocks in `raw_units` (2-6x
-        # more numerous on the real corpus; see the module docstring). Headings, list
-        # items and merged blocks still under `analyzer.min_words` are excluded via
-        # `rewritable_units`: they are barriers or unscorable, so they can never appear
-        # in `units_in_target` either, and counting them here would make the
-        # denominator disagree with the numerator by construction.
-        #
-        # CHUNKED mode gates on exactly this list (`source_units` is passed straight
-        # into `_run_chunked` below, not recomputed from `raw_units` a second time), so
-        # `start.units` and `progress.units_in_target` there are drawn from the literal
-        # same objects. WHOLE mode cannot make that same guarantee: pass 1 is free to
-        # re-paragraph the text, so `_run_whole` re-splits and re-merges the REWRITTEN
-        # output before gating (see its own comment). `start.units` there is reported
-        # before any rewrite exists, so it is necessarily an estimate from the source's
-        # own structure -- normally close, because a rewrite rarely changes how many
-        # paragraph breaks a document has, but not literally the same computation.
         source_units = merge_units(raw_units, SIMPLIFY_MIN_UNIT_WORDS, analyzer.min_words)
         unit_count = len(rewritable_units(source_units))
         mode: SimplifyMode = "whole" if len(text) <= SIMPLIFY_CHUNKING_THRESHOLD_CHARS else "chunked"
@@ -541,11 +496,6 @@ class SimplifyService:
         threshold and every retry decision downstream is calibrated per language, and
         an uncalibrated score would look authoritative while meaning nothing.
         """
-        # No analyzer means no gate, so the only `progress` event here is the phase
-        # marker below -- `units_in_target` has no numerator anywhere in this run to
-        # stay consistent with, unlike the scored path. `units` is still reported as
-        # the merged count (not the raw block count) so the field means the same thing
-        # on every event the client ever sees, scored or not.
         units = merge_units(split_units(text, DEFAULT_MIN_WORDS), SIMPLIFY_MIN_UNIT_WORDS, DEFAULT_MIN_WORDS)
         yield SimplifyStartEvent(
             language=prompt_language,
@@ -573,10 +523,6 @@ class SimplifyService:
             unconverged=(),
         )
 
-    # -------------------------------------------------------------------------
-    # STAGE 2: WHOLE mode -- pass 1 is one call, retries are per merged unit
-    # -------------------------------------------------------------------------
-
     async def _run_whole(
         self,
         text: str,
@@ -585,9 +531,6 @@ class SimplifyService:
         score_before: ReadabilityScore | None,
         state: SimplifyRunState,
     ) -> AsyncIterator[SimplifyEvent]:
-        # --- Pass 1: exactly one whole-document call (section 14.3) --------------
-        # Announced before the call, not after: this one call is the whole wall-clock
-        # of pass 1 and nothing else reaches the client until it returns.
         yield SimplifyProgressEvent(attempt=1, stage="rewriting", units_in_target=0)
 
         state.attempts = 1
@@ -600,10 +543,6 @@ class SimplifyService:
         rewritten = await self._rewrite(request, state)
         pass1_text = rewritten if rewritten is not None else text
 
-        # --- Score every unit of the pass-1 result (section 14.1/14.2) -----------
-        # The gate operates on merged blocks of the OUTPUT, not the source: a
-        # whole-document rewrite is free to re-paragraph, and section 14.2's
-        # measurement is about the text actually being gated.
         pass1_score = await self.text_analysis_service.score(pass1_text, analyzer)
         units = merge_units(
             split_units(pass1_text, analyzer.min_words),
@@ -612,17 +551,6 @@ class SimplifyService:
         )
         unit_scores = await self.text_analysis_service.score_many([unit.text for unit in units], analyzer)
         scores_by_index = {unit.index: score for unit, score in zip(units, unit_scores, strict=True)}
-        # Only units the loop is allowed to touch can ever leave this list: a heading or
-        # list-item barrier that happens to score outside target is not rewritable and
-        # would sit in unconverged_units forever, pointing at something nobody will
-        # ever retry (section 14.2/4.4, "what cannot be verified must not be rewritten").
-        #
-        # `rewritable` is also the population `units_in_target` below is counted over --
-        # the same one `start.units` reports (computed from the source in `_run`), so
-        # the two numbers read as one fraction. WHOLE mode's rewrite may re-paragraph
-        # the text, so this list can differ slightly from that source-based estimate;
-        # CHUNKED mode has no such drift (`_run_chunked` gates on the identical merged
-        # list `start.units` was computed from, passed in rather than recomputed).
         rewritable = rewritable_units(units)
         unconverged = [unit.index for unit in rewritable if _needs_rewrite(scores_by_index[unit.index])]
         pass1_in_target = _count_in_target(scores_by_index[unit.index] for unit in rewritable)
@@ -638,14 +566,10 @@ class SimplifyService:
 
         replacements: dict[int, str] = {}
         # A retry only makes sense over a pass-1 result that actually came from the
-        # model; a failed pass 1 already fell back to the original above, and retrying
-        # per unit against an untouched original would not be "one retry of a failing
-        # rewrite" but a second unrelated attempt at the same budget.
+        # model; a failed pass 1 already fell back to the original above.
         if unconverged and self.max_attempts > 1 and rewritten is not None:
             state.attempts = 2
             retried = len(unconverged)
-            # The retry round is another silent stretch of LLM time; say so before it
-            # starts rather than only reporting its outcome afterwards.
             yield SimplifyProgressEvent(attempt=2, stage="rewriting", units_in_target=pass1_in_target)
             replacements, unconverged = await self._retry_units_once(
                 units, unit_scores, analyzer, prompt_language, state, attempt=2
@@ -669,8 +593,6 @@ class SimplifyService:
             mode="whole",
             score_before=score_before,
             score_after=score_after,
-            # Section 14.1: the whole-document band is reported, never gated on. A run
-            # has converged when every unit did, independent of what this number reads.
             converged=not unconverged,
             unconverged=unconverged,
             unit_spans=unit_spans,
@@ -726,9 +648,6 @@ class SimplifyService:
             units_in_target=already_in_target,
         )
 
-        # ``self.max_attempts`` (2 by construction, section 14.3) bounds this to pass 1
-        # plus exactly one retry round; the eval harness's single-shot baseline (1)
-        # stops after pass 1.
         for attempt in range(1, self.max_attempts + 1):
             if not pending:
                 break
@@ -772,18 +691,13 @@ class SimplifyService:
                     else:
                         still_pending.append(index)
 
-                    # One event per unit that lands, not one per round: the counter is
-                    # the only evidence the user has that a multi-minute round is
-                    # progressing at all. Emitted for failures and misses too, so the
-                    # attempt/stage stay live even in a round where nothing converges.
                     yield SimplifyProgressEvent(
                         attempt=attempt,
                         stage="rewriting",
                         units_in_target=already_in_target + len(replacements),
                     )
             finally:
-                # The consumer stopping (client disconnect -> CancelledError) must not
-                # leave paid-for LLM calls running for nobody. Advisor's run_batch pattern.
+                # Cancel running tasks if consumer disconnects
                 for task in tasks:
                     if not task.done():
                         task.cancel()
@@ -798,13 +712,6 @@ class SimplifyService:
                 units_in_target=already_in_target + len(replacements),
             )
 
-        # --- Resolve every unit that never finalized ----------------------------
-        # Same rule as WHOLE mode: the best attempt ships even though it missed the
-        # target, and the unit is reported as unconverged. On a 38,000-char Ratschlag
-        # most units improve without reaching B1, and discarding all of them would
-        # return an unchanged document after minutes of work -- which the frontend
-        # would then present as "All good". Only a unit that produced nothing usable
-        # (every attempt errored) keeps its original text.
         for index in pending:
             best = _best_attempt(history[index], direction)
             unconverged.append(index)
@@ -830,9 +737,6 @@ class SimplifyService:
             mode="chunked",
             score_before=score_before,
             score_after=score_after,
-            # Section 14.1: per-unit, not the whole-document band -- a single
-            # stubbornly dense unit is reported in unconverged_units, not
-            # counted as a failed run; the document is what the user reads.
             converged=not unconverged,
             unconverged=sorted(unconverged),
             unit_spans=unit_spans,
@@ -850,12 +754,7 @@ class SimplifyService:
     ) -> tuple[dict[int, str], list[int]]:
         """One concurrent retry round for units outside the target band (section 14.3).
 
-        Used by WHOLE mode's post-pass-1 retry. Unlike CHUNKED mode's per-unit pass,
-        these retries are not surfaced as ``chunk_done`` (section 14.4: per-unit levels
-        are never surfaced to the user), so there is nothing to stream and the round is
-        simply awaited to completion. Each retried unit ships the better of its pass-1
-        text and its retry, ranked exactly as ``_best_attempt`` ranks any other pair of
-        attempts (section 3, "Ranking").
+        Used by WHOLE mode's post-pass-1 retry.
         """
         direction = analyzer.scale_info().direction
         by_index = {unit.index: unit for unit in units}
@@ -977,21 +876,8 @@ class SimplifyService:
             converged=converged,
         )
 
-    # -------------------------------------------------------------------------
-    # LLM CALLS
-    # -------------------------------------------------------------------------
-
     async def _rewrite(self, request: RewriteRequest, state: SimplifyRunState) -> str | None:
-        """One rewrite, timeout-bounded. Returns None when it produced nothing usable.
-
-        "Nothing usable" covers a timeout, an exception and an empty generation alike:
-        resolution ships the best attempt, so an empty string must never be allowed to
-        become one -- it would score as unscorable and delete the text.
-
-        The one failure that is *not* absorbed this way is an unreachable model, which
-        raises :class:`ModelUnavailableError` and ends the run -- see that class for why
-        continuing is only a way of spending two minutes to reach the same answer.
-        """
+        """One rewrite, timeout-bounded. Returns None when it produced nothing usable."""
         state.llm_calls += 1
         temperature = SIMPLIFY_TEMPERATURE_FIRST if request.attempt == 1 else SIMPLIFY_TEMPERATURE_RETRY
         try:
@@ -1016,10 +902,6 @@ class SimplifyService:
             state.rewrite_failures += 1
             return None
         return rewritten
-
-    # -------------------------------------------------------------------------
-    # PROMPT DATA
-    # -------------------------------------------------------------------------
 
     def _score_reference(
         self,
@@ -1087,23 +969,13 @@ class SimplifyService:
         )
 
     def _document_summary(self, units: Sequence[TextUnit]) -> str | None:
-        """A one-line "what this document is about", derived without an LLM call.
-
-        Section 5.3 asks for a one-line document summary as unit-retry context.
-        Generating one would add an LLM call per run for a single prompt line; the
-        document's first heading (or its opening sentence) carries the same signal
-        for free.
-        """
+        """A one-line "what this document is about", derived without an LLM call."""
         heading = next((unit for unit in units if unit.kind == "heading"), None)
         source = heading.text if heading is not None else (units[0].text if units else "")
         line = " ".join(source.split())
         if not line:
             return None
         return line if len(line) <= SIMPLIFY_SUMMARY_MAX_CHARS else line[:SIMPLIFY_SUMMARY_MAX_CHARS] + "..."
-
-    # -------------------------------------------------------------------------
-    # STAGE 4: assemble
-    # -------------------------------------------------------------------------
 
     def _finish(
         self,

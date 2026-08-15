@@ -9,24 +9,9 @@ a list of :class:`~text_mate_tools.simplify_eval.models.CaseRunResult`:
     attempts-to-converge distribution, fidelity-failure rate, length ratio, wall-clock
     p50/p95, LLM call count
 
-:func:`aggregate_by_mode` produces the same aggregate split into WHOLE and CHUNKED, which
-is how the report is read: the two modes are different pipelines (§4.1) and averaging them
-together hides both.
+:func:`aggregate_by_mode` produces the same aggregate split into WHOLE and CHUNKED.
 
-**Two numbers answer different questions and must never share a headline.**
-``documents_in_target_rate`` is what the user experiences: did the assembled text they get
-back read "easy"? ``all_units_converged_rate`` is a per-unit gate diagnostic: did the loop
-run out of retries anywhere in the document? A big CHUNKED document can converge on every
-metric a user would recognize while reading 0.0 on the second number, because one dense
-paragraph out of dozens never cleared its own band (§13.6). Reporting the second number
-first, or under a name that sounds like the first, has already produced a wrong "total
-failure" reading of a run that mostly succeeded -- print ``documents_in_target_rate``
-first, always, and keep the other clearly subordinate.
-
-The German band calibration is **not** duplicated here: :func:`german_band` delegates to
-``text_mate_backend.readability.languages.german``, which owns it (§4.2). Two copies of a
-calibration are two chances to drift, and the harness must gate on exactly the thresholds
-the pipeline gates on or it measures the wrong thing.
+The German band calibration is owned by ``text_mate_backend.readability.languages.german``.
 """
 
 import statistics
@@ -187,31 +172,10 @@ class AggregateMetrics:
     cefr_shift: Stats = field(default_factory=Stats)
 
     documents_in_target_rate: float = 0.0
-    """PRIMARY success measure: share of runs whose *assembled* text reached the target
-    band (``CaseRunResult.in_target``, i.e. ``band_after == "easy"``). This is the one
-    number the user experiences -- the score badge in the diff header -- so it is what
-    the report leads with and what T7.1 tunes against.
-
-    Do not read this as "the run converged": docs/simplify_redesign.md §14.1 moved the
-    gate to the unit, so a document can be in target here while :attr:`all_units_converged_rate`
-    below is 0 for the same run (one unit still short, section 14.4's "nothing to point
-    at" case) -- and, more commonly on real CHUNKED documents, the reverse: every unit
-    converged (see the field below) while this number is still under threshold, because a
-    whole-document score is not the mean of its units (§13.6). Renamed from ``in_target_rate``.
-    """
+    """Share of runs whose assembled text reached the target band."""
 
     all_units_converged_rate: float = 0.0
-    """SECONDARY, diagnostic only: share of runs in which *every* scorable unit reached
-    target (``CaseRunResult.converged``). This is the section 14.1 per-unit gate result,
-    not a verdict on the run -- it is the signal behind the ``unconverged_units``
-    shortfall hint (T6.7), nothing else. On a large CHUNKED document one stubborn block
-    out of dozens is enough to read 0 here while :attr:`documents_in_target_rate` above
-    is comfortably 1. Renamed from ``convergence_rate``; do not reintroduce that name or
-    print this ahead of the primary measure -- doing exactly that on this same field
-    manufactured a "total failure" reading of a run that mostly succeeded (the third such
-    naming trap this project has hit; see §13.2 and §13.3 for the first two, one of which
-    reversed a design verdict).
-    """
+    """Share of runs in which every scorable unit reached target."""
 
     unconverged_units: Stats = field(default_factory=Stats)
     """Distribution of ``len(unconverged_units)`` per run -- how many units, not

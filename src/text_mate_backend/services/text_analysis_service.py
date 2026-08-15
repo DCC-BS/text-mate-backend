@@ -99,7 +99,7 @@ class TextAnalysisService:
         language = detect_language(text)
         if language is not None:
             analyzer = get_analyzer(language)
-            if analyzer is None:  # unreachable: detect_language only returns scorable languages
+            if analyzer is None:
                 logger.warning("No analyzer for language", language=language, error_code=TEXT_ANALYSIS_ERROR)
                 return TextAnalysisResult(zix_score=None, cefr_level=None, language=language)
             return await self._analyze_with(text, analyzer, language)
@@ -112,7 +112,7 @@ class TextAnalysisService:
         # Inconclusive: assume German (this endpoint's historical behaviour) but
         # do not claim the text is German.
         legacy_analyzer = get_analyzer(LEGACY_LANGUAGE)
-        if legacy_analyzer is None:  # unreachable: LEGACY_LANGUAGE always has an analyzer
+        if legacy_analyzer is None:
             logger.warning("No analyzer for language", language=LEGACY_LANGUAGE, error_code=TEXT_ANALYSIS_ERROR)
             return TextAnalysisResult(zix_score=None, cefr_level=None, language=None)
         return await self._analyze_with(text, legacy_analyzer, language=None)

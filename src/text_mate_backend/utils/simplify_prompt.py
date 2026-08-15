@@ -50,12 +50,7 @@ MAX_EXAMPLE_CHARS: int = 200
 """Truncation limit for quoted passing exemplars (blokkli: 200)."""
 
 
-# =============================================================================
-# DATA
-# =============================================================================
-
-
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class ScoreReference:
     """The active analyzer's score, band and reference table, as plain values.
 
@@ -72,7 +67,7 @@ class ScoreReference:
     reference_table: str | None = None
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class ParagraphIssue:
     """One paragraph that is still outside the target band."""
 
@@ -83,7 +78,7 @@ class ParagraphIssue:
     impact: str | None = None
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class PassingExample:
     """A paragraph from the same document that already reached the target band."""
 
@@ -92,7 +87,7 @@ class PassingExample:
     score: float | None = None
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class PreviousAttempt:
     """The previous rewrite, its score, and the facts the fidelity gate found missing."""
 
@@ -103,16 +98,16 @@ class PreviousAttempt:
     missing_facts: Sequence[str] = field(default_factory=tuple)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class NeighbourContext:
-    """Read-only surroundings of the target paragraph in CHUNKED mode."""
+    """Surroundings of a unit in CHUNKED mode, plus a one-line document summary."""
 
     previous_text: str | None = None
     following_text: str | None = None
     document_summary: str | None = None
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, slots=True)
 class _Labels:
     """Section headings and fixed sentences for one language branch."""
 
@@ -210,11 +205,6 @@ _ESCALATION_GENERIC: tuple[tuple[str, ...], ...] = (
 )
 
 
-# =============================================================================
-# HELPERS
-# =============================================================================
-
-
 def is_german(language: str | None) -> bool:
     """Return whether the authored German rule set applies to ``language``.
 
@@ -278,11 +268,6 @@ def _describe(score: float | None, band: str | None, cefr: str | None, label: st
 
 def _section(*lines: str) -> str:
     return "\n".join(line for line in lines if line)
-
-
-# =============================================================================
-# BLOCK RENDERERS
-# =============================================================================
 
 
 def render_score_reference_block(reference: ScoreReference | None, language: str | None = None) -> str:
@@ -523,11 +508,6 @@ def render_neighbour_context(context: NeighbourContext | None, language: str | N
 
     tag = "kontext" if german else "context"
     return _section(f"<{tag}>", *lines, f"</{tag}>")
-
-
-# =============================================================================
-# WHOLE PROMPT
-# =============================================================================
 
 
 def select_rules(language: str | None) -> str:

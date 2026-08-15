@@ -118,11 +118,9 @@ class TestCounts:
 class TestFormulas:
     def test_flesch_reading_ease(self) -> None:
         coefficients = FleschCoefficients(base=206.835, sentences=1.015, syllables_per_word=84.6)
-        # 206.835 - 1.015 * 10 - 84.6 * 1.5
         assert flesch_reading_ease(10, 1.5, coefficients) == pytest.approx(69.785)
 
     def test_gulpease_index(self) -> None:
-        # (300 * 2 - 10 * 100) / 20 + 89
         assert gulpease_index(2, 100, 20) == pytest.approx(69.0)
 
     def test_lix(self) -> None:

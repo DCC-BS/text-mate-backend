@@ -19,7 +19,7 @@ from text_mate_backend.models.error_codes import (
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.utils.configuration import Configuration
 
-logger = get_logger(__name__)
+logger = get_logger("document_conversion_service")
 
 
 def get_mimetype(path_source: Path) -> str:
@@ -54,10 +54,9 @@ def get_mimetype(path_source: Path) -> str:
     return mimetypes.get(extension, "invalid")
 
 
-def validate_mimetype(mimetype: str, logger_context: dict[str, Any]) -> None:
+def validate_mimetype(mimetype: str, logger_context: Mapping[str, Any]) -> None:
     if len(mimetype) == 0:
         logger.error("MIME type is empty", **logger_context)
-
         raise ApiErrorException(
             {
                 "errorId": INVALID_MIME_TYPE,
@@ -66,13 +65,26 @@ def validate_mimetype(mimetype: str, logger_context: dict[str, Any]) -> None:
             }
         )
 
-    if mimetype == "invalid":
+    if mimetype not in [
+        "application/pdf",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "text/html",
+        "text/asciidoc",
+        "text/markdown",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "text/csv",
+        "image/png",
+        "image/jpeg",
+        "image/tiff",
+        "image/bmp",
+    ]:
         logger.error("Invalid MIME type", **logger_context)
         raise ApiErrorException(
             {
                 "errorId": INVALID_MIME_TYPE,
                 "status": status.HTTP_400_BAD_REQUEST,
-                "debugMessage": "Invalid MIME type",
+                "debugMessage": f"Invalid MIME type: {mimetype}",
             }
         )
 
@@ -81,16 +93,18 @@ def validate_mimetype(mimetype: str, logger_context: dict[str, Any]) -> None:
 class DocumentConversionService:
     def __init__(self, config: Configuration, transport: httpx.AsyncBaseTransport | None = None) -> None:
         self.config = config
-        self.client = httpx.AsyncClient(timeout=self.config.docling_http_timeout_seconds, transport=transport)
+        self.client = httpx.AsyncClient(timeout=config.docling_http_timeout_seconds, transport=transport)
 
     async def __aenter__(self) -> "DocumentConversionService":
         return self
 
     async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-        await self.close()
+        await self.client.aclose()
+
+    async def aclose(self) -> None:
+        await self.client.aclose()
 
     async def close(self) -> None:
-        """Explicitly close the HTTP client. Should be called when done with the service."""
         await self.client.aclose()
 
     async def _prepare_file_data(
@@ -99,41 +113,29 @@ class DocumentConversionService:
         filename: str | None = None,
         content_type: str | None = None,
     ) -> tuple[bytes, str, str]:
-        """
-        Extract common file handling logic for document conversion.
-
-        Uses asynchronous I/O for `UploadFile` to avoid blocking the event loop,
-        while keeping a single in-memory copy of the content (bytes) and
-        avoiding the previous extra `BytesIO` wrapper.
+        """Extract common file handling logic for document conversion.
 
         Args:
-            file: UploadFile or BytesIO object containing the document
-            filename: Optional filename override
-            content_type: Optional content type override
+            file: UploadFile or BytesIO object containing the document.
+            filename: Optional filename override.
+            content_type: Optional content type override.
 
         Returns:
-            Tuple of (content_bytes, filename, content_type)
+            Tuple of (content_bytes, filename, content_type).
         """
-        # Handle both UploadFile and BytesIO cases
         if isinstance(file, UploadFile):
-            # Ensure we start reading from the beginning of the stream
             await file.seek(0)
             content = await file.read()
-            # Resolve filename: prefer provided, then UploadFile.filename, then default
             resolved_filename = filename or file.filename or "uploaded_document"
         else:
-            # It's a BytesIO (or compatible) object; synchronous read is fine (in-memory)
             file_obj = file
             _ = file_obj.seek(0)
             content = file_obj.read()
-            # Resolve filename: prefer provided, then default
             resolved_filename = filename or "uploaded_document"
 
-        # Determine content_type if missing
         if content_type is None:
             content_type = get_mimetype(Path(resolved_filename))
 
-        # Validate the mimetype
         validate_mimetype(content_type, logger_context={"content_type": content_type})
 
         return content, resolved_filename, content_type

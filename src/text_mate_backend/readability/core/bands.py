@@ -38,7 +38,6 @@ def classify_band(score: float, config: BandConfig) -> ReadabilityBand:
             return "ok"
         return "hard"
 
-    # higher_harder
     if score <= config.easy:
         return "easy"
     if score <= config.ok:
@@ -63,7 +62,6 @@ def impact_for_score(score: float, config: BandConfig) -> ImpactLevel:
             return "moderate"
         return "minor"
 
-    # higher_harder
     if score >= critical:
         return "critical"
     if score >= serious:

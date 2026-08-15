@@ -1,8 +1,7 @@
 """Tests for the eval harness's must-keep-facts comparison.
 
-Every case below was, at some point, reported as a *lost fact* by the exact-substring
-check this replaces. Chasing those phantoms is what led to the review that removed the
-runtime fidelity gate, so the regression they guard against is expensive.
+Guards against false-positive fact losses when numbers, dates, or currencies
+are reformatted according to simplification guidelines.
 
 See ``src/text_mate_tools/simplify_eval/normalize.py`` and docs/simplify_redesign.md §6.
 """

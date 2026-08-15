@@ -73,7 +73,7 @@ def german() -> GermanAnalyzer:
 
 
 class TestScore:
-    """``describe('analyze')`` — scoring behaviour."""
+    """Scoring behaviour tests."""
 
     def test_returns_a_score_for_a_sufficiently_long_text(self, english: EnglishAnalyzer) -> None:
         score = english.score(EN_LONG)
@@ -110,13 +110,11 @@ class TestScore:
     def test_produces_a_gulpease_score_for_italian(self, italian: ItalianAnalyzer) -> None:
         score = italian.score(IT_COMPLEX)
         assert score is not None
-        # (300 * 1 sentence - 10 * 109 chars) / 12 words + 89
         assert score == pytest.approx(23.2)
 
     def test_produces_a_lix_score_for_french(self, french: FrenchAnalyzer) -> None:
         score = french.score(FR_COMPLEX)
         assert score is not None
-        # 12 words per sentence + 9 long words * 100 / 12 words
         assert score == pytest.approx(87.0)
 
     def test_produces_a_zix_score_for_german(self, german: GermanAnalyzer) -> None:
@@ -141,7 +139,7 @@ class TestScore:
 
 
 class TestScoreLabel:
-    """``describe('scoreLabel')``."""
+    """Score label tests."""
 
     def test_returns_cefr_for_english(self, english: EnglishAnalyzer) -> None:
         assert english.score_label == "CEFR"
@@ -158,7 +156,7 @@ class TestScoreLabel:
 
 
 class TestClassifyBand:
-    """``describe('classifyBand')``."""
+    """Band classification tests."""
 
     def test_classifies_high_fre_as_easy(self, english: EnglishAnalyzer) -> None:
         assert english.band(75) == "easy"
@@ -195,7 +193,7 @@ class TestClassifyBand:
 
 
 class TestImpactForScore:
-    """``describe('impactForScore')``."""
+    """Impact level tests."""
 
     def test_returns_critical_for_fre_below_10(self, english: EnglishAnalyzer) -> None:
         assert english.impact(5) == "critical"
@@ -233,7 +231,7 @@ class TestImpactForScore:
 
 
 class TestAgentContext:
-    """``describe('getAgentContext')``."""
+    """Agent context reference text tests."""
 
     def test_returns_cefr_reference_text_for_english(self, english: EnglishAnalyzer) -> None:
         context = english.agent_context()
@@ -290,7 +288,7 @@ class TestFleschToCefr:
 
 
 class TestScaleInfo:
-    """``getScaleInfo`` — thresholds ascending, padded by half their distance."""
+    """Scale info tests."""
 
     def test_english_scale(self, english: EnglishAnalyzer) -> None:
         info = english.scale_info()

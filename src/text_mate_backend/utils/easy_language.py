@@ -32,20 +32,12 @@ prefer Markdown or JSON. We use Claude's prompt structure for Mistral with good 
 
 from __future__ import annotations
 
-# ========================================================================s=====
-# SYSTEM MESSAGES
-# =============================================================================
-
 SYSTEM_MESSAGE_ES: str = (
     "Du bist ein hilfreicher Assistent, der Texte in Einfache Sprache, Sprachniveau B1 bis A2, "
     "umschreibt. Sei immer wahrheitsgemäss und objektiv. Schreibe nur das, was du sicher aus dem "
     "Text des Benutzers weisst. Arbeite die Texte immer vollständig durch und kürze nicht. "
     "Mache keine Annahmen. Schreibe einfach und klar und immer in deutscher Sprache. "
 )
-
-# =============================================================================
-# LANGUAGE RULES
-# =============================================================================
 
 
 RULES_ES = """
@@ -86,11 +78,6 @@ RULES_ES = """
 REWRITE_COMPLETE = """- Achte immer sehr genau darauf, dass ALLE Informationen aus dem schwer verständlichen Text in deinem verständlicheren Text enthalten sind. Kürze niemals Informationen. Wo sinnvoll kannst du zusätzliche Beispiele hinzufügen, um den Text verständlicher zu machen und relevante Inhalte zu konkretisieren."""
 
 
-# =============================================================================
-# CLAUDE TEMPLATES
-# =============================================================================
-
-# Claude template for "Einfache Sprache" (Simple Language)
 CLAUDE_TEMPLATE_ES: str = """
 Hier ist ein schwer verständlicher Text, den du vollständig in Einfache Sprache, Sprachniveau B1 bis A2, umschreiben sollst:
 
