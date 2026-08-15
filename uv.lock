@@ -544,7 +544,7 @@ wheels = [
 
 [[package]]
 name = "dcc-backend-common"
-version = "0.1.19"
+version = "0.1.20"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "datasets" },
@@ -553,9 +553,9 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "structlog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c4/37/195b3012f89cd2df7ee9f52e3e65c06869e96c144d93fc000cd6df3f4dd0/dcc_backend_common-0.1.19.tar.gz", hash = "sha256:7d3a1167f9b4bf2c896efd0c8577a175c562c124df2dc5863ea62b31baa35b58", size = 237047, upload-time = "2026-08-05T14:31:46.026Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/39/a9/24fee79967ef3db8423705bcf373941b7046f8c354d4eb5d1e677094e9cc/dcc_backend_common-0.1.20.tar.gz", hash = "sha256:175116162841217f77e65d9c1df265499c37de4cc644e79287e1809cd3693714", size = 238392, upload-time = "2026-08-15T08:34:31.084Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cc/4a/46bb682cba57584a1df19eee901540606140823b73742d7d3f46a7907c94/dcc_backend_common-0.1.19-py3-none-any.whl", hash = "sha256:865fac9be693fc86eaec773fa5b38174b0b11994670be17db4ce95945d4e4262", size = 37851, upload-time = "2026-08-05T14:31:44.979Z" },
+    { url = "https://files.pythonhosted.org/packages/6b/0a/21112c99819bf9bca874a5a48da45542cb05345dab83934b94b83aab14c5/dcc_backend_common-0.1.20-py3-none-any.whl", hash = "sha256:af872ec349aca6967ef0f71da674fd111df663b052e2417de054721f6764cb7c", size = 38566, upload-time = "2026-08-15T08:34:29.873Z" },
 ]
 
 [package.optional-dependencies]
@@ -3161,7 +3161,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "dcc-backend-common", extras = ["fastapi"], specifier = ">=0.1.16" },
+    { name = "dcc-backend-common", extras = ["fastapi"], specifier = ">=0.1.20" },
     { name = "dependency-injector", specifier = ">=4.48.3" },
     { name = "fast-langdetect", specifier = ">=1.0.1" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.128.2" },
