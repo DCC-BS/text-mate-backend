@@ -22,8 +22,8 @@ class TextAnalysisResult(BaseModel):
     than none.
     """
 
-    zix_score: float | None = Field(description="ZIX understandability score (-10 to 10); None if text is too short")
-    cefr_level: str | None = Field(description="CEFR level (A1–C2); None if score could not be computed")
+    zix_score: float | None = Field(default=None, description="ZIX understandability score (-10 to 10); None if text is too short")
+    cefr_level: str | None = Field(default=None, description="CEFR level (A1–C2); None if score could not be computed")
     language: str | None = Field(
         default=None,
         description=(

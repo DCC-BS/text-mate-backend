@@ -400,3 +400,19 @@ class TestUnsupportedAndInconclusiveLanguages:
         # A supported language is never "unsupported", however confident.
         assert service._confident_unsupported_language_from(("de", 1.0)) is None
         assert service._confident_unsupported_language_from(None) is None
+
+    def test_text_analysis_result_defaults(self) -> None:
+        """TextAnalysisResult should have default=None for all optional fields."""
+        result = TextAnalysisResult(language="es")
+        assert result.zix_score is None
+        assert result.cefr_level is None
+        assert result.language == "es"
+        assert result.score is None
+        assert result.score_label is None
+        assert result.band is None
+
+
+
+
+
+

@@ -1205,3 +1205,131 @@ Worth recording how nearly this one was mis-verified: the first check asserted o
 the offset was *stable across samples*, which a single sample satisfies trivially — it
 passed against the broken layout. Stability was never the property; sitting at the right
 edge was.
+
+## 15. Measured: the redesign against what shipped on `main`
+
+Every number in §13 and §14 compares one configuration of the new pipeline against another.
+None of them answers the question a reader outside the project asks first: **what did all
+of this buy over the single prompt that was already in production?** This section answers
+it, on 2026-08-15, on the 16-case Basel-Stadt corpus.
+
+### 15.1 What the baseline is
+
+`--simplifier main_single_shot` (`simplify_eval/main_baseline.py`) — not
+`simplify_single_shot`, which is the *new* pipeline with the retry switched off and is an
+ablation, not a baseline. `main_single_shot` reproduces the `main` path end to end: one LLM
+call for the whole document however long it is, no chunking, no readability measurement at
+any point, `main`'s prompt verbatim at commit `5a5079a` (the Zurich rule formulations, before
+the Bundeskanzlei reconciliation of §5.1), inside `QuickActionBaseAgent`'s instruction
+envelope. Its prompt constants are **copied, not imported**: a baseline that follows the
+current branch's edits is not a baseline. `main`'s decorative `check_readability_score`
+tool is not reproduced — nothing on `main` acted on its output, and reproducing it would
+make the call count depend on whether the vLLM build advertises tool calling.
+
+Both runs: one run per case, same corpus, same hardware, same model
+(`Gemma/Gemma-4-31B`, NVFP4), back to back, scored by the same `GermanZixScorer`.
+
+### 15.2 The readability numbers say the two are equal
+
+|  | `main` single-shot | §14 loop |
+|---|---|---|
+| ZIX after, all modes | **+0.84** ± 0.66 | **+0.81** ± 0.79 |
+| ZIX shift | +4.45 ± 1.35 | +4.42 ± 1.34 |
+| CEFR levels gained | 2.12 | 2.00 |
+| documents reaching band `easy` | **14/16** | **12/16** |
+| paragraphs in target | 0.04 → 0.56 | 0.04 → 0.67 |
+| LLM calls, corpus total | **16** | **302** |
+| wall clock, corpus total | **19.2 min** | 49.7 min |
+
+Read alone, this table says the redesign cost 19× the calls and 2.6× the wall clock to lose
+two documents. That reading is wrong, and the next table is why.
+
+### 15.3 The baseline reaches the band by deleting the document
+
+|  | `main` single-shot | §14 loop |
+|---|---|---|
+| length ratio, all modes | 0.72 | **1.04** |
+| length ratio, CHUNKED (9 long docs) | **0.50** | **1.11** |
+| must-keep facts lost, all modes | **48**, in 12/16 runs | **19**, in 9/16 runs |
+| must-keep facts lost, CHUNKED | **44**, in 9/9 runs | **15**, in 6/9 runs |
+
+`bs-gr-bericht-prostitution`: 38'630 → 12'644 characters, 8 facts gone. `erben-fuers-wohnen`:
+27'243 → 8'603, 9 facts gone. `motion-menschenhandel`: 26'115 → 12'785, 9 facts gone. What
+disappears is not padding — it is Geschäftsnummern (`18.1256.01`, `FD/P260515`), enactment
+dates, `§`/`Art.` citations, budget position codes, and in one case a co-signing Grossrat.
+
+This is the mechanism the ZIX column cannot see, and it is exactly the failure §4.4 predicted
+in the abstract: **ZIX scores the text you hand it, so deleting the hard two-thirds of a
+document is a valid strategy for maximising it.** The loop's per-unit gate forecloses that
+strategy structurally — a unit that is gone cannot score `easy` — which is why the loop is
+*behind* on the headline metric and ahead on every fidelity metric. A single-number eval
+would have ranked these two systems the wrong way round.
+
+The prompt is identical on this point in both systems (`REWRITE_COMPLETE`: "Kürze niemals
+Informationen"), so this is not a prompt-quality difference. It is what a single call does
+when asked to rewrite 38'000 characters, whatever the instruction says.
+
+> **The fact counts moved during this run.** Both systems' totals were first reported as 59
+> and 27, of which 19 (11 + 8) were `Mio.` → `Millionen` — a conversion `RULES_ES` *requires*
+> ("Vermeide Abkürzungen grundsätzlich"), scored as data loss by the exact-substring test.
+> `simplify_eval/normalize.py` now expands the abbreviations the rules mandate, and the
+> numbers above are the re-scored ones. The direction of the finding is unchanged; the false
+> positives were roughly symmetric.
+
+### 15.4 A house-style regression, measured
+
+Hyphenated compounds (`Betriebs-Bewilligung`, `Arbeit-Nehmende`, `Regierungs-Rat`), the
+Leichte-Sprache A1 convention, in each system's output over the whole corpus:
+
+| `main` single-shot | §14 loop |
+|---|---|
+| **5.41** per 1000 chars (636 total) | **1.01** per 1000 chars (255 total) |
+
+`main`'s `RULES_ES` carries the Zurich bullet "Wenn du vier oder mehr Wörter zusammensetzt,
+setzt du Bindestriche"; the reconciled rule set of §5.1 does not push it the same way. On
+`bs-merkblatt-betriebsbewilligung` the baseline produced 52 instances in one Merkblatt.
+
+### 15.5 Four blind judges, 64 verdicts
+
+ZIX cannot answer "would a Basel-Stadt department send this out". Four LLM judges read the
+two output sets blind — `evals/simplify/blind_judge_protocol.md` for the instructions,
+`simplify_eval/build_blind_pairs.py` for the tree, which randomises A/B **per case** and
+**balanced** 8/8, with the key written outside the tree. The roles are chosen to conflict:
+
+| judge | `main` | loop | tie |
+|---|---|---|---|
+| Betroffene:r Bürger:in | 5 | **7** | 4 |
+| Verwaltungsjurist:in | 3 | **9** | 4 |
+| Fachperson Einfache Sprache | 1 | **11** | 4 |
+| Kommunikation Staatskanzlei | 2 | **12** | 2 |
+| **total** | **11** | **39** | **14** |
+
+All four prefer the loop, and the *spread* is the informative part: the citizen, who only
+asks "can I act on this", finds the two nearly equal (7–5) — the baseline's deletions mostly
+remove things a citizen never needed. The jurist and the Staatskanzlei, who need the
+citation and the register, split 9–3 and 12–2. **The value of the redesign is concentrated
+exactly where an administration is liable**, and a reader-comprehension eval alone would
+have measured almost none of it.
+
+Judges named defects on both sides. Two of the loop's, verified in the output rather than
+taken on the judge's word: it renders "Anzug" as "Klage" four times in
+`bs-gr-bericht-prostitution` (a parliamentary motion is not a lawsuit), and it drops
+co-signer "Tobias Christ" from the nine-name list in `bs-gr-anzug-feuerwerks-littering` —
+both present and correct in the baseline's output. The loop is better, not good.
+
+### 15.6 Caveats
+
+* **One run per case.** §14.6 used the same budget. The per-case ZIX differences here are
+  mostly smaller than the ~1.0 unit-length measurement error of §14.2 and should not be read
+  individually; the aggregates and the fidelity counts are what carry.
+* **The baseline samples, the loop does not.** `main` set no `temperature`, so the baseline
+  runs at the server default while the loop's pass 1 is at 0.0. This is faithful to `main`
+  and it means the baseline's numbers carry sampling variance the loop's do not.
+* **LLM judges have length bias**, and the loop's outputs are consistently the longer ones.
+  That is a reason to weigh the judges' *concrete, quotable* findings (a dropped
+  Geschäftsnummer, a missing name) over their verdict counts — and the fidelity metrics in
+  §15.3, which are measured rather than judged, point the same way.
+* **The corpus over-represents CHUNKED** (9 long documents to 7 short, §12 expects the
+  reverse in production). On the seven WHOLE cases the two systems are much closer: same
+  band outcome (5 `easy`, 2 `ok`), 4 facts lost each. **Most of the redesign's measured
+  value is on long documents.**

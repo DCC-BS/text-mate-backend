@@ -46,8 +46,10 @@ ever be handed.
 - **Mode balance is inverted versus production.** 12 CHUNKED to 4 WHOLE, because
   parliamentary documents are long. §12 expects WHOLE for the large majority of real
   requests, so aggregate numbers should be read per mode, never pooled.
-- **Every must-keep fact is auto-extracted and unreviewed** (`must_keep_facts_reviewed:
-  false` on all 16). See below.
+- ~~Every must-keep fact is auto-extracted and unreviewed.~~ **Done:** all 16 cases carry
+  `must_keep_facts_reviewed: true`, seven of them corrected in the process
+  (`docs/simplify_redesign.md` §14.7). The paragraph further down that still describes the
+  facts as candidates is about how to add a *new* case.
 
 Nothing here was scraped: the 14 PDFs were supplied directly, downloaded once to a scratch
 directory, and are not committed — only the extracted text lives in git.

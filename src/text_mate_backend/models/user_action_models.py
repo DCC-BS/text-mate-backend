@@ -1,17 +1,18 @@
-from pydantic.main import BaseModel
+from pydantic import BaseModel, Field
 
 
 class UserActionMeta(BaseModel):
     id: str
     name: str
-    tooltip: str | None
+    tooltip: str | None = None
 
 
 class UserAction(UserActionMeta):
     content: str
-    groups: list[str] = []
-    tooltip: str | None
+    groups: list[str] = Field(default_factory=list)
+    tooltip: str | None = None
 
 
 class UserActionGetResponse(BaseModel):
     actions: list[UserActionMeta]
+

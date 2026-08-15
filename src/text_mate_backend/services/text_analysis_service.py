@@ -10,11 +10,11 @@ from dcc_backend_common.logger import get_logger
 from text_mate_backend.models.error_codes import TEXT_ANALYSIS_ERROR
 from text_mate_backend.models.text_analysis_models import TextAnalysisResult
 from text_mate_backend.readability import (
+    MIN_CONFIDENCE,
     LanguageCode,
     ReadabilityAnalyzer,
     ReadabilityScore,
     build_score,
-    detect_language,
     detect_raw_language,
     get_analyzer,
     is_supported,
@@ -96,18 +96,18 @@ class TextAnalysisService:
             semantics for German) plus the language-aware ``language``,
             ``score``, ``score_label`` and ``band`` fields.
         """
-        language = detect_language(text)
-        if language is not None:
-            analyzer = get_analyzer(language)
-            if analyzer is None:
-                logger.warning("No analyzer for language", language=language, error_code=TEXT_ANALYSIS_ERROR)
-                return TextAnalysisResult(zix_score=None, cefr_level=None, language=language)
-            return await self._analyze_with(text, analyzer, language)
+        raw = detect_raw_language(text)
+        if raw is not None:
+            code, confidence = raw
+            if confidence >= MIN_CONFIDENCE and is_supported(code):
+                analyzer = get_analyzer(code)
+                if analyzer is not None:
+                    return await self._analyze_with(text, analyzer, code)
 
-        unsupported = self._confident_unsupported_language(text)
-        if unsupported is not None:
-            logger.debug("Text is in a language we do not score", language=unsupported)
-            return TextAnalysisResult(zix_score=None, cefr_level=None, language=unsupported)
+            unsupported = self._confident_unsupported_language_from(raw)
+            if unsupported is not None:
+                logger.debug("Text is in a language we do not score", language=unsupported)
+                return TextAnalysisResult(zix_score=None, cefr_level=None, language=unsupported)
 
         # Inconclusive: assume German (this endpoint's historical behaviour) but
         # do not claim the text is German.

@@ -74,10 +74,13 @@ def validate_mimetype(mimetype: str, logger_context: Mapping[str, Any]) -> None:
         "text/markdown",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "text/csv",
+        "text/plain",
         "image/png",
         "image/jpeg",
         "image/tiff",
         "image/bmp",
+        "image/gif",
+        "image/webp",
     ]:
         logger.error("Invalid MIME type", **logger_context)
         raise ApiErrorException(
@@ -141,7 +144,7 @@ class DocumentConversionService:
         return content, resolved_filename, content_type
 
     async def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
-        url = f"{self.config.docling_url}{path}"
+        url = f"{self.config.docling_url.rstrip('/')}/{path.lstrip('/')}"
         headers = {"Authorization": f"Bearer {self.config.docling_api_key}", **kwargs.pop("headers", {})}
         try:
             response = await self.client.request(method, url, headers=headers, **kwargs)
@@ -225,8 +228,9 @@ class DocumentConversionService:
         logger.debug("Fetching docling task result", task_id=task_id)
         response = await self._request("GET", f"/result/{task_id}")
         json_response = response.json()
-        html = json_response.get("document", {}).get("html_content", "")
+        html = (json_response.get("document") or {}).get("html_content", "")
         return ConversionResult(html=html)
+
 
     async def convert(
         self,

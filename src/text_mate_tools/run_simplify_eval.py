@@ -111,8 +111,8 @@ from pathlib import Path
 from typing import final
 
 from dcc_backend_common.logger import get_logger
-from zix.understandability import get_cefr, get_zix
 
+from text_mate_backend.readability.languages.german import GermanAnalyzer
 from text_mate_backend.services.simplify_service import SIMPLIFY_MAX_ATTEMPTS, SimplifyService
 from text_mate_backend.services.text_analysis_service import TextAnalysisService
 from text_mate_backend.utils.configuration import Configuration
@@ -140,7 +140,6 @@ from text_mate_tools.simplify_eval.scoring import (
     aggregate_by_mode,
     band_shift,
     cefr_shift,
-    german_band,
 )
 
 logger = get_logger("run_simplify_eval")
@@ -166,27 +165,19 @@ class GermanZixScorer:
 
     score_label = "ZIX"
     min_words = 6
-    """ZIX itself warns at <= 5 words that the estimate is unreliable, so 6 is its floor.
 
-    Short units (headings, salutations, "Freundliche Grüsse") are skipped rather than
-    scored — §4.3 requires skipping below min_words, and §4.4 passes unscorable units
-    through unrewritten because what cannot be verified must not be changed.
-    """
+    def __init__(self) -> None:
+        self._analyzer = GermanAnalyzer()
 
     async def score(self, text: str) -> float | None:
-        if len(text.split()) < self.min_words:
-            return None
-        try:
-            return await asyncio.to_thread(get_zix, text)
-        except Exception as error:  # noqa: BLE001 - an unscorable text must not abort the eval
-            logger.warning("ZIX scoring failed", error=str(error), chars=len(text))
-            return None
+        return await asyncio.to_thread(self._analyzer.score, text)
 
     def band(self, score: float) -> ReadabilityBand:
-        return german_band(score)
+        return self._analyzer.band(score)
 
     def cefr(self, score: float) -> str | None:
-        return get_cefr(score)
+        return self._analyzer.cefr(score)
+
 
 
 @final

@@ -53,7 +53,7 @@ def create_router(
                 return await agent.run(deps=data)
         except Exception as exp:
             handle_exception(exp)
-            raise exp
+
 
     logger.debug("Sentence rewrite router configured")
     return router

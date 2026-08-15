@@ -1,3 +1,5 @@
+from typing import NoReturn
+
 from dcc_backend_common.logger import get_logger
 
 from text_mate_backend.models.error_response import ApiErrorException
@@ -5,7 +7,8 @@ from text_mate_backend.models.error_response import ApiErrorException
 logger = get_logger("router_utils")
 
 
-def handle_exception(exp: Exception, request_id: str | None = None):
+def handle_exception(exp: Exception, request_id: str | None = None) -> NoReturn:
+
     log_context = {"request_id": request_id} if request_id else {}
 
     error_type = type(exp).__name__

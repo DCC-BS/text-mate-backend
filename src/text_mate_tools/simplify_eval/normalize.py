@@ -71,6 +71,30 @@ NUMBER_WORDS: Final[dict[str, str]] = {
     "tausend": "1000",
 }
 
+#: Abbreviations the rules **require** to be spelled out, mapped to their long form.
+#:
+#: ``RULES_ES`` says "Vermeide Abkürzungen grundsätzlich. Schreibe stattdessen die Wörter
+#: aus", so ``2,365 Mio. Franken`` -> ``2,365 Millionen Franken`` is the rewrite doing what
+#: it was told. Without this table the exact-substring test scores obedience as data loss:
+#: on one real corpus run it reported 11 phantom losses on `main`'s output and 8 on the
+#: pipeline's, all of them ``Mio.`` -> ``Millionen``, which is 19 of 86 reported losses
+#: across the two systems. Keys are matched after folding, hence lowercase and no ``ß``.
+ABBREVIATIONS: Final[dict[str, str]] = {
+    "mio.": "millionen",
+    "mio": "millionen",
+    "mia.": "milliarden",
+    "mrd.": "milliarden",
+    "tsd.": "tausend",
+    "%": "prozent",
+    "z.b.": "zum beispiel",
+    "d.h.": "das heisst",
+    "usw.": "und so weiter",
+    "ca.": "circa",
+    "bzw.": "beziehungsweise",
+    "inkl.": "inklusive",
+    "exkl.": "exklusive",
+}
+
 #: German month names -> month number, for date canonicalization.
 MONTHS: Final[dict[str, int]] = {
     "januar": 1,
@@ -102,6 +126,15 @@ _DATE_WITH_MONTH_NAME = re.compile(
 _DATE_NUMERIC = re.compile(r"(?<!\d)(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{2,4})(?!\d)")
 
 _NUMBER_WORD = re.compile(rf"(?<!\w)({'|'.join(NUMBER_WORDS)})(?!\w)")
+
+#: Longest key first, so ``mio.`` is not matched as ``mio`` with a stray dot left behind.
+#: ``%`` needs no word boundary before it and would never get one after a digit.
+_ABBREVIATION = re.compile(
+    "|".join(
+        rf"(?<!\w){re.escape(key)}" if key[0].isalpha() else re.escape(key)
+        for key in sorted(ABBREVIATIONS, key=len, reverse=True)
+    )
+)
 
 _THOUSANDS = re.compile(r"(?<=\d)[\s'’](?=\d{3}(?!\d))")
 _DECIMAL_COMMA = re.compile(r"(?<=\d),(?=\d)")
@@ -160,8 +193,16 @@ def normalize_for_fact_match(text: str) -> str:
     True
     >>> normalize_for_fact_match("Die Frist beträgt  sechzig Tage!")
     'die frist betraegt 60 tage'
+    >>> normalize_for_fact_match("2,365 Mio. Franken") == normalize_for_fact_match("2,365 Millionen Franken")
+    True
+    >>> normalize_for_fact_match("30 %") == normalize_for_fact_match("30 Prozent")
+    True
     """
     folded = _fold(text)
+
+    # Abbreviations before everything else: expanding "mio." removes a dot that the date
+    # and amount patterns below would otherwise try to read as a separator.
+    folded = _ABBREVIATION.sub(lambda m: ABBREVIATIONS[m.group(0)], folded)
 
     # Dates first: they own the "12.3.2025" shape, which the amount rules would
     # otherwise chew into a decimal.

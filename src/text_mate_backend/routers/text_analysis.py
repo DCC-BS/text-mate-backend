@@ -48,7 +48,7 @@ def create_router(
             return await text_analysis_service.analyze(data.text)
         except Exception as exp:
             handle_exception(exp)
-            raise exp
+
 
     logger.debug("Text analysis router configured")
     return router

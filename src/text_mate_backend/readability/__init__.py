@@ -27,6 +27,7 @@ from text_mate_backend.readability.core.bands import (
     in_target,
 )
 from text_mate_backend.readability.detection import (
+    MIN_CONFIDENCE,
     MIN_DETECTION_CHARS,
     detect_language,
     detect_raw_language,
@@ -46,6 +47,7 @@ from text_mate_backend.readability.types import (
 )
 
 __all__ = [
+    "MIN_CONFIDENCE",
     "MIN_DETECTION_CHARS",
     "SUPPORTED_LANGUAGES",
     "TARGET_BAND",
@@ -69,3 +71,4 @@ __all__ = [
     "is_supported",
     "supported_languages",
 ]
+

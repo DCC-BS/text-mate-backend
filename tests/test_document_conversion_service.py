@@ -287,3 +287,63 @@ async def test_convert_with_bytesio(service_config: Configuration):
         bio = io.BytesIO(b"%PDF-1.4 bytesio content")
         res = await service.convert(bio, filename="doc.pdf")
         assert res.html == "<p>BytesIO Content</p>"
+
+
+@pytest.mark.anyio
+async def test_fetch_task_result_none_document(service_config: Configuration):
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"document": None, "status": "success"})
+
+    transport = httpx.MockTransport(handler)
+    service = DocumentConversionService(service_config, transport=transport)
+    result = await service.fetch_task_result("task-none-doc")
+    assert result.html == ""
+    await service.close()
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("docling_url", "path", "expected_url"),
+    [
+        ("http://localhost:5001/v1", "/status/poll/123", "http://localhost:5001/v1/status/poll/123"),
+        ("http://localhost:5001/v1/", "/status/poll/123", "http://localhost:5001/v1/status/poll/123"),
+        ("http://localhost:5001/v1", "status/poll/123", "http://localhost:5001/v1/status/poll/123"),
+        ("http://localhost:5001/v1/", "status/poll/123", "http://localhost:5001/v1/status/poll/123"),
+        ("http://localhost:5001///", "///status/poll/123", "http://localhost:5001/status/poll/123"),
+    ],
+)
+async def test_request_url_normalization(service_config: Configuration, docling_url: str, path: str, expected_url: str):
+    recorded_url: str | None = None
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal recorded_url
+        recorded_url = str(request.url)
+        return httpx.Response(200, json={"task_status": "success"})
+
+    service_config_copy = service_config.model_copy(update={"docling_url": docling_url})
+    transport = httpx.MockTransport(handler)
+    service = DocumentConversionService(service_config_copy, transport=transport)
+    await service._request("GET", path)
+    assert recorded_url == expected_url
+    await service.close()
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("ext,content_type", [(".gif", "image/gif"), (".webp", "image/webp"), (".txt", "text/plain")])
+async def test_convert_gif_webp_txt_mimetypes_accepted(service_config: Configuration, ext: str, content_type: str):
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST" and request.url.path == "/v1/convert/file/async":
+            return httpx.Response(200, json={"task_id": "task-mime", "task_status": "pending"})
+        elif request.method == "GET" and request.url.path == "/v1/status/poll/task-mime":
+            return httpx.Response(200, json={"task_id": "task-mime", "task_status": "success"})
+        elif request.method == "GET" and request.url.path == "/v1/result/task-mime":
+            return httpx.Response(200, json={"document": {"html_content": "<p>Content</p>"}})
+        return httpx.Response(404)
+
+    transport = httpx.MockTransport(handler)
+    service = DocumentConversionService(service_config, transport=transport)
+    upload = UploadFile(file=io.BytesIO(b"file content"), filename=f"sample{ext}")
+    res = await service.convert(upload)
+    assert res.html == "<p>Content</p>"
+    await service.close()
+

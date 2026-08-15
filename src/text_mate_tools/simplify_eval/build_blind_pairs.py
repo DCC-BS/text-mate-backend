@@ -7,10 +7,11 @@ exercise. That question needs a reader, and a reader who knows which system prod
 which text is not a reader, it is a confirmation.
 
 So this writes, per case, a directory holding ``original.txt``, ``A.txt`` and ``B.txt``,
-with the A/B assignment **drawn per case** from a seeded RNG. Per case, not per run: a
-fixed assignment lets a judge who guesses the pattern on one case apply it to the rest,
-and a judge who develops a position-bias ("A is usually the careful one") has that bias
-land on one system throughout. The key mapping A/B back to the systems is written
+with the A/B assignment **drawn per case** from a seeded RNG, and **balanced**: exactly
+half the cases are swapped. Per case, not per run, because a fixed assignment lets a judge
+who guesses the pattern on one case apply it to the rest. Balanced rather than
+per-case-independent, because sixteen fair coin flips come out 12-4 or worse about one run
+in six, which hands whatever position bias the judge has almost entirely to one system. The key mapping A/B back to the systems is written
 *outside* the comparison tree, so the directory handed to a judge cannot be walked upwards
 into the answer.
 
@@ -49,22 +50,34 @@ def main() -> None:
     rng = random.Random(args.seed)
     args.out.mkdir(parents=True, exist_ok=True)
 
-    key: dict[str, dict[str, str]] = {}
+    comparable = [
+        case
+        for case in load_cases(args.cases, [])
+        if (args.left / f"{case.id}{RUN_SUFFIX}").exists() and (args.right / f"{case.id}{RUN_SUFFIX}").exists()
+    ]
     for case in load_cases(args.cases, []):
-        left_file = args.left / f"{case.id}{RUN_SUFFIX}"
-        right_file = args.right / f"{case.id}{RUN_SUFFIX}"
-        if not left_file.exists() or not right_file.exists():
+        if case not in comparable:
             # A case only one side produced cannot be compared, and silently emitting it
             # with one empty side would read as "this system wrote nothing", which is a
             # verdict rather than a gap.
             print(f"  skipping {case.id}: missing output on one side")
-            continue
+
+    # A *balanced* assignment, not an independent coin flip per case. Sixteen fair flips
+    # land 12-4 or worse about one run in six, and a lopsided draw hands whatever position
+    # bias the judge has (a real, measured LLM-judge failure mode) mostly to one system.
+    # Halving the cases exactly removes that, and costs nothing: which half is still random.
+    swaps = [True] * (len(comparable) // 2) + [False] * (len(comparable) - len(comparable) // 2)
+    rng.shuffle(swaps)
+
+    key: dict[str, dict[str, str]] = {}
+    for case, swap in zip(comparable, swaps, strict=True):
+        left_file = args.left / f"{case.id}{RUN_SUFFIX}"
+        right_file = args.right / f"{case.id}{RUN_SUFFIX}"
 
         case_dir = args.out / case.id
         case_dir.mkdir(parents=True, exist_ok=True)
         (case_dir / "original.txt").write_text(case.source_text, encoding="utf-8")
 
-        swap = rng.random() < 0.5
         a_source, b_source = (right_file, left_file) if swap else (left_file, right_file)
         a_name, b_name = (args.right_name, args.left_name) if swap else (args.left_name, args.right_name)
         (case_dir / "A.txt").write_text(a_source.read_text(encoding="utf-8"), encoding="utf-8")

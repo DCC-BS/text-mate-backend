@@ -70,9 +70,10 @@ class ReadabilityScore(BaseModel):
     score_label: str = Field(description='Short name of the metric ("ZIX", "CEFR", "LIX", "Gulpease")')
     band: ReadabilityBand = Field(description="Calibrated band of the score")
     impact: ImpactLevel = Field(description="Severity of the readability problem")
-    cefr: str | None = Field(description="CEFR level (A1-C2) where the metric supports it; None for fr/it")
+    cefr: str | None = Field(default=None, description="CEFR level (A1-C2) where the metric supports it; None for fr/it")
     in_target: bool = Field(description="True when the text is in the target band (band == easy)")
     formatted: str = Field(description="Human-readable rendering of the score")
+
 
 
 @runtime_checkable
