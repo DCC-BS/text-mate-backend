@@ -8,12 +8,7 @@ dependencies = [
     "dependency-injector>=4.48.3",
     "fastapi-azure-auth>=5.2.0",
     "fastapi[standard]>=0.128.2",
-    "python-jose[cryptography]>=3.5.0",
-    "requests>=2.32.5",
-    "returns>=0.26.0",
     "structlog>=25.5.0",
-    "types-requests>=2.32.4.20260107",
-    "types-setuptools>=80.10.0.20260124",
     "pydantic-ai<2.22.1",
     "logfire>=4.22.0",
     "pyyaml>=6.0.2",
@@ -32,7 +27,6 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "coverage>=7.6.12",
     "pytest>=8.3.5",
     "pytest-mock>=3.14.0",
     "pre-commit>=2.20.0",
