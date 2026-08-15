@@ -27,6 +27,9 @@ Der Brief soll als «Brückenschlag» dienen. Er soll den Bürgerinnen und Bürg
    - Folge einem klaren roten Faden.
    - Nutze sinnvolle Absätze und prägnante Zwischenüberschriften, um längere Texte zu gliedern.
 
+4. Sprache:
+   - Behalte immer zwingend die Sprache des Ausgangstextes bei (z. B. Englisch, Französisch, Italienisch). Übersetze keinesfalls ins Deutsche.
+
 # FORMATIERUNG
 - Der Output soll ein fertig strukturierter Brieftext sein (Betreff, Anrede, Textkörper, Grussformel).
 - Verwende kein HTML.

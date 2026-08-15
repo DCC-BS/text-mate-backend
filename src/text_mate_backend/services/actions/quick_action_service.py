@@ -7,6 +7,7 @@ from fastapi.responses import StreamingResponse
 from text_mate_backend.agents import QuickActionBaseAgent
 from text_mate_backend.agents.agent_types.quick_actions.bullet_point_agent import BulletPointAgent
 from text_mate_backend.agents.agent_types.quick_actions.character_speech_agent import CharacterSpeechAgent
+from text_mate_backend.agents.agent_types.quick_actions.condense_agent import CondenseAgent
 from text_mate_backend.agents.agent_types.quick_actions.custom_agent import CustomAgent
 from text_mate_backend.agents.agent_types.quick_actions.formality_agent import FormalityAgent
 from text_mate_backend.agents.agent_types.quick_actions.medium_agent import MediumAgent
@@ -37,6 +38,7 @@ class QuickActionService:
         # See docs/simplify_redesign.md section 3, "Old action".
         self.agent_mapping: dict[Actions, QuickActionBaseAgent] = {
             Actions.BulletPoints: BulletPointAgent(config),
+            Actions.Condense: CondenseAgent(config),
             Actions.Custom: CustomAgent(config),
             Actions.Formality: FormalityAgent(config),
             Actions.Medium: MediumAgent(config),

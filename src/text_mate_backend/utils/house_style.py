@@ -8,7 +8,8 @@
 
 BASEL_STADT_HOUSE_STYLE = """
 # HAUSSTIL KANTON BASEL-STADT
-Beachte beim Schreiben immer die folgenden Regeln der Verwaltung Kanton Basel-Stadt:
+Beachte beim Schreiben immer die folgenden Regeln der Verwaltung Kanton Basel-Stadt.
+Wichtige Sprachregel: Diese Richtlinien gelten primär für deutschsprachige Texte. Bei Texten in anderen Sprachen (z. B. Englisch, Französisch, Italienisch) wende die allgemeinen Grundsätze (wie Klarheit, Direktheit, bürgernaher Ton und Faktentreue) sinngemäss in der Originalsprache an. Behalte zwingend die Sprache des Ausgangstextes bei und übersetze ihn keinesfalls ins Deutsche!
 
 1. Ton, Anrede und Haltung:
    - Sprich die Leserin oder den Leser direkt mit «Sie» an. «Sie», «Ihr» und «Ihnen» schreibst du immer gross.

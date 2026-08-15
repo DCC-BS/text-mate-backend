@@ -1,5 +1,6 @@
 """Tests for Canton Basel-Stadt house style guidelines."""
 
+from text_mate_backend.agents.agent_types.quick_actions.condense_agent import CONDENSE_PROMPT
 from text_mate_backend.agents.agent_types.quick_actions.medium_agent import (
     MAIL_PROMPT,
     OFFICIAL_LETTER_PROMPT,
@@ -64,5 +65,19 @@ class TestMediumPromptsComposition:
     def test_presentation_and_report_prompts_include_house_style(self) -> None:
         assert "# HAUSSTIL KANTON BASEL-STADT" in PRESENTATION_PROMPT
         assert "Präsentationen" in PRESENTATION_PROMPT
+        assert "Sprache des Ausgangstextes" in PRESENTATION_PROMPT
         assert "# HAUSSTIL KANTON BASEL-STADT" in REPORT_PROMPT
         assert "Management Summary" in REPORT_PROMPT
+        assert "Sprache des Ausgangstextes" in REPORT_PROMPT
+
+    def test_condense_prompt_includes_house_style(self) -> None:
+        assert "# HAUSSTIL KANTON BASEL-STADT" in CONDENSE_PROMPT
+        assert "verdichten" in CONDENSE_PROMPT
+        assert "roten Faden" in CONDENSE_PROMPT
+        assert "Füllstoff" in CONDENSE_PROMPT
+        assert "Sprache des Ausgangstextes" in CONDENSE_PROMPT
+
+    def test_house_style_and_templates_include_language_retention(self) -> None:
+        assert "Sprache des Ausgangstextes" in BASEL_STADT_HOUSE_STYLE
+        assert "Sprache des Ausgangstextes" in EMAIL_PROMPT_TEMPLATE
+        assert "Sprache des Ausgangstextes" in OFFICIAL_LETTER_NOTICE

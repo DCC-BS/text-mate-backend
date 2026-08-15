@@ -69,3 +69,26 @@ def test_quick_action_retired_plain_language_returns_400():
     data = response.json()
     assert data["errorId"] == REWRITE_TEXT_ERROR
     assert "retired" in data["debugMessage"]
+
+
+def test_quick_action_condense_agent_registered():
+    from text_mate_backend.agents.agent_types.quick_actions.condense_agent import CondenseAgent
+    from text_mate_backend.models.quick_actions_models import Actions
+    from text_mate_backend.services.actions.quick_action_service import QuickActionService
+
+    config = Configuration(
+        environment="test",
+        docling_url="http://localhost:5001/v1",
+        docling_api_key="test-key",
+        llm_api_key="test-llm-key",
+        llm_url="http://localhost:8000/v1",
+        llm_model="test-model",
+        azure_client_id="test-client-id",
+        azure_tenant_id="test-tenant-id",
+        azure_frontend_client_id="test-frontend-client-id",
+        hmac_secret="test-hmac-secret",
+    )
+    service = QuickActionService(user_action_service=cast(Any, None), config=config)
+    agent = service.get_agent(Actions.Condense)
+    assert isinstance(agent, CondenseAgent)
+    assert agent.agent_name == "Condense Agent"

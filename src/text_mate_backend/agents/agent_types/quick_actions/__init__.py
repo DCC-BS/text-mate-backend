@@ -1,4 +1,5 @@
 from .bullet_point_agent import BulletPointAgent
+from .condense_agent import CondenseAgent
 from .custom_agent import CustomAgent
 from .formality_agent import FormalityAgent
 from .medium_agent import MediumAgent
@@ -9,6 +10,7 @@ from .summarize_agent import SummarizeAgent
 
 __all__ = [
     "BulletPointAgent",
+    "CondenseAgent",
     "CustomAgent",
     "FormalityAgent",
     "MediumAgent",

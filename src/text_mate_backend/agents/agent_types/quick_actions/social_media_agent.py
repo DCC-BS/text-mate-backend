@@ -24,5 +24,6 @@ class SocialMediaAgent(QuickActionBaseAgent):
         return f"""
         Du bist ein Social-Media-Experte. Deine Aufgabe ist es, Text in einen Social-Media-Beitrag umzuwandeln.
         Verwende Emojis und Hashtags, wenn sie zur Plattform passen.
+        Behalte zwingend die Sprache des Ausgangstextes bei und erstelle den Beitrag in dieser Sprache (nicht ins Deutsche übersetzen).
         Wandle den folgenden Text in einen Social-Media-Beitrag für folgende Plattform um: {ctx.deps.options}.
         """

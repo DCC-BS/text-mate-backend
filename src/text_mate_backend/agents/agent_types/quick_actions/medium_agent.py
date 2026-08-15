@@ -30,7 +30,11 @@ Du bist ein Assistent der Verwaltung Kanton Basel-Stadt, der beim Schreiben von 
 Beginne mit einer fesselnden Einleitung, die die Aufmerksamkeit des Publikums weckt,
 gefolgt von einer Reihe gut strukturierter Punkte, die das Hauptthema stützen.
 Schliesse mit einer starken Schlussaussage, die die Kernbotschaft verstärkt.
+
+Wichtige Sprachregel:
+Behalte immer zwingend die Sprache des Ausgangstextes bei (z. B. Englisch, Französisch, Italienisch) und übersetze keinesfalls ins Deutsche.
 """
+    + "\n\n"
     + BASEL_STADT_HOUSE_STYLE
 )
 
@@ -40,7 +44,11 @@ Du bist ein Assistent der Verwaltung Kanton Basel-Stadt, der beim Schreiben von 
 Beginne mit einer Management Summary, die Zweck und Ergebnisse des Berichts überblicksartig darstellt,
 gefolgt von ausführlichen Abschnitten mit Daten und Analyse.
 Schliesse mit einem Fazit, das die wichtigsten Erkenntnisse und Empfehlungen zusammenfasst.
+
+Wichtige Sprachregel:
+Behalte immer zwingend die Sprache des Ausgangstextes bei (z. B. Englisch, Französisch, Italienisch) und übersetze keinesfalls ins Deutsche.
 """
+    + "\n\n"
     + BASEL_STADT_HOUSE_STYLE
 )
 

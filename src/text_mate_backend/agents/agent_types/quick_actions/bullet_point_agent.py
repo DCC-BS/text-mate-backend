@@ -29,4 +29,5 @@ class BulletPointAgent(QuickActionBaseAgent):
 
             Wandle den folgenden Text in eine strukturierte Stichwortliste um.
             Ordne Hauptgedanken und unterstützende Punkte sinnvoll an.
+            Behalte zwingend die Sprache des Ausgangstextes bei und erstelle die Stichwortliste in der Sprache des Originaltextes.
             """
