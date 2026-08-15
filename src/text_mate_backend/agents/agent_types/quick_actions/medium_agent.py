@@ -7,11 +7,12 @@ from text_mate_backend.agents.agent_types.quick_actions.quick_action_base_agent 
 from text_mate_backend.models.quick_actions_models import CurrentUser, QuickActionContext
 from text_mate_backend.utils.configuration import Configuration
 from text_mate_backend.utils.emails import EMAIL_PROMPT_TEMPLATE
+from text_mate_backend.utils.house_style import BASEL_STADT_HOUSE_STYLE
 from text_mate_backend.utils.offical_letter import OFFICIAL_LETTER_NOTICE
 
 MAIL_PROMPT = (
     """
-Du bist ein Assistent, der beim Schreiben von E-Mails hilft. Die E-Mail soll den folgenden Richtlinien folgen: {EMAIL_PROMPT}
+Du bist ein Assistent der Verwaltung Kanton Basel-Stadt, der beim Schreiben von E-Mails hilft. Die E-Mail soll den folgenden Richtlinien folgen: {EMAIL_PROMPT}
 1. Rufe zuerst das Tool get_current_user auf, um die Benutzerdaten abzurufen.
 2. Schreibe die E-Mail und verwende den Vornamen und Nachnamen der Benutzerin oder des Benutzers in der Signatur. Verwende für die Anrede einen Platzhalter.
 """  # noqa: E501
@@ -19,23 +20,29 @@ Du bist ein Assistent, der beim Schreiben von E-Mails hilft. Die E-Mail soll den
 
 OFFICIAL_LETTER_PROMPT = (
     """
-Du bist ein Assistent, der beim Schreiben von Behördenbriefen hilft. Der Text soll den folgenden Richtlinien folgen: {OFFICIAL_LETTER_NOTICE}.
+Du bist ein Assistent der Verwaltung Kanton Basel-Stadt, der beim Schreiben von Behördenbriefen hilft. Der Text soll den folgenden Richtlinien folgen: {OFFICIAL_LETTER_NOTICE}.
 """  # noqa: E501
 ).format(OFFICIAL_LETTER_NOTICE=OFFICIAL_LETTER_NOTICE)
 
-PRESENTATION_PROMPT = """
-Du bist ein Assistent, der beim Schreiben von Präsentationen hilft.
+PRESENTATION_PROMPT = (
+    """
+Du bist ein Assistent der Verwaltung Kanton Basel-Stadt, der beim Schreiben von Präsentationen hilft.
 Beginne mit einer fesselnden Einleitung, die die Aufmerksamkeit des Publikums weckt,
 gefolgt von einer Reihe gut strukturierter Punkte, die das Hauptthema stützen.
 Schliesse mit einer starken Schlussaussage, die die Kernbotschaft verstärkt.
-"""  # noqa: E501
+"""
+    + BASEL_STADT_HOUSE_STYLE
+)
 
-REPORT_PROMPT = """
-Du bist ein Assistent, der beim Schreiben von Berichten hilft.
+REPORT_PROMPT = (
+    """
+Du bist ein Assistent der Verwaltung Kanton Basel-Stadt, der beim Schreiben von Berichten hilft.
 Beginne mit einer Management Summary, die Zweck und Ergebnisse des Berichts überblicksartig darstellt,
 gefolgt von ausführlichen Abschnitten mit Daten und Analyse.
 Schliesse mit einem Fazit, das die wichtigsten Erkenntnisse und Empfehlungen zusammenfasst.
-"""  # noqa: E501
+"""
+    + BASEL_STADT_HOUSE_STYLE
+)
 
 
 class MediumAgent(QuickActionBaseAgent):

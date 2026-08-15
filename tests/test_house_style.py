@@ -1,5 +1,11 @@
 """Tests for Canton Basel-Stadt house style guidelines."""
 
+from text_mate_backend.agents.agent_types.quick_actions.medium_agent import (
+    MAIL_PROMPT,
+    OFFICIAL_LETTER_PROMPT,
+    PRESENTATION_PROMPT,
+    REPORT_PROMPT,
+)
 from text_mate_backend.utils.emails import EMAIL_PROMPT_TEMPLATE
 from text_mate_backend.utils.house_style import BASEL_STADT_HOUSE_STYLE
 from text_mate_backend.utils.offical_letter import OFFICIAL_LETTER_NOTICE
@@ -47,8 +53,16 @@ class TestMediumPromptsComposition:
         assert "Betreff:" in EMAIL_PROMPT_TEMPLATE
         assert "Inhalt:" in EMAIL_PROMPT_TEMPLATE
         assert "Bildschirm-Lesbarkeit" in EMAIL_PROMPT_TEMPLATE
+        assert "# HAUSSTIL KANTON BASEL-STADT" in MAIL_PROMPT
 
     def test_official_letter_includes_house_style_and_letter_rules(self) -> None:
         assert "# HAUSSTIL KANTON BASEL-STADT" in OFFICIAL_LETTER_NOTICE
         assert "Behördenbrief" in OFFICIAL_LETTER_NOTICE
         assert "Brückenschlag" in OFFICIAL_LETTER_NOTICE
+        assert "# HAUSSTIL KANTON BASEL-STADT" in OFFICIAL_LETTER_PROMPT
+
+    def test_presentation_and_report_prompts_include_house_style(self) -> None:
+        assert "# HAUSSTIL KANTON BASEL-STADT" in PRESENTATION_PROMPT
+        assert "Präsentationen" in PRESENTATION_PROMPT
+        assert "# HAUSSTIL KANTON BASEL-STADT" in REPORT_PROMPT
+        assert "Management Summary" in REPORT_PROMPT

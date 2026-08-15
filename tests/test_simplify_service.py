@@ -132,12 +132,16 @@ def make_service(
     scoring: StubScoring,
     *,
     max_attempts: int = service_module.SIMPLIFY_MAX_ATTEMPTS,
+    temperature_first: float | None = service_module.SIMPLIFY_TEMPERATURE_FIRST,
+    temperature_retry: float | None = service_module.SIMPLIFY_TEMPERATURE_RETRY,
 ) -> SimplifyService:
     service = SimplifyService.__new__(SimplifyService)
     service.config = cast(Any, None)
     service.text_analysis_service = cast(Any, scoring)
     service.rewriter = cast(Any, rewriter)
     service.max_attempts = max_attempts
+    service.temperature_first = temperature_first
+    service.temperature_retry = temperature_retry
     return service
 
 
@@ -246,7 +250,9 @@ class TestConvergence:
         assert len(rewriter.temperatures) == 2, "pass 1 plus exactly one retry"
         assert rewriter.temperatures[0] == service_module.SIMPLIFY_TEMPERATURE_FIRST == 0.0
         assert rewriter.temperatures[1] == service_module.SIMPLIFY_TEMPERATURE_RETRY
-        assert service_module.SIMPLIFY_TEMPERATURE_RETRY > 0, "a deterministic retry reproduces the failure"
+        assert (
+            service_module.SIMPLIFY_TEMPERATURE_RETRY is None or service_module.SIMPLIFY_TEMPERATURE_RETRY > 0
+        ), "a deterministic retry reproduces the failure"
 
 
 class TestRanking:
@@ -1287,9 +1293,58 @@ class TestEvalHarnessEntries:
         assert full is not None and full.name == "simplify"
         assert single is not None and single.name == "simplify_single_shot"
         assert built == [
-            {"max_attempts": service_module.SIMPLIFY_MAX_ATTEMPTS},
-            {"max_attempts": 1},
+            {"max_attempts": service_module.SIMPLIFY_MAX_ATTEMPTS, "server_default_temperature": False},
+            {"max_attempts": 1, "server_default_temperature": False},
         ]
+
+    def test_server_default_temperature_reaches_the_service_as_two_nones(self) -> None:
+        """The flag must drop *both* temperatures, not only the first pass.
+
+        Dropping only pass 1 would leave the retry sampling at 0.4 while the baseline
+        it is compared against samples at the server's default -- a comparison that
+        looks controlled and is not.
+        """
+        from text_mate_tools import run_simplify_eval
+
+        built: list[dict[str, Any]] = []
+
+        class Recorder:
+            def __init__(self, config: Any, scoring: Any, **kwargs: Any) -> None:
+                built.append(kwargs)
+
+        with pytest.MonkeyPatch.context() as patch:
+            patch.setattr(run_simplify_eval, "SimplifyService", Recorder)
+            patch.setattr(run_simplify_eval, "TextAnalysisService", lambda: cast(Any, None))
+            patch.setattr(run_simplify_eval.Configuration, "from_env", classmethod(lambda cls: fake_config()))
+
+            run_simplify_eval.build_simplify_service(max_attempts=2, server_default_temperature=True)
+            run_simplify_eval.build_simplify_service(max_attempts=2)
+
+        assert built == [
+            {"max_attempts": 2, "temperature_first": None, "temperature_retry": None},
+            {"max_attempts": 2},
+        ]
+
+    def test_a_none_temperature_sends_no_temperature_at_all(self, monkeypatch: Any) -> None:
+        """``None`` must reach the rewriter as ``None``, not as ``0.0``.
+
+        ``PlainLanguageAgent.rewrite`` turns that into an omitted ``model_settings``
+        entry; sending ``temperature: null`` instead is rejected by vLLM, and sending
+        ``0.0`` would silently reinstate the determinism the flag exists to remove.
+        """
+        analyzer = StubAnalyzer()
+        patch_language(monkeypatch, analyzer)
+        rewriter = StubRewriter(["Kurz und klar."])
+        service = make_service(
+            rewriter,
+            StubScoring(scores({SOURCE: -3.0}, default=2.0)),
+            temperature_first=None,
+            temperature_retry=None,
+        )
+
+        run_stream(service, SOURCE)
+
+        assert rewriter.temperatures == [None]
 
     def test_the_adapter_translates_an_outcome_into_the_harness_model(self, monkeypatch: Any) -> None:
         from text_mate_tools.run_simplify_eval import SimplifyServiceSimplifier
