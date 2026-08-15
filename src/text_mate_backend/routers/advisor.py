@@ -1,9 +1,8 @@
 import asyncio
-from collections.abc import AsyncGenerator, AsyncIterable
+from collections.abc import AsyncGenerator
 from os import path
 from typing import Annotated
 
-from dcc_backend_common.fastapi_error_handling import ApiErrorCodes, api_error_exception
 from dcc_backend_common.logger import get_logger
 from dcc_backend_common.usage_tracking import UsageTrackingService
 from dependency_injector.wiring import Provide, inject
@@ -18,7 +17,7 @@ from text_mate_backend.container import Container
 from text_mate_backend.models.error_codes import NO_DOCUMENT
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.fix_models import FixRequest
-from text_mate_backend.models.rule_models import RuleDocumentDescription, RulesValidationContainer
+from text_mate_backend.models.rule_models import RuleDocumentDescription
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.services.fix_service import FixService
 from text_mate_backend.utils.auth import AuthSchema
@@ -52,25 +51,35 @@ def create_router(
     async def validate_advisor(
         data: AdvisorInput,
         current_user: Annotated[User, Depends(auth_scheme)],
-    ) -> AsyncIterable[RulesValidationContainer]:
+    ) -> StreamingResponse:
         usage_tracking_service.log_event(
             "advisor.validate",
             get_user_id(current_user),
             text_length=len(data.text),
         )
 
-        try:
-            async for validation_result in advisor_service.check_text_stream(
-                data.text,
-                data.docs,
-            ):
-                yield validation_result
-        except asyncio.CancelledError:
-            logger.info("Client disconnected from advisor JSON Lines stream")
-            raise
-        except Exception as e:
-            logger.exception("Unhandled error during advisor JSON Lines stream")
-            raise api_error_exception(errorId=ApiErrorCodes.UNEXPECTED_ERROR, status=500, debugMessage=str(e)) from e
+        async def event_generator() -> AsyncGenerator[str, None]:
+            try:
+                async for validation_result in advisor_service.check_text_stream(
+                    data.text,
+                    data.docs,
+                ):
+                    yield validation_result.model_dump_json() + "\n"
+            except asyncio.CancelledError:
+                logger.info("Client disconnected from advisor JSON Lines stream")
+                raise
+            except Exception:
+                logger.exception("Unhandled error during advisor JSON Lines stream")
+                raise
+
+        return StreamingResponse(
+            event_generator(),
+            media_type="application/x-ndjson",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+            },
+        )
 
     @router.post("/fix", dependencies=[Security(auth_scheme)])
     async def fix_text(
