@@ -13,6 +13,18 @@ class Configuration(LlmConfig):
     docling_api_key: str = Field(
         description="The API key for Docling service, set it to none if none is required", default="none"
     )
+    docling_poll_interval_seconds: float = Field(
+        description="Interval in seconds between Docling task status polling requests",
+        default=1.0,
+    )
+    docling_conversion_timeout_seconds: float = Field(
+        description="Maximum seconds to wait for Docling conversion task to complete",
+        default=300.0,
+    )
+    docling_http_timeout_seconds: float = Field(
+        description="Per-request HTTP timeout in seconds for Docling API calls",
+        default=30.0,
+    )
 
     llm_health_check_url: str = Field(
         description="The URL for LLM health check API", default="http://localhost:8001/health"
@@ -57,6 +69,9 @@ class Configuration(LlmConfig):
             llm_max_retries=2,
             docling_url=get_env_or_throw("DOCLING_URL"),
             docling_api_key=get_env_or_throw("DOCLING_API_KEY"),
+            docling_poll_interval_seconds=float(os.getenv("DOCLING_POLL_INTERVAL_SECONDS", "1.0")),
+            docling_conversion_timeout_seconds=float(os.getenv("DOCLING_CONVERSION_TIMEOUT_SECONDS", "300.0")),
+            docling_http_timeout_seconds=float(os.getenv("DOCLING_HTTP_TIMEOUT_SECONDS", "30.0")),
             llm_health_check_url=get_env_or_throw("LLM_HEALTH_CHECK_URL"),
             azure_client_id="" if disable_auth else get_env_or_throw("AZURE_CLIENT_ID"),
             azure_tenant_id="" if disable_auth else get_env_or_throw("AZURE_TENANT_ID"),
@@ -77,6 +92,9 @@ class Configuration(LlmConfig):
             llm_model={self.llm_model},
             docling_url={self.docling_url},
             docling_api_key={log_secret(self.docling_api_key)},
+            docling_poll_interval_seconds={self.docling_poll_interval_seconds},
+            docling_conversion_timeout_seconds={self.docling_conversion_timeout_seconds},
+            docling_http_timeout_seconds={self.docling_http_timeout_seconds},
             llm_health_check_url={self.llm_health_check_url},
             azure_client_id={log_secret(self.azure_client_id)},
             azure_tenant_id={log_secret(self.azure_tenant_id)},

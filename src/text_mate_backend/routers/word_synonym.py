@@ -51,7 +51,6 @@ def create_router(
                 return await agent.run(deps=data)
         except Exception as err:
             handle_exception(err)
-            raise err
 
     logger.debug("Word synonym router configured")
     return router

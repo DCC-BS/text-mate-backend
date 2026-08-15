@@ -7,6 +7,7 @@ builds agents) — the methods under test use no instance state.
 
 from text_mate_backend.models.rule_models import DetectionViolation, ResolvedDetection, Rule, ViolationRange
 from text_mate_backend.services.advisor import AdvisorService
+from text_mate_backend.utils.text_offsets import to_utf16_offset
 
 
 def make_service() -> AdvisorService:
@@ -243,26 +244,26 @@ class TestMapNormalizedToOriginal:
 class TestToUtf16Offset:
     def test_bmp_text_unchanged(self) -> None:
         # All BMP (umlauts, ß) — UTF-16 code-unit count equals code-point count.
-        assert AdvisorService._to_utf16_offset("Grüße Anhörung", 6) == 6
+        assert to_utf16_offset("Grüße Anhörung", 6) == 6
 
     def test_supplementary_char_before_offset_counts_double(self) -> None:
         # 🎉 (U+1F389) is one Python code point but two UTF-16 units.
         text = "🎉Anhörung"
-        assert AdvisorService._to_utf16_offset(text, 1) == 2
+        assert to_utf16_offset(text, 1) == 2
 
     def test_supplementary_char_after_offset_ignored(self) -> None:
         text = "abc🎉"
-        assert AdvisorService._to_utf16_offset(text, 3) == 3
+        assert to_utf16_offset(text, 3) == 3
 
     def test_mixed_offsets(self) -> None:
         text = "a🎉b🎉c"  # code points: a(0) 🎉(1) b(2) 🎉(3) c(4)
-        assert AdvisorService._to_utf16_offset(text, 1) == 1  # "a"
-        assert AdvisorService._to_utf16_offset(text, 3) == 4  # "a🎉b" -> 1+2+1
-        assert AdvisorService._to_utf16_offset(text, 5) == 7  # whole string
+        assert to_utf16_offset(text, 1) == 1  # "a"
+        assert to_utf16_offset(text, 3) == 4  # "a🎉b" -> 1+2+1
+        assert to_utf16_offset(text, 5) == 7  # whole string
 
     def test_zero_and_past_end(self) -> None:
-        assert AdvisorService._to_utf16_offset("🎉abc", 0) == 0
-        assert AdvisorService._to_utf16_offset("🎉abc", 4) == 5
+        assert to_utf16_offset("🎉abc", 0) == 0
+        assert to_utf16_offset("🎉abc", 4) == 5
 
 
 class TestBuildViolationResultUtf16:

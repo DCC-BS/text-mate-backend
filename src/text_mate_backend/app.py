@@ -11,13 +11,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from structlog.stdlib import BoundLogger
 
 from text_mate_backend.container import Container
-
-# Import routers
 from text_mate_backend.routers import (
     advisor,
     convert_route,
     quick_action,
     sentence_rewrite,
+    simplify,
     text_analysis,
     user_action_route,
     word_synonym,
@@ -30,11 +29,19 @@ def create_app() -> FastAPI:
     logger: BoundLogger = get_logger("app")
     logger.info("Starting Text Mate API application")
 
-    # Set up dependency injection container
     logger.debug("Configuring dependency injection container")
     container = Container()
     container.wire(
-        modules=[advisor, quick_action, word_synonym, sentence_rewrite, convert_route, user_action_route, text_analysis]
+        modules=[
+            advisor,
+            quick_action,
+            word_synonym,
+            sentence_rewrite,
+            convert_route,
+            user_action_route,
+            text_analysis,
+            simplify,
+        ]
     )
     container.check_dependencies()
     logger.debug("Dependency injection configured")
@@ -48,7 +55,6 @@ def create_app() -> FastAPI:
             environment=config.environment,
         )
 
-    # only in development mode, enable pydantic_ai logfire instrumentation
     if config.environment == "development":
         import logfire
 
@@ -89,7 +95,6 @@ def create_app() -> FastAPI:
     app.include_router(health_probe_router(service_dependencies))
     inject_api_error_handler(app)
 
-    # Configure CORS
     logger.debug("Setting up CORS middleware")
     app.add_middleware(
         CORSMiddleware,
@@ -104,7 +109,6 @@ def create_app() -> FastAPI:
     # emitted while handling a request carries the same id.
     add_logging_middleware(app)
 
-    # Include routers
     logger.debug("Registering API routers")
     app.include_router(advisor.create_router())
     app.include_router(quick_action.create_router())
@@ -113,6 +117,7 @@ def create_app() -> FastAPI:
     app.include_router(convert_route.create_router())
     app.include_router(user_action_route.create_router())
     app.include_router(text_analysis.create_router())
+    app.include_router(simplify.create_router())
     logger.debug("All routers registered")
 
     logger.info("API setup complete")

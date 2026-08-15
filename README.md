@@ -16,11 +16,13 @@ Text Mate Backend is a powerful Python FastAPI service that provides advanced te
 ## Features
 
 ### Core Capabilities
-- **Text Rewriting**: Advanced text transformation with customizable parameters
-- **Document Advisor**: Validates text against reference documents and style guides
+- **Text Simplification**: AI-powered simplification of complex texts into plain language with readability scoring and fact preservation
+- **Text Analysis & Readability**: Multilingual readability scoring (ZIX for German, CEFR, LIX, Gulpease) and language detection (DE, EN, FR, IT)
+- **Document Advisor**: Validates text against editorial style guides with violation detection and improvement proposals
 - **Word Synonyms**: Intelligent synonym suggestions based on context
 - **Sentence Rewrite**: Context-aware sentence transformation
 - **Document Conversion**: Convert documents using Docling service (PDF, DOCX, etc.)
+- **Custom User Actions**: Role-gated and customized AI transformations loaded from Markdown definitions
 
 ### Quick Actions
 Many specialized AI-powered text transformations:
@@ -47,7 +49,7 @@ Many specialized AI-powered text transformations:
 - **Tool Manager**: [mise](https://mise.jdx.dev/) — pins and installs `uv`, `varlock`, and `pass-cli`, and provides project tasks
 - **Dependency Injection**: Dependency-Injector
 - **LLM Integration**: pydantic-ai for AI model integration
-- **AI Model**: Qwen3 32B served via vLLM
+- **AI Model**: Gemma 4 31B served via vLLM
 - **Document Processing**: Docling
 - **Containerization**: Docker and Docker Compose
 - **Monitoring**: Logfire for observability
@@ -59,8 +61,8 @@ Many specialized AI-powered text transformations:
 - **uv package manager**: [Installation guide](https://github.com/astral-sh/uv) — only needed if you are not using mise
 - **Docker & Docker Compose**: For containerized deployment
 - **NVIDIA GPU** with CUDA support:
-  - Minimum 2 GPUs recommended (one for vLLM, one for Docling)
-  - GPU memory: ~20GB for Qwen3-32B-AWQ model
+  - 2 GPUs recommended (for vLLM tensor parallelism)
+  - GPU memory: ~20GB+ per GPU for Gemma-4-31B model
   - CUDA toolkit installed
 - **varlock**: For environment variables validation (installed automatically by mise)
 - **pass-cli**: For varlock with Proton Pass integration (installed automatically by mise via the [`DCC-BS/mise-proton-pass-cli`](https://github.com/DCC-BS/mise-proton-pass-cli) plugin)
@@ -97,8 +99,8 @@ The following environment variables have defaults and can be overridden as neede
 | `LLM_URL` | LLM API URL | `http://localhost:8001/v1` (dev) | URL |
 | `LLM_HEALTH_CHECK_URL` | LLM health check URL | `http://localhost:8001/health` (dev) | URL |
 | **LLM Configuration** |
-| `LLM_MODEL` | Model for LLM API | `Qwen/Qwen3-32B-AWQ` | string |
-| `LLM_API_KEY` | API key for OpenAI authentication | `none` | string (sensitive in prod) |
+| `LLM_MODEL` | Model for LLM API | `Gemma/Gemma-4-31B` (dev) | string |
+| `LLM_API_KEY` | API key for LLM endpoint authentication | `none` (dev) | string (sensitive in prod) |
 | **Service Keys** |
 | `DOCLING_API_KEY` | Docling API key | `none` | string (sensitive in prod) |
 | `HUGGING_FACE_HUB_TOKEN` | Hugging Face API token | - | string (optional, sensitive) |
@@ -146,17 +148,16 @@ uv run pre-commit install
 
 ## Services Architecture
 
-The application consists of four main services:
+The application consists of three main services:
 
 | Service | Port | Description |
 |---------|------|-------------|
 | **FastAPI Backend** | 8000 | Main application API |
-| **vLLM Service** | 8001 | Qwen3-32B-AWQ model inference (v0.17.1) |
-| **Docling** | 5001 | Document conversion service |
+| **vLLM Service** | 8001 | Gemma-4-31B model inference (v0.26.0) |
+| **Docling** | 5001 | Document conversion service (CPU) |
 
 ### GPU Allocation
-- GPU 0 (`device_ids: ["0"]`): vLLM service for LLM inference
-- GPU 1 (`device_ids: ["1"]`): Docling for document processing
+- GPUs 0 & 1 (`device_ids: ["0", "1"]`): vLLM service for LLM inference (tensor parallel size 2)
 
 ## Development
 
@@ -192,7 +193,7 @@ mise test         # or: make test
 uv run pytest --cov=src/text_mate_backend tests/
 
 # Run specific test file
-uv run pytest tests/test_example.py
+uv run pytest tests/test_simplify_service.py
 ```
 
 ### Mise Tasks
@@ -275,29 +276,56 @@ src/text_mate_backend/
 ├── container.py                    # Dependency injection container
 ├── agents/                         # AI agent implementations
 │   └── agent_types/
-│       ├── quick_actions/         # Quick action agents (8 types)
-│       ├── advisor_agent.py       # Document advisor
-│       ├── sentence_rewrite_agent.py
-│       └── word_synonym_agent.py
+│       ├── quick_actions/         # Built-in quick action agents (9 types)
+│       ├── fix_agent.py           # Fix generation agent
+│       ├── proposal_agent.py      # Advisor proposal agent
+│       ├── sentence_rewrite_agent.py # Sentence rewrite agent
+│       ├── violation_detection_agent.py # Advisor violation detection agent
+│       └── word_synonym_agent.py  # Word synonym agent
 ├── models/                         # Pydantic data models and schemas
+├── readability/                    # Readability scoring & language detection
+│   ├── core/                      # Tokenization, formulas, bands
+│   ├── languages/                 # Language analyzers (German, English, French, Italian)
+│   ├── detection.py               # Fast language detection
+│   └── registry.py                # Analyzer registry
 ├── routers/                        # API endpoint definitions
-│   ├── advisor.py                 # Document advisor endpoint
-│   ├── convert_route.py           # Document conversion endpoint
-│   ├── quick_action.py            # Quick actions endpoint
-│   ├── sentence_rewrite.py        # Sentence rewrite endpoint
-│   └── word_synonym.py            # Word synonym endpoint
+│   ├── advisor.py                 # Document advisor endpoint (/advisor)
+│   ├── convert_route.py           # Document conversion endpoint (/convert)
+│   ├── quick_action.py            # Quick actions endpoint (/quick-action)
+│   ├── sentence_rewrite.py        # Sentence rewrite endpoint (/sentence-rewrite)
+│   ├── simplify.py                # Text simplification endpoint (/simplify)
+│   ├── text_analysis.py           # Readability & analysis endpoint (/text-analysis)
+│   ├── user_action_route.py       # Custom user actions endpoint (/user-action)
+│   └── word_synonym.py            # Word synonym endpoint (/word-synonym)
 ├── services/                       # Business logic services
 │   ├── actions/                   # Quick action service
-│   └── document_conversion_service.py
+│   ├── advisor.py                 # Advisor service
+│   ├── azure_service.py           # Azure AD auth service
+│   ├── document_conversion_service.py # Docling document conversion
+│   ├── fix_service.py             # Rule fix application service
+│   ├── sentence_rewrite_service.py # Sentence rewrite service
+│   ├── simplify_service.py        # Text simplification pipeline
+│   ├── text_analysis_service.py   # Readability analysis service
+│   └── user_actions_service.py    # Custom user actions service
 └── utils/                          # Utility functions and helpers
     ├── auth.py                    # Authentication utilities
     ├── configuration.py           # Configuration management
     └── middleware.py              # Request/response middleware
 
-text_mate_tools/                    # Utility scripts
+src/text_mate_tools/                # Utility and evaluation scripts
+├── advisor_eval/                  # Advisor eval scoring and harness
+├── simplify_eval/                 # Simplify eval scoring and corpus harness
 ├── preprocess_document_rules.py   # AI-assisted rule extraction from PDFs
 ├── count_rules_per_file.py        # Rule count per collection and source PDF
-└── analyse_ruels.py               # Rule analysis across all collections
+├── analyse_rules.py               # Rule analysis across all collections
+├── consolidate_rules.py           # Rule consolidation utility
+├── generate_eval_cases.py         # Eval case generator
+├── run_advisor_eval.py            # Run Advisor evaluation suite
+└── run_simplify_eval.py           # Run Simplify evaluation suite
+
+evals/                              # Evaluation datasets
+├── advisor/                       # Advisor test cases
+└── simplify/                      # Simplification test cases
 
 assets/docs/
 ├── rules/                          # Rule collections (one JSON per collection)
@@ -463,7 +491,7 @@ After editing, run `make check` to verify everything is valid.
 uv run src/text_mate_tools/count_rules_per_file.py
 
 # Detailed analysis (char counts per collection)
-uv run src/text_mate_tools/analyse_ruels.py
+uv run src/text_mate_tools/analyse_rules.py
 ```
 
 ## Troubleshooting

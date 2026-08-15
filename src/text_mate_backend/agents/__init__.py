@@ -2,6 +2,7 @@
 
 from .agent_types import (
     BulletPointAgent,
+    CondenseAgent,
     CustomAgent,
     FixAgent,
     FormalityAgent,
@@ -22,6 +23,7 @@ __all__ = [
     "SentenceRewriteAgent",
     "WordSynonymAgent",
     "BulletPointAgent",
+    "CondenseAgent",
     "CustomAgent",
     "FixAgent",
     "FormalityAgent",

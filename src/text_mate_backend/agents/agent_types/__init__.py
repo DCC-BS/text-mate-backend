@@ -2,6 +2,7 @@ from .fix_agent import FixAgent
 from .proposal_agent import ProposalAgent
 from .quick_actions import (
     BulletPointAgent,
+    CondenseAgent,
     CustomAgent,
     FormalityAgent,
     MediumAgent,
@@ -21,6 +22,7 @@ __all__ = [
     "SentenceRewriteAgent",
     "WordSynonymAgent",
     "BulletPointAgent",
+    "CondenseAgent",
     "CustomAgent",
     "FormalityAgent",
     "MediumAgent",

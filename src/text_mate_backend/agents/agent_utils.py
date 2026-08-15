@@ -1,11 +1,16 @@
 from typing import Any
 
 
-def get_language_instruction(langauge: str | None):
-    if langauge is None or langauge == "auto":
-        return "Schreibe das Ergebnis in derselben Sprache wie der Eingabetext."
+def get_language_instruction(language: str | None) -> str:
+    if language is None or language == "auto":
+        return """
+        ## WICHTIGE SPRACHREGEL (STRIKT EINHALTEN):
+        - Behalte zwingend die Sprache des Ausgangstextes bei (z. B. Deutsch, Englisch, Französisch, Italienisch usw.).
+        - Übersetze den Text keinesfalls in eine andere Sprache (insbesondere nicht ins Deutsche), es sei denn, dies wird ausdrücklich verlangt.
+        - Setze alle inhaltlichen, stilistischen und formatierenden Anweisungen direkt in der Originalsprache des Ausgangstextes um.
+        """
     else:
-        return f"Schreibe das Ergebnis in folgender Sprache: {langauge}."
+        return f"Schreibe das Ergebnis ausschliesslich in folgender Sprache: {language}."
 
 
 def build_agent_metadata(

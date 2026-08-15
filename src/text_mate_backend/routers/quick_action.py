@@ -63,6 +63,8 @@ def create_router(
 
         try:
             return await quick_action_service.run(request.action, request.text, request.options, user)
+        except ApiErrorException:
+            raise
         except Exception as e:
             logger.exception("Quick action failed", action=request.action)
             raise ApiErrorException(

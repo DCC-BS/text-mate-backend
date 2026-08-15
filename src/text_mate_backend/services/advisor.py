@@ -27,6 +27,7 @@ from text_mate_backend.models.rule_models import (
     ViolationResult,
 )
 from text_mate_backend.utils.configuration import Configuration
+from text_mate_backend.utils.text_offsets import to_utf16_offset
 
 logger = get_logger("advisor_service")
 MAX_RULES_PER_REQUEST = 5
@@ -330,23 +331,20 @@ class AdvisorService:
         parallel.
         """
 
-        # --- Step 1: detection -------------------------------------------------
         try:
             detection_result: DetectionResult = await asyncio.wait_for(
                 self.detection_agent.run(text, deps=RulesContainer(rules=rule_batch)),
                 timeout=DETECTION_TIMEOUT_SECONDS,
             )
         except asyncio.TimeoutError:
-            logger.error(f"Detection timed out after {DETECTION_TIMEOUT_SECONDS}s")
+            logger.error("Detection timed out", timeout_seconds=DETECTION_TIMEOUT_SECONDS)
             return []
 
-        # Resolve positions + dedup before requesting proposals (skip wasted calls).
         survivors = self._resolve_and_dedup(detection_result.violations, text, rule_lookup)
 
         if not survivors:
             return []
 
-        # --- Step 2: parallel proposal generation ------------------------------
         proposal_tasks = [
             asyncio.wait_for(
                 self.proposal_agent.run(None, deps=self._build_proposal_request(text, resolved, rule_lookup)),
@@ -360,8 +358,11 @@ class AdvisorService:
         for resolved, proposal in zip(survivors, proposals, strict=True):
             if isinstance(proposal, BaseException):
                 logger.error(
-                    f"Proposal generation failed for rule '{resolved.rule_name}' "
-                    f"at [{resolved.range.start}:{resolved.range.end}]: {proposal}. Dropping violation."
+                    "Proposal generation failed",
+                    rule_name=resolved.rule_name,
+                    start=resolved.range.start,
+                    end=resolved.range.end,
+                    error=str(proposal),
                 )
                 continue
             results.append(self._build_violation_result(resolved, proposal, text))
@@ -394,7 +395,6 @@ class AdvisorService:
             unit_end = unit_start + len(unit_text)
             if unit_start <= range_.start < unit_end:
                 return unit_text
-        # Fallback: widen around the range.
         start = max(0, range_.start - 80)
         end = min(len(text), range_.end + 80)
         return text[start:end]
@@ -409,12 +409,16 @@ class AdvisorService:
         """Resolve a detection's source snippet to character positions in the original text."""
         source = violation.source.strip()
         if not source or len(source) < 1:
-            logger.warn(f"Empty source for violation: {violation.rule_name}")
+            logger.warning("Empty source for violation", rule_name=violation.rule_name)
             return None
 
         found = self._find_source(source, text, consumed=consumed_ranges)
         if found is None:
-            logger.warn(f"Could not locate source in text: '{source[:80]}' (rule: {violation.rule_name})")
+            logger.warning(
+                "Could not locate source in text",
+                snippet=source[:80],
+                rule_name=violation.rule_name,
+            )
             return None
         pos, match_len = found
 
@@ -436,7 +440,7 @@ class AdvisorService:
         # API boundary: the frontend is JavaScript, which indexes strings by
         # UTF-16 code units. All internal work (resolution, dedup, slicing) runs
         # on Python code points, so we translate the range to UTF-16 here, on the
-        # way out. See ``_to_utf16_offset`` for the rationale.
+        # way out. See ``utils.text_offsets.to_utf16_offset`` for the rationale.
         return ViolationResult(
             rule_name=resolved.rule_name,
             reason=resolved.reason,
@@ -445,31 +449,11 @@ class AdvisorService:
             file_name=resolved.file_name,
             page_number=resolved.page_number,
             range=ViolationRange(
-                start=self._to_utf16_offset(text, resolved.range.start),
-                end=self._to_utf16_offset(text, resolved.range.end),
+                start=to_utf16_offset(text, resolved.range.start),
+                end=to_utf16_offset(text, resolved.range.end),
             ),
             collection=resolved.collection,
         )
-
-    @staticmethod
-    def _to_utf16_offset(text: str, codepoint_offset: int) -> int:
-        """Translate a Python code-point index into a JavaScript UTF-16 code-unit index.
-
-        Python ``str`` is a sequence of Unicode code points; ``str.find`` /
-        slicing / regex offsets are therefore code-point based. JavaScript, by
-        contrast, stores strings as UTF-16 and indexes them by **code unit**.
-        The two indexing schemes agree for every Basic Multilingual Plane (BMP)
-        character — that covers all of Latin, umlauts, ``ß``, accented letters,
-        Cyrillic, CJK, etc. They diverge only for code points >= U+10000
-        (supplementary plane: emoji, some symbols, historic scripts), which are
-        a single Python code point but two UTF-16 code units (a surrogate pair).
-
-        For each character before ``codepoint_offset`` we add 2 when it lies
-        outside the BMP and 1 otherwise, yielding the offset a JS consumer would
-        compute. This keeps UTF-16 translation at the API boundary only; all
-        internal resolution logic continues to operate on code points.
-        """
-        return sum(2 if ord(ch) >= 0x10000 else 1 for ch in text[:codepoint_offset])
 
     def _find_source(
         self, source: str, text: str, consumed: list[tuple[int, int]] | None = None
@@ -569,7 +553,6 @@ class AdvisorService:
             elif normalized[norm_idx].isspace() and original[orig_pos].isspace():
                 norm_idx += 1
                 orig_pos += 1
-                # Consume the remainder of this original whitespace run.
                 while orig_pos < len(original) and original[orig_pos].isspace():
                     orig_pos += 1
             else:
@@ -616,6 +599,8 @@ class AdvisorService:
 
         return None
 
+    # See also utils/simplify_chunker.py: paragraph-level, offset-preserving splitting for the
+    # simplify pipeline (see docs/simplify_redesign.md section 2).
     def _split_into_search_units(self, text: str) -> list[tuple[str, int]]:
         """Split text into sentences/segments with their character offsets."""
         units: list[tuple[str, int]] = []

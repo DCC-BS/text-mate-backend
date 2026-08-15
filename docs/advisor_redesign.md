@@ -111,7 +111,7 @@ current behaviour):
 ```python
 kind: Literal["mechanical", "lexical", "semantic"] = "semantic"
 scope: Literal["window", "document"] = "document"
-checker: CheckerSpec | None = None   # e.g. {"type": "regex", "pattern": "ß", "message_template": ...}
+checker: CheckerSpec | None = None  # e.g. {"type": "regex", "pattern": "ß", "message_template": ...}
 ```
 
 - `kind` drives prompt selection and ensemble size (mechanical rules need more

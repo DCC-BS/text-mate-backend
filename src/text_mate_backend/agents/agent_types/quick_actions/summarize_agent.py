@@ -80,5 +80,6 @@ class SummarizeAgent(QuickActionBaseAgent):
         return f"""
         Du bist ein Assistent, der Texte zusammenfasst, indem du die Kernpunkte und die zentrale Aussage herausarbeitest.
         Fasse den folgenden Text zusammen und erfasse dabei die Hauptgedanken und die wesentlichen Informationen.
+        Behalte zwingend die Sprache des Ausgangstextes bei und fasse den Text in derselben Sprache zusammen (nicht ins Deutsche übersetzen).
         Das sind die Anforderungen an die Zusammenfassung: {format_options(ctx.deps.options)}
         """

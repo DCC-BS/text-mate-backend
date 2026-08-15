@@ -7,14 +7,16 @@ from fastapi.responses import StreamingResponse
 from text_mate_backend.agents import QuickActionBaseAgent
 from text_mate_backend.agents.agent_types.quick_actions.bullet_point_agent import BulletPointAgent
 from text_mate_backend.agents.agent_types.quick_actions.character_speech_agent import CharacterSpeechAgent
+from text_mate_backend.agents.agent_types.quick_actions.condense_agent import CondenseAgent
 from text_mate_backend.agents.agent_types.quick_actions.custom_agent import CustomAgent
 from text_mate_backend.agents.agent_types.quick_actions.formality_agent import FormalityAgent
 from text_mate_backend.agents.agent_types.quick_actions.medium_agent import MediumAgent
-from text_mate_backend.agents.agent_types.quick_actions.plain_language_agent import PlainLanguageAgent
 from text_mate_backend.agents.agent_types.quick_actions.proof_read_agent import ProofReadAgent
 from text_mate_backend.agents.agent_types.quick_actions.social_media_agent import SocialMediaAgent
 from text_mate_backend.agents.agent_types.quick_actions.summarize_agent import SummarizeAgent
 from text_mate_backend.agents.agent_types.quick_actions.user_action_agent import UserActionAgent
+from text_mate_backend.models.error_codes import REWRITE_TEXT_ERROR
+from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.models.quick_actions_models import Actions, CurrentUser, QuickActionContext
 from text_mate_backend.services.actions.action_utils import create_streaming_response
 from text_mate_backend.services.user_actions_service import UserActionService
@@ -29,12 +31,16 @@ class QuickActionService:
         self.config = config
         self.user_action_service = user_action_service
 
+        # Actions.PlainLanguage is deliberately absent: simplification moved to
+        # POST /simplify, where it is a measured, closed loop (readability gate +
+        # retry) instead of a single unmeasured call. The enum member stays so an
+        # old client gets a clear 400 rather than a 500.
         self.agent_mapping: dict[Actions, QuickActionBaseAgent] = {
             Actions.BulletPoints: BulletPointAgent(config),
+            Actions.Condense: CondenseAgent(config),
             Actions.Custom: CustomAgent(config),
             Actions.Formality: FormalityAgent(config),
             Actions.Medium: MediumAgent(config),
-            Actions.PlainLanguage: PlainLanguageAgent(config),
             Actions.SocialMediafy: SocialMediaAgent(config),
             Actions.Summarize: SummarizeAgent(config),
             Actions.Proofread: ProofReadAgent(config),
@@ -103,8 +109,21 @@ class QuickActionService:
             )
             raise
 
-    def get_agent(self, id: str | Actions):
+    def get_agent(self, id: str | Actions) -> QuickActionBaseAgent:
         if id in [member.value for member in Actions]:
-            return self.agent_mapping[Actions(id)]
+            agent = self.agent_mapping.get(Actions(id))
+            if agent is None:
+                # A predefined action with no agent: retired, not missing.
+                raise ApiErrorException(
+                    {
+                        "status": 400,
+                        "errorId": REWRITE_TEXT_ERROR,
+                        "debugMessage": (
+                            f"Quick action '{Actions(id).value}' has been retired. "
+                            "Use POST /simplify for simplification."
+                        ),
+                    }
+                )
+            return agent
 
         return self.user_agent
