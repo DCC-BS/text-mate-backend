@@ -246,6 +246,13 @@ class AdvisorService:
         total_rules = len(rules)
         rule_lookup: dict[str, Rule] = {rule.name: rule for rule in rules}
 
+        # Yield initial progress frame so the client immediately knows the total rule count
+        yield RulesValidationContainer(
+            violations=[],
+            checked=0,
+            total=total_rules,
+        )
+
         batches = list(self._batched_rules(rules, MAX_RULES_PER_REQUEST, max_rules=len(rules)))
 
         # Run all batches concurrently. Each batch carries its own per-batch

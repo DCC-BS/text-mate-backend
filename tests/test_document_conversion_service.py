@@ -458,7 +458,3 @@ async def test_convert_cancellation_during_polling(service_config: Configuration
         await task
 
     await service.close()
-
-
-
-

@@ -119,14 +119,8 @@ class CorpusCoverage:
         Otherwise computes gaps across all languages using each language's target threshold.
         """
         if language is not None:
-            return tuple(
-                sorted(score_gap_to_target(score, language) for score in self.scores.get(language, ()))
-            )
-        gaps = [
-            score_gap_to_target(score, lang)
-            for lang, lang_scores in self.scores.items()
-            for score in lang_scores
-        ]
+            return tuple(sorted(score_gap_to_target(score, language) for score in self.scores.get(language, ())))
+        gaps = [score_gap_to_target(score, lang) for lang, lang_scores in self.scores.items() for score in lang_scores]
         return tuple(sorted(gaps))
 
     def beyond_single_pass(self, typical_pass_gain: float, language: str | None = None) -> int:
@@ -205,4 +199,3 @@ def coverage(cases: Sequence[SimplifyEvalCase], threshold: int = CHUNKING_THRESH
         unreviewed_facts=sum(1 for case in cases if case.must_keep_facts and not case.must_keep_facts_reviewed),
         scores={lang: tuple(sorted(s)) for lang, s in sorted(scores.items())},
     )
-

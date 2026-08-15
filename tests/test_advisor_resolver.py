@@ -5,6 +5,8 @@ instantiated via ``__new__`` to bypass ``__init__`` (which loads rules files and
 builds agents) — the methods under test use no instance state.
 """
 
+import pytest
+
 from text_mate_backend.models.rule_models import DetectionViolation, ResolvedDetection, Rule, ViolationRange
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.utils.text_offsets import to_utf16_offset
@@ -309,3 +311,54 @@ class TestBuildViolationResultUtf16:
         assert result.file_name == resolved.file_name
         assert result.page_number == resolved.page_number
         assert result.collection == resolved.collection
+
+
+class TestCheckTextStream:
+    @pytest.mark.anyio
+    async def test_initial_frame_emitted_immediately(self) -> None:
+        svc = make_service()
+        sample_rules = [
+            Rule(
+                name=f"Rule {i}",
+                description=f"Description {i}",
+                file_name="doc.pdf",
+                page_number=1,
+                example="",
+                collection="bundeskanzlei",
+            )
+            for i in range(12)
+        ]
+        svc.filter_rules = lambda docs: sample_rules
+
+        async def fake_process_batch(text, batch, rule_lookup):
+            return []
+
+        svc._process_batch = fake_process_batch
+
+        frames = []
+        async for frame in svc._check_text_stream("test text", {"bundeskanzlei"}):
+            frames.append(frame)
+
+        assert len(frames) > 1
+        # First frame must be the initial progress frame with checked=0 and total=12
+        assert frames[0].checked == 0
+        assert frames[0].total == 12
+        assert frames[0].violations == []
+
+        # Final frame must reflect completion
+        assert frames[-1].checked == 12
+        assert frames[-1].total == 12
+
+    @pytest.mark.anyio
+    async def test_empty_rules_yields_zero_total(self) -> None:
+        svc = make_service()
+        svc.filter_rules = lambda docs: []
+
+        frames = []
+        async for frame in svc._check_text_stream("test text", {"unknown"}):
+            frames.append(frame)
+
+        assert len(frames) == 1
+        assert frames[0].checked == 0
+        assert frames[0].total == 0
+        assert frames[0].violations == []
