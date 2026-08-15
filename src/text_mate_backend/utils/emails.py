@@ -26,7 +26,6 @@ Die E-Mail muss schnell erfassbar sein, Missverständnisse vermeiden und darf ni
 
 4. Handlungsaufforderung (Call to Action):
    - Mache am Ende deutlich, was der nächste Schritt ist: wer tut was bis wann.
-   - Falls Anhänge erwähnt werden: Stelle sicher, dass im Text darauf hingewiesen wird (z. B. «Im Anhang finden Sie...»).
 
 5. Sprache:
    - Behalte immer zwingend die Sprache des Ausgangstextes bei (z. B. Englisch, Französisch, Italienisch). Übersetze keinesfalls ins Deutsche.

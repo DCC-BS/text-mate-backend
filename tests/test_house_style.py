@@ -31,12 +31,12 @@ class TestBaselStadtHouseStyle:
         assert "immer «ss», nie «ß»" in BASEL_STADT_HOUSE_STYLE
         assert BASEL_STADT_HOUSE_STYLE.count("ß") == 1
         assert "« »" in BASEL_STADT_HOUSE_STYLE
-        assert "‹ ›" in BASEL_STADT_HOUSE_STYLE
+        assert "‹ ›" in BASEL_STADT_HOUSE_STYLE  # noqa: RUF001
         assert "„ “" in BASEL_STADT_HOUSE_STYLE  # As counter-example of what not to use
 
     def test_zahlen_daten_zeiten_betraege(self) -> None:
         assert "Fr. 327.65" in BASEL_STADT_HOUSE_STYLE
-        assert "Fr. 20.–" in BASEL_STADT_HOUSE_STYLE
+        assert "Fr. 20.–" in BASEL_STADT_HOUSE_STYLE  # noqa: RUF001
         assert "1. Januar 2022" in BASEL_STADT_HOUSE_STYLE
         assert "14 Uhr (NICHT 14.00 Uhr)" in BASEL_STADT_HOUSE_STYLE
         assert "044 123 45 67" in BASEL_STADT_HOUSE_STYLE
