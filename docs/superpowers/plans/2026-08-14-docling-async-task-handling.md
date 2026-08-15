@@ -110,9 +110,9 @@ In `src/text_mate_backend/utils/configuration.py`:
 ```
 Update `Configuration.from_env()` in `src/text_mate_backend/utils/configuration.py`:
 ```python
-            docling_poll_interval_seconds=float(os.getenv("DOCLING_POLL_INTERVAL_SECONDS", "1.0")),
-            docling_conversion_timeout_seconds=float(os.getenv("DOCLING_CONVERSION_TIMEOUT_SECONDS", "300.0")),
-            docling_http_timeout_seconds=float(os.getenv("DOCLING_HTTP_TIMEOUT_SECONDS", "30.0")),
+docling_poll_interval_seconds = (float(os.getenv("DOCLING_POLL_INTERVAL_SECONDS", "1.0")),)
+docling_conversion_timeout_seconds = (float(os.getenv("DOCLING_CONVERSION_TIMEOUT_SECONDS", "300.0")),)
+docling_http_timeout_seconds = (float(os.getenv("DOCLING_HTTP_TIMEOUT_SECONDS", "30.0")),)
 ```
 
 In `docker-compose.yml`:
@@ -308,6 +308,7 @@ from text_mate_backend.utils.configuration import Configuration
 logger = get_logger(__name__)
 
 # [Keep existing get_mimetype and validate_mimetype functions]
+
 
 @final
 class DocumentConversionService:

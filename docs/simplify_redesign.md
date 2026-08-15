@@ -233,13 +233,14 @@ The Protocol, mirroring blokkli's `ReadabilityAnalyzer`:
 ```python
 class ReadabilityAnalyzer(Protocol):
     language: LanguageCode
-    score_label: str              # "ZIX" | "CEFR" | "LIX" | "Gulpease"
+    score_label: str  # "ZIX" | "CEFR" | "LIX" | "Gulpease"
     min_words: int
+
     def score(self, text: str) -> float | None: ...
-    def band(self, score: float) -> ReadabilityBand: ...      # easy | ok | hard
-    def cefr(self, score: float) -> str | None: ...           # de, en only
+    def band(self, score: float) -> ReadabilityBand: ...  # easy | ok | hard
+    def cefr(self, score: float) -> str | None: ...  # de, en only
     def format_score(self, score: float) -> str: ...
-    def agent_context(self) -> str: ...                       # reference table for prompts
+    def agent_context(self) -> str: ...  # reference table for prompts
 ```
 
 `in_target` is `band == easy`. Calibrations ported verbatim from blokkli's `SCORE_CONFIGS`
