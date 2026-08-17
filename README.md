@@ -544,6 +544,10 @@ uv run src/text_mate_tools/analyse_rules.py
 - Ensure Azure AD app registration is configured properly
 - Verify redirect URIs match your application URL
 
+## Acknowledgements
+
+This project builds upon and adapts third-party open-source components and ideas, notably [machinelearningZH/simply-simplify-language](https://github.com/machinelearningZH/simply-simplify-language) (origin of the core simplification approach and foundation for prompt design), [blokkli/editor](https://github.com/blokkli/editor), [@lunarisapp/text-tools](https://github.com/LunarisApp/text-tools), and [ZIX](https://github.com/machinelearningZH/zix_understandability-index). See [`NOTICE`](NOTICE) for full attribution and license details.
+
 ## License
 
 [MIT](LICENSE) © Data Competence Center Basel-Stadt

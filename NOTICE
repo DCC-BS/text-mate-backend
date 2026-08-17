@@ -24,10 +24,19 @@ per-language `SCORE_CONFIGS` calibration (bands, impact thresholds, minimum word
 counts and score reference tables) for `en`, `fr` and `it`. The expectations of
 `builtin.spec.ts` are ported as test vectors in `tests/test_readability_*.py`.
 
+Additionally, prompt structures and retry heuristics in `src/text_mate_backend/utils/simplify_prompt.py`
+and `src/text_mate_backend/utils/simplify_generic.py` are adapted from:
+
+  - src/modules/agent/runtime/server/templates/definitions/fixReadability.ts
+  - src/modules/agent/runtime/server/templates/definitions/rewrite.ts
+
+Adapted: the retry escalation structure, issue quoting, passing exemplars (`passingFields`),
+and prompt truncation limits.
+
 Not ported: the Wiener Sachtextformel and the `countSyllablesDe` heuristic —
 German is scored with ZIX instead (see below).
 
-Copyright (c) blokkli
+Copyright (c) 2023 Jan Hug / dulnan (blokkli)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -59,9 +68,16 @@ reproduced above.
 Copyright (c) LunarisApp
 
 --------------------------------------------------------------------------------
-zix (Zurich Understandability Index) — MIT License
+simply-simplify-language & zix — MIT License
+https://github.com/machinelearningZH/simply-simplify-language
 https://github.com/machinelearningZH/zix_understandability-index
 --------------------------------------------------------------------------------
+
+The initial concept of plain-language simplification with readability feedback
+(which also inspired blokkli/editor) stems from simply-simplify-language. Our
+German simplification prompts and rules (in `src/text_mate_backend/utils/simplify_style.py`
+and `src/text_mate_backend/utils/simplify_prompt.py`) build upon the prompt guidelines
+and calibrations originating in that repository.
 
 German readability is scored with ZIX, a trained model published by the
 Statistisches Amt des Kantons Zürich. It is used as a dependency (see
@@ -69,4 +85,4 @@ Statistisches Amt des Kantons Zürich. It is used as a dependency (see
 A1/A2/B1) follows the calibration in `machinelearningZH/simply-simplify-language`
 (`config.yaml`: `limit_hard: 0`, `limit_medium: -2`).
 
-Copyright (c) Statistisches Amt Kanton Zürich
+Copyright (c) Canton of Zurich / Department of Justice and Home Affairs / Office for Statistics and Data / Team Data
