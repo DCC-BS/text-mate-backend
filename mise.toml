@@ -1,6 +1,7 @@
 [tools]
 "npm:varlock" = "1.16.0"
 pass-cli = "latest"
+python = "3.13"
 rust = "1.97.1"
 usage = "5.1.0"
 uv = "0.12.1"
@@ -57,7 +58,7 @@ run = [
     "varlock scan"
 ]
 
-[tasks.test]
+[tasks."test:unit"]
 description = "🧪 Run the test suite (including doctests)"
 alias = "t"
 env = { APP_MODE = 'ci' }
@@ -75,7 +76,7 @@ run = [
 
 [tasks.ci]
 description = "🤖 Run all CI checks (lock, format, lint, types, tests)"
-depends = ['ci-check', 'test']
+depends = ['ci-check', 'test:unit']
 
 # ── Docker ──────────────────────────────────────────────────────────────────
 

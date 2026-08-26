@@ -97,5 +97,5 @@ addopts = [
 pythonpath = ["src"]
 
 [tool.uv]
-exclude-newer = "1 week"
-exclude-newer-package = { dcc-backend-common = "PT0H"}
+exclude-newer = "P7D"
+exclude-newer-package = { dcc-backend-common = "P0D" }

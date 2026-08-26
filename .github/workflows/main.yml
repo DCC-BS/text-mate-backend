@@ -14,9 +14,6 @@ env:
 
 jobs:
     backend-ci:
-        uses: DCC-BS/ci-workflows/.github/workflows/python-backend-ci.yml@6d1cca8023e197f6e9cda5e64f3b3f0448f4cf6e # v9
+        uses: DCC-BS/ci-workflows/.github/workflows/ci.yml@d64a5d501aaee55d37be82405e03812862d43474
         with:
-            python_versions: '["3.13"]'
-            quality_python_version: "3.13"
-            check_command: "make check"
-            uv_version: 0.11.16
+            check-command: "mise run ci-check"
