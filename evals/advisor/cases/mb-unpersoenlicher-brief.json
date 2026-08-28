@@ -1,0 +1,39 @@
+{
+  "collections": [
+    "merkblatt_behoerdenbriefe"
+  ],
+  "description": "Semantic violations in an impersonal Beh\u00f6rdenbrief: third-person address, impersonal passive, Amtsjargon, a Floskel, and a demanded action without deadline or consequences. Sibling rules accepted as alternatives where attributions legitimately overlap.",
+  "expected": [
+    {
+      "alt_rule_names": [
+        "Pers\u00f6nlicher Stil mit \u00abich\u00bb und \u00abwir\u00bb"
+      ],
+      "rule_name": "Pers\u00f6nliche Anrede mit \u00abSie\u00bb",
+      "source": "Dem Gesuchsteller wird mitgeteilt"
+    },
+    {
+      "alt_rule_names": [
+        "Pers\u00f6nliche Anrede mit \u00abSie\u00bb"
+      ],
+      "rule_name": "Pers\u00f6nlicher Stil mit \u00abich\u00bb und \u00abwir\u00bb",
+      "source": "Es wird darauf hingewiesen"
+    },
+    {
+      "rule_name": "Kein Amtsjargon",
+      "source": "zur Einreichung zu bringen"
+    },
+    {
+      "rule_name": "Konkrete Handlungsaufforderung mit Frist",
+      "source": "Die fehlenden Dokumente sind der Beh\u00f6rde zur Einreichung zu bringen."
+    },
+    {
+      "alt_rule_names": [
+        "Kein Amtsjargon"
+      ],
+      "rule_name": "Keine Floskeln",
+      "source": "Zur Beantwortung allf\u00e4lliger Fragen steht Ihnen unser Sachbearbeiter gerne zur Verf\u00fcgung."
+    }
+  ],
+  "id": "mb-unpersoenlicher-brief",
+  "text": "Sehr geehrte Damen und Herren\n\nDem Gesuchsteller wird mitgeteilt, dass das Gesuch vom 12. Mai 2026 gepr\u00fcft worden ist. Es wird darauf hingewiesen, dass die Unterlagen unvollst\u00e4ndig waren. Die fehlenden Dokumente sind der Beh\u00f6rde zur Einreichung zu bringen. Zur Beantwortung allf\u00e4lliger Fragen steht Ihnen unser Sachbearbeiter gerne zur Verf\u00fcgung.\n\nFreundliche Gr\u00fcsse"
+}

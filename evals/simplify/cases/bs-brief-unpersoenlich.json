@@ -1,0 +1,15 @@
+{
+  "id": "bs-brief-unpersoenlich",
+  "language": "de",
+  "must_keep_facts": [
+    "12. Mai 2026"
+  ],
+  "must_keep_facts_reviewed": true,
+  "notes": "Impersonal Behoerdenbrief: third-person address, impersonal passive, Amtsjargon, Floskeln. Text reused verbatim from evals/advisor/cases/mb-unpersoenlicher-brief.json. Probes tone alongside readability. WHOLE mode.",
+  "provenance": "adapted",
+  "source_band": "ok",
+  "source_document": "evals/advisor/cases/mb-unpersoenlicher-brief.json",
+  "source_score": -1.476,
+  "source_text": "Sehr geehrte Damen und Herren\n\nDem Gesuchsteller wird mitgeteilt, dass das Gesuch vom 12. Mai 2026 gepr\u00fcft worden ist. Es wird darauf hingewiesen, dass die Unterlagen unvollst\u00e4ndig waren. Die fehlenden Dokumente sind der Beh\u00f6rde zur Einreichung zu bringen. Zur Beantwortung allf\u00e4lliger Fragen steht Ihnen unser Sachbearbeiter gerne zur Verf\u00fcgung.\n\nFreundliche Gr\u00fcsse",
+  "source_url": ""
+}

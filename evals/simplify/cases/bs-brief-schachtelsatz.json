@@ -1,0 +1,16 @@
+{
+  "id": "bs-brief-schachtelsatz",
+  "language": "de",
+  "must_keep_facts": [
+    "3. April 2026",
+    "30. April 2026"
+  ],
+  "must_keep_facts_reviewed": true,
+  "notes": "Behoerdenbrief built around one deeply nested Schachtelsatz. Text reused verbatim from evals/advisor/cases/mb-schachtelsatz.json. Probes sentence splitting (1-in-N-out) while two dates must survive. WHOLE mode.",
+  "provenance": "adapted",
+  "source_band": "ok",
+  "source_document": "evals/advisor/cases/mb-schachtelsatz.json",
+  "source_score": -1.711,
+  "source_text": "Sehr geehrte Frau Muster\n\nDa die von Ihnen eingereichten Unterlagen, welche wir am 3. April 2026 erhalten haben, unvollst\u00e4ndig waren, weshalb eine abschliessende Pr\u00fcfung, die wir gerne vorgenommen h\u00e4tten, nicht m\u00f6glich war, bitten wir Sie um Erg\u00e4nzung Ihres Gesuchs bis zum 30. April 2026.\n\nFreundliche Gr\u00fcsse",
+  "source_url": ""
+}

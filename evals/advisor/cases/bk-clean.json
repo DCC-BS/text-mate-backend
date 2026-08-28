@@ -1,0 +1,9 @@
+{
+  "collections": [
+    "bundeskanzlei"
+  ],
+  "description": "Clean negative case \u2014 measures the false-positive floor. Contains correct dates, a Paarform, and the established anglicism 'Website' (must NOT be flagged).",
+  "expected": [],
+  "id": "bk-clean",
+  "text": "Der Regierungsrat hat an seiner Sitzung vom 2. September 2026 beschlossen, die Vernehmlassung zu er\u00f6ffnen. Die Unterlagen stehen ab sofort auf der Website des Kantons bereit. Stellungnahmen sind bis zum 15. Dezember 2026 einzureichen. Die Mitarbeiterinnen und Mitarbeiter der Staatskanzlei geben gerne Auskunft."
+}

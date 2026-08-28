@@ -2,6 +2,7 @@
 .vscode
 examples
 tests
+evals
 .env.example
 Makefile
 .git

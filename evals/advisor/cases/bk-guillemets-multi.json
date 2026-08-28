@@ -1,0 +1,22 @@
+{
+  "collections": [
+    "bundeskanzlei"
+  ],
+  "description": "Three straight-quote violations of the same rule \u2014 probes the first-hit-only failure mode (model flags the first occurrence and skims past the rest).",
+  "expected": [
+    {
+      "rule_name": "Guillemets als Anf\u00fchrungszeichen verwenden",
+      "source": "\"Der Bund\""
+    },
+    {
+      "rule_name": "Guillemets als Anf\u00fchrungszeichen verwenden",
+      "source": "\"Politik heute\""
+    },
+    {
+      "rule_name": "Guillemets als Anf\u00fchrungszeichen verwenden",
+      "source": "\"wichtigen Schritt\""
+    }
+  ],
+  "id": "bk-guillemets-multi",
+  "text": "Die Zeitung \"Der Bund\" berichtete gestern \u00fcber die neue Vorlage. Auch das Magazin \"Politik heute\" nahm Stellung. Der Regierungsrat sprach von einem \"wichtigen Schritt\" f\u00fcr den Kanton."
+}
