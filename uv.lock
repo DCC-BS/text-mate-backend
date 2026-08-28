@@ -2677,7 +2677,6 @@ dependencies = [
     { name = "fast-langdetect" },
     { name = "fastapi", extra = ["standard"] },
     { name = "fastapi-azure-auth" },
-    { name = "logfire" },
     { name = "pydantic-ai" },
     { name = "pyphen" },
     { name = "pyyaml" },
@@ -2689,6 +2688,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "deptry" },
+    { name = "logfire" },
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -2708,7 +2708,6 @@ requires-dist = [
     { name = "fast-langdetect", specifier = ">=1.0.1" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.128.2" },
     { name = "fastapi-azure-auth", specifier = ">=5.2.0" },
-    { name = "logfire", specifier = ">=4.22.0" },
     { name = "pydantic-ai", specifier = "<2.22.1" },
     { name = "pyphen", specifier = ">=0.17.2" },
     { name = "pyyaml", specifier = ">=6.0.2" },
@@ -2720,6 +2719,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "deptry", specifier = ">=0.22.0" },
+    { name = "logfire", specifier = ">=4.22.0" },
     { name = "pre-commit", specifier = ">=2.20.0" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "pytest-cov", specifier = ">=6.0.0" },
