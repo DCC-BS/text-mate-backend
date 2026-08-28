@@ -8,7 +8,7 @@ permissions:
 
 jobs:
     publish:
-        uses: DCC-BS/ci-workflows/.github/workflows/publish-docker.yml@d64a5d501aaee55d37be82405e03812862d43474
+        uses: DCC-BS/ci-workflows/.github/workflows/publish-docker.yml@2d9a1d861a5cc27f571e7a9d6227cf9943c0ba6d
         secrets: inherit
         with:
             project_type: "python" # or "node"
@@ -18,7 +18,4 @@ jobs:
             dockerfile: ./Dockerfile
             platforms: linux/amd64
             push: true
-            # Raise the GitHub API rate limit when mise resolves the
-            # `github:dmno-dev/varlock` release during the build.
-            build_args: |
-                GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+            inject_github_token: true
