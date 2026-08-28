@@ -1,18 +1,20 @@
 {
-  "id": "bk-uhrzeit-double",
-  "description": "The identical violating substring appears twice — probes multi-occurrence detection and the harness's occurrence-index resolution.",
-  "collections": ["bundeskanzlei"],
-  "text": "Die Anhörung beginnt um 9:30 Uhr im Saal drei. Die zweite Sitzung beginnt um 9:30 Uhr am folgenden Tag.",
+  "collections": [
+    "bundeskanzlei"
+  ],
+  "description": "The identical violating substring appears twice \u2014 probes multi-occurrence detection and the harness's occurrence-index resolution.",
   "expected": [
     {
-      "rule_name": "Uhrzeit mit Punkt in der 24-Stunden-Zählung",
-      "source": "9:30",
-      "occurrence": 1
+      "occurrence": 1,
+      "rule_name": "Uhrzeit mit Punkt in der 24-Stunden-Z\u00e4hlung",
+      "source": "9:30"
     },
     {
-      "rule_name": "Uhrzeit mit Punkt in der 24-Stunden-Zählung",
-      "source": "9:30",
-      "occurrence": 2
+      "occurrence": 2,
+      "rule_name": "Uhrzeit mit Punkt in der 24-Stunden-Z\u00e4hlung",
+      "source": "9:30"
     }
-  ]
+  ],
+  "id": "bk-uhrzeit-double",
+  "text": "Die Anh\u00f6rung beginnt um 9:30 Uhr im Saal drei. Die zweite Sitzung beginnt um 9:30 Uhr am folgenden Tag."
 }

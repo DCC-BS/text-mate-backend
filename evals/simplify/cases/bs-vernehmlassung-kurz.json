@@ -1,16 +1,16 @@
 {
   "id": "bs-vernehmlassung-kurz",
-  "source_text": "Der Regierungsrat hat an seiner Sitzung vom 2. September 2026 beschlossen, die Vernehmlassung zu eröffnen. Die Unterlagen stehen ab sofort auf der Website des Kantons bereit. Stellungnahmen sind bis zum 15. Dezember 2026 einzureichen. Die Mitarbeiterinnen und Mitarbeiter der Staatskanzlei geben gerne Auskunft.",
   "language": "de",
-  "source_score": 0.279,
-  "source_band": "easy",
-  "notes": "Short Regierungsrat announcement. Text reused verbatim from evals/advisor/cases/bk-clean.json (advisor violation labels dropped). Comparatively readable already, so it probes the easy end of the corpus and the 'do not make it worse' case. WHOLE mode.",
-  "provenance": "adapted",
-  "source_url": "",
-  "source_document": "evals/advisor/cases/bk-clean.json",
   "must_keep_facts": [
     "2. September 2026",
     "15. Dezember 2026"
   ],
-  "must_keep_facts_reviewed": true
+  "must_keep_facts_reviewed": true,
+  "notes": "Short Regierungsrat announcement. Text reused verbatim from evals/advisor/cases/bk-clean.json (advisor violation labels dropped). Comparatively readable already, so it probes the easy end of the corpus and the 'do not make it worse' case. WHOLE mode.",
+  "provenance": "adapted",
+  "source_band": "easy",
+  "source_document": "evals/advisor/cases/bk-clean.json",
+  "source_score": 0.279,
+  "source_text": "Der Regierungsrat hat an seiner Sitzung vom 2. September 2026 beschlossen, die Vernehmlassung zu er\u00f6ffnen. Die Unterlagen stehen ab sofort auf der Website des Kantons bereit. Stellungnahmen sind bis zum 15. Dezember 2026 einzureichen. Die Mitarbeiterinnen und Mitarbeiter der Staatskanzlei geben gerne Auskunft.",
+  "source_url": ""
 }

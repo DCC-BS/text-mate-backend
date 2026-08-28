@@ -1,20 +1,22 @@
 {
-  "id": "bk-eszett-multi",
-  "description": "Three ß occurrences. Also probes the known pipeline hazard: the replace_eszett output postprocessor can mutate the reported source snippet so it no longer matches the input text (docs/advisor_redesign.md §9).",
-  "collections": ["bundeskanzlei"],
-  "text": "Gemäß dem Beschluss wird die Bahnhofstraße ab dem 1. Juli 2026 saniert. Die Anwohnerinnen und Anwohner wurden bereits über die Massnahmen informiert. Der Gemeinderat dankt für das Verständnis und grüßt freundlich.",
+  "collections": [
+    "bundeskanzlei"
+  ],
+  "description": "Three \u00df occurrences. Also probes the known pipeline hazard: the replace_eszett output postprocessor can mutate the reported source snippet so it no longer matches the input text (docs/advisor_redesign.md \u00a79).",
   "expected": [
     {
-      "rule_name": "Doppel-s statt Eszett (ß)",
-      "source": "Gemäß"
+      "rule_name": "Doppel-s statt Eszett (\u00df)",
+      "source": "Gem\u00e4\u00df"
     },
     {
-      "rule_name": "Doppel-s statt Eszett (ß)",
-      "source": "Bahnhofstraße"
+      "rule_name": "Doppel-s statt Eszett (\u00df)",
+      "source": "Bahnhofstra\u00dfe"
     },
     {
-      "rule_name": "Doppel-s statt Eszett (ß)",
-      "source": "grüßt"
+      "rule_name": "Doppel-s statt Eszett (\u00df)",
+      "source": "gr\u00fc\u00dft"
     }
-  ]
+  ],
+  "id": "bk-eszett-multi",
+  "text": "Gem\u00e4\u00df dem Beschluss wird die Bahnhofstra\u00dfe ab dem 1. Juli 2026 saniert. Die Anwohnerinnen und Anwohner wurden bereits \u00fcber die Massnahmen informiert. Der Gemeinderat dankt f\u00fcr das Verst\u00e4ndnis und gr\u00fc\u00dft freundlich."
 }

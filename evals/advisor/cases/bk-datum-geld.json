@@ -1,16 +1,18 @@
 {
-  "id": "bk-datum-geld",
+  "collections": [
+    "bundeskanzlei"
+  ],
   "description": "Numeric month in a date and trailing currency unit; written-out 'dreissig' as a correct distractor.",
-  "collections": ["bundeskanzlei"],
-  "text": "Die Frist für die Einsprache läuft am 15.8.2026 ab. Die Gebühr beträgt 40.50 Franken und ist innert dreissig Tagen zu überweisen.",
   "expected": [
     {
       "rule_name": "Datum im Fliesstext mit ausgeschriebenem Monat",
       "source": "15.8.2026"
     },
     {
-      "rule_name": "Geldbeträge mit Währungseinheit vor dem Betrag",
+      "rule_name": "Geldbetr\u00e4ge mit W\u00e4hrungseinheit vor dem Betrag",
       "source": "40.50 Franken"
     }
-  ]
+  ],
+  "id": "bk-datum-geld",
+  "text": "Die Frist f\u00fcr die Einsprache l\u00e4uft am 15.8.2026 ab. Die Geb\u00fchr betr\u00e4gt 40.50 Franken und ist innert dreissig Tagen zu \u00fcberweisen."
 }

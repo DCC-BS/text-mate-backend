@@ -1,8 +1,8 @@
 {
-  "id": "bk-gen-maskulinum",
+  "collections": [
+    "bundeskanzlei"
+  ],
   "description": "Two generic-masculine person designations in consecutive sentences.",
-  "collections": ["bundeskanzlei"],
-  "text": "Alle Mitarbeiter der Abteilung sind zur Weiterbildung eingeladen. Die Teilnehmer erhalten die Unterlagen im Voraus. Bitte melden Sie sich bis zum 20. Mai 2026 an.",
   "expected": [
     {
       "rule_name": "Kein generisches Maskulinum",
@@ -12,5 +12,7 @@
       "rule_name": "Kein generisches Maskulinum",
       "source": "Teilnehmer"
     }
-  ]
+  ],
+  "id": "bk-gen-maskulinum",
+  "text": "Alle Mitarbeiter der Abteilung sind zur Weiterbildung eingeladen. Die Teilnehmer erhalten die Unterlagen im Voraus. Bitte melden Sie sich bis zum 20. Mai 2026 an."
 }

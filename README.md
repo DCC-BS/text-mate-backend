@@ -268,6 +268,18 @@ docker build -t text-mate-backend .
 docker run -p 8000:8000 text-mate-backend
 ```
 
+> **GitHub rate limit:** the build resolves the `github:dmno-dev/varlock` release
+> via the GitHub API, which is limited to 60 unauthenticated requests/hour per
+> IP. On fresh builds or CI this can fail with a `403 Forbidden` / rate-limit
+> error. Pass a GitHub token (no scopes required) to raise the limit:
+>
+> ```bash
+> docker build --build-arg GITHUB_TOKEN=<token> -t text-mate-backend .
+> ```
+>
+> The token is only used during the build stage and is not baked into the
+> runtime image. Omit it for local builds.
+
 ## Project Architecture
 
 ```

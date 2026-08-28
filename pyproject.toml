@@ -10,7 +10,6 @@ dependencies = [
     "fastapi[standard]>=0.128.2",
     "structlog>=25.5.0",
     "pydantic-ai<2.22.1",
-    "logfire>=4.22.0",
     "pyyaml>=6.0.2",
     "dcc-backend-common[fastapi]>=0.1.21",
     "fast-langdetect>=1.0.1",
@@ -27,6 +26,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "logfire>=4.22.0",
     "pytest>=8.3.5",
     "pytest-mock>=3.14.0",
     "pre-commit>=2.20.0",

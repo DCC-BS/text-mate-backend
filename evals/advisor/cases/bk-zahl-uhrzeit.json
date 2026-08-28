@@ -1,16 +1,18 @@
 {
-  "id": "bk-zahl-uhrzeit",
+  "collections": [
+    "bundeskanzlei"
+  ],
   "description": "Short number as digit plus colon-separated time; correct money and date formats as distractors (exceptions must not be flagged).",
-  "collections": ["bundeskanzlei"],
-  "text": "Der Ausschuss hat im vergangenen Jahr 3 Sitzungen durchgeführt. Für den Umbau des Schulhauses bewilligte er einen Kredit von Fr. 250 000.–. Die Bauarbeiten beginnen am 2. März 2026. Die Informationsveranstaltung findet um 19:30 Uhr statt.",
   "expected": [
     {
       "rule_name": "Kurze Zahlen im Fliesstext ausschreiben",
       "source": "3"
     },
     {
-      "rule_name": "Uhrzeit mit Punkt in der 24-Stunden-Zählung",
+      "rule_name": "Uhrzeit mit Punkt in der 24-Stunden-Z\u00e4hlung",
       "source": "19:30"
     }
-  ]
+  ],
+  "id": "bk-zahl-uhrzeit",
+  "text": "Der Ausschuss hat im vergangenen Jahr 3 Sitzungen durchgef\u00fchrt. F\u00fcr den Umbau des Schulhauses bewilligte er einen Kredit von Fr. 250 000.\u2013. Die Bauarbeiten beginnen am 2. M\u00e4rz 2026. Die Informationsveranstaltung findet um 19:30 Uhr statt."
 }
