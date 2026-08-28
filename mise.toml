@@ -3,7 +3,7 @@
 pass-cli = "latest"
 rust = "1.97.1"
 usage = "5.1.0"
-uv = "0.12.1"
+uv = "0.12.5"
 
 [plugins]
 pass-cli = "https://github.com/DCC-BS/mise-proton-pass-cli"
