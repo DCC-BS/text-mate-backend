@@ -18,3 +18,7 @@ jobs:
             dockerfile: ./Dockerfile
             platforms: linux/amd64
             push: true
+            # Raise the GitHub API rate limit when mise resolves the
+            # `github:dmno-dev/varlock` release during the build.
+            build_args: |
+                GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}

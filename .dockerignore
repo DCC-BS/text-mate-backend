@@ -14,3 +14,11 @@ tests
 _imgs
 dist
 __pycache__
+.logfire/
+LINCENSE
+publiccode.yml
+renovate.json
+docker-compose.yml
+Dockerfile
+NOTICE
+docs
