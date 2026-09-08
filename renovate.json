@@ -1,65 +1,35 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "lockFileMaintenance": {
-    "enabled": true
-  },
+  "automerge": false,
   "dependencyDashboard": true,
-  "extends": ["config:recommended"],
-  "forkProcessing": "enabled",
-  "labels": ["renovate"],
+  "extends": [
+    "config:recommended"
+  ],
+  "ignoreTests": true,
   "internalChecksFilter": "strict",
+  "lockFileMaintenance": {
+    "enabled": false
+  },
   "minimumReleaseAge": "14 days",
   "packageRules": [
     {
-      "automerge": true,
-      "matchCurrentVersion": "!/^0/",
-      "matchUpdateTypes": ["minor", "patch"]
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-non-major",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest",
+        "lockFileMaintenance"
+      ]
     },
     {
-      "automerge": false,
-      "groupName": "python-dependencies",
-      "labels": ["dependencies", "python"],
-      "matchDepTypes": [
-        "dependencies",
-        "optionalDependencies",
-        "peerDependencies",
-        "devDependencies"
-      ],
-      "matchFileNames": ["pyproject.toml"]
-    },
-    {
-      "automerge": true,
-      "groupName": "python-dev-tools",
-      "labels": ["dev-dependencies", "python"],
-      "matchDepTypes": ["devDependencies"],
-      "matchPackageNames": ["ruff", "mkdocs", "mkdocs-material"]
-    },
-    {
-      "automerge": true,
-      "groupName": "python-dev-tools",
-      "labels": ["dev-dependencies", "python"],
-      "matchDepTypes": [
-        "dependencies",
-        "optionalDependencies",
-        "devDependencies"
-      ],
-      "matchPackageNames": ["uv"]
-    },
-    {
-      "automerge": true,
-      "groupName": "devcontainer",
-      "labels": ["devcontainer"],
-      "matchFileNames": [".devcontainer/devcontainer.json"]
-    },
-    {
-      "automerge": true,
-      "groupName": "docker-python-version",
-      "labels": ["docker", "python"],
-      "matchFileNames": ["Dockerfile"],
-      "matchPackageNames": ["python"]
+      "groupName": "all major dependencies",
+      "groupSlug": "all-major",
+      "matchUpdateTypes": [
+        "major"
+      ]
     }
   ],
-  "platformAutomerge": true,
-  "prCreation": "immediate",
-  "timezone": "Europe/Zurich"
+  "prConcurrentLimit": 2
 }
