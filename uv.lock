@@ -930,15 +930,15 @@ wheels = [
 
 [[package]]
 name = "genai-prices"
-version = "0.1.1"
+version = "0.1.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx2" },
     { name = "pydantic" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/83/9b/85e646305a90a2da18f1edf055498668391e71f9849d3e1754d66559a311/genai_prices-0.1.1.tar.gz", hash = "sha256:54a2237691e0aaefb057d10a0c3c20160accc9fc09521c64c03fcdb7a4a69f68", size = 91182, upload-time = "2026-08-01T09:02:49.552Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/1a/16/e5a507d42c0eb629b48ebe6c278f2d8c3f929bb6b28f18108bdd66d8ae12/genai_prices-0.1.6.tar.gz", hash = "sha256:802c1e4cc3ed5e70a09083b83af441a58d91f62e12768f7f1b6b26c98a33fcac", size = 111810, upload-time = "2026-09-02T14:53:54.895Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6e/5e/cfe36dff790ffad6aeff8a069b6f36743987ac17053579035ee0a67635dd/genai_prices-0.1.1-py3-none-any.whl", hash = "sha256:de2e3d8ea3ca1d0d292025995c598da447a74e94f22cd3342df46941aeb5416b", size = 95300, upload-time = "2026-08-01T09:02:48.308Z" },
+    { url = "https://files.pythonhosted.org/packages/48/a1/43fa2a4c5557cd977e83eecec265b0b77b726b0c7b9f2f180b46c6fdb458/genai_prices-0.1.6-py3-none-any.whl", hash = "sha256:35ac8043dbcf2958488129413bfecba7304fe12a68ad4a78c5b0d15281e82814", size = 118834, upload-time = "2026-09-02T14:53:53.758Z" },
 ]
 
 [[package]]
@@ -1993,19 +1993,19 @@ email = [
 
 [[package]]
 name = "pydantic-ai"
-version = "2.34.0"
+version = "2.36.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic-ai-slim", extra = ["anthropic", "cli", "evals", "google", "logfire", "mcp", "openai", "web"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e4/23/e3689ab339cd7e2f35c09b0051b7f7eed3f0304511a39122db7f6c6ffb54/pydantic_ai-2.34.0.tar.gz", hash = "sha256:94bc6d24f5c0cac405695a17402548ed44261753ce3441fe3e2fef08a6c6b825", size = 23436, upload-time = "2026-08-25T02:01:13.172Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c7/2a/89c2f9eb3b6109c63ee8f9d48f3f2e11a3e501a5c3f0ab95dc2b635777fc/pydantic_ai-2.36.0.tar.gz", hash = "sha256:ca226e7ae900bce881a100cf22a244ba7708db39bd898f6f805cd4b861185469", size = 23908, upload-time = "2026-08-29T01:39:34.457Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1b/81/ea21685d3d1e54150d2cc696e015a9704146a26fb5ea6742d0a247e7fe51/pydantic_ai-2.34.0-py3-none-any.whl", hash = "sha256:61853bdd993c8ec3b74339b451d04ca1a58330f06aced455846a91b4fd84e411", size = 9448, upload-time = "2026-08-25T02:01:04.391Z" },
+    { url = "https://files.pythonhosted.org/packages/a8/e8/22bab801964931f901d5c34d3d5a9381a653e93d4317aaf520b2e7c17ab3/pydantic_ai-2.36.0-py3-none-any.whl", hash = "sha256:95306d14fe11f7bd37f22dbb738e5b607137a2fa37080c6dc03560171c3fcf1e", size = 9453, upload-time = "2026-08-29T01:39:24.943Z" },
 ]
 
 [[package]]
 name = "pydantic-ai-slim"
-version = "2.34.0"
+version = "2.36.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -2017,9 +2017,9 @@ dependencies = [
     { name = "pydantic-graph" },
     { name = "typing-inspection" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ce/d3/1a6c6fea55d3ea6458852d70f18f4725d7d0c49882bf3c50aedd5abe117e/pydantic_ai_slim-2.34.0.tar.gz", hash = "sha256:e1e9ca1e35063a676c7a9afc783492fa85b62760b0a71084f5282e3c071c2a30", size = 1259113, upload-time = "2026-08-25T02:01:15.377Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/af/ad/a1db6a8ea93d4f8b7a9adaab64204ccd40d236933285c564fcd4b9037173/pydantic_ai_slim-2.36.0.tar.gz", hash = "sha256:43b53401099352bbb0d1a1ecbcf8855bb7c3d0c680311ba006c5549ed6d61039", size = 1313875, upload-time = "2026-08-29T01:39:37.069Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/40/70/cdc87d6a8d85405a4730bca7fb9fd1481c4e05d921a6c31f3a34fb900d02/pydantic_ai_slim-2.34.0-py3-none-any.whl", hash = "sha256:933acdd8139674df53e8453c1ccc39b08d6b1a80bf238d212bd6fed1d023c95d", size = 1486367, upload-time = "2026-08-25T02:01:07.611Z" },
+    { url = "https://files.pythonhosted.org/packages/e4/0c/433c49819fa099700d69078586327b9dfad2c11492f96f51a13fa30208ad/pydantic_ai_slim-2.36.0-py3-none-any.whl", hash = "sha256:90957c37c99d3bfbfab4be632b733bf50d563686fbfbf8a2e42b6c91a4fca877", size = 1548738, upload-time = "2026-08-29T01:39:28.524Z" },
 ]
 
 [package.optional-dependencies]
@@ -2098,7 +2098,7 @@ wheels = [
 
 [[package]]
 name = "pydantic-evals"
-version = "2.34.0"
+version = "2.36.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -2108,9 +2108,9 @@ dependencies = [
     { name = "pyyaml" },
     { name = "rich" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/83/fe/cdd90cf4a3e7163b45ce53b5b5b812f76225f5bb53fcac98baa639606dec/pydantic_evals-2.34.0.tar.gz", hash = "sha256:7d1096c7c4a92d139ac75d8571d7ff4251c39e353526e27f8a6f46599b048394", size = 86809, upload-time = "2026-08-25T02:01:16.731Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6c/63/baf8f1cc968b28345f1fce773309a46d7c9e925f02f4614dc4e6db325c30/pydantic_evals-2.36.0.tar.gz", hash = "sha256:36b0393865032ed883a3e5eabde551cf2f8d560e2f43b634c82af2da08b20fbd", size = 86856, upload-time = "2026-08-29T01:39:38.449Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c7/b9/34cb910d1b5f90ae8a4e4cd923138780a173721382113b4787f14497ae63/pydantic_evals-2.34.0-py3-none-any.whl", hash = "sha256:b3e87fc1f9108c879e1ae4ab69de66c8e5cfb3b354981d2348a277e91b39cb09", size = 102010, upload-time = "2026-08-25T02:01:09.533Z" },
+    { url = "https://files.pythonhosted.org/packages/fb/91/8b5d2f58a5c26c3ceec5adde8a5b8aa4a730f95654d358f026cecd723fc4/pydantic_evals-2.36.0-py3-none-any.whl", hash = "sha256:ada7de4e4a02a008149df64e5a9606c1edbb0718650053a8ff030b84454f4c2f", size = 102073, upload-time = "2026-08-29T01:39:30.525Z" },
 ]
 
 [[package]]
@@ -2128,7 +2128,7 @@ wheels = [
 
 [[package]]
 name = "pydantic-graph"
-version = "2.34.0"
+version = "2.36.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
@@ -2136,9 +2136,9 @@ dependencies = [
     { name = "pydantic" },
     { name = "typing-inspection" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ee/92/b50def44bf5a25523e2f032fd767c1797f888f3c1783494970ac6f36110c/pydantic_graph-2.34.0.tar.gz", hash = "sha256:192e7ed6f8381ed8cc4cf91a6e9406637caeea163976c864cf08f336a3195cba", size = 45158, upload-time = "2026-08-25T02:01:17.718Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6d/79/af5579c790ee5f670c270e4183d4c8411a6392c9b267022ea467e9e1c831/pydantic_graph-2.36.0.tar.gz", hash = "sha256:1222b50a141f88bca299dc21e94694277e6ef60d6f1bbbf490f2f2796851594a", size = 45191, upload-time = "2026-08-29T01:39:39.748Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ed/f3/090aa40d7dd5130e5b570b2b25673c2162b3790b23c0a152fb84f28d9c05/pydantic_graph-2.34.0-py3-none-any.whl", hash = "sha256:33a8514a3ab53b20f101fa4a2eb01b3b0045cebb778394b80534dbe93e97bdf7", size = 52648, upload-time = "2026-08-25T02:01:11.12Z" },
+    { url = "https://files.pythonhosted.org/packages/4f/f4/7b43affa018fa14ba0d8169fb2460ec496d4cb974c64bfc1f8e85fc4da44/pydantic_graph-2.36.0-py3-none-any.whl", hash = "sha256:c0c7cddb87038298b367036d799b4b605b2a23858869b2b661706df6e1b811f2", size = 52700, upload-time = "2026-08-29T01:39:32.131Z" },
 ]
 
 [[package]]
@@ -2906,7 +2906,7 @@ requires-dist = [
     { name = "fast-langdetect", specifier = ">=1.0.1" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.128.2" },
     { name = "fastapi-azure-auth", specifier = ">=5.2.0" },
-    { name = "pydantic-ai", specifier = "<2.34.1" },
+    { name = "pydantic-ai", specifier = "<2.36.1" },
     { name = "pyphen", specifier = ">=0.17.2" },
     { name = "pyyaml", specifier = ">=6.0.2" },
     { name = "scikit-learn", specifier = ">=1.9,<2" },
