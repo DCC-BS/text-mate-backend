@@ -6,7 +6,7 @@ services:
         ports:
             - ${LLM_API_PORT:-8001}:8000
         environment:
-            - HUGGING_FACE_HUB_TOKEN=${HUGGING_FACE_HUB_TOKEN:-}
+            - HF_TOKEN=${HF_TOKEN:-}
         runtime: nvidia
         deploy:
             resources:
@@ -17,7 +17,7 @@ services:
                           capabilities: [gpu]
         ipc: host
         volumes:
-            - ${HUGGING_FACE_CACHE_DIR:-${HOME}/cache/huggingface}:/root/.cache/huggingface
+            - ${HF_HOME:-${HOME}/cache/huggingface}:/root/.cache/huggingface
         command: >
             --port 8000
             --model RedHatAI/gemma-4-31B-it-NVFP4
