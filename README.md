@@ -103,10 +103,10 @@ The following environment variables have defaults and can be overridden as neede
 | `LLM_API_KEY` | API key for LLM endpoint authentication | `none` (dev) | string (sensitive in prod) |
 | **Service Keys** |
 | `DOCLING_API_KEY` | Docling API key | `none` | string (sensitive in prod) |
-| `HUGGING_FACE_HUB_TOKEN` | Hugging Face API token | - | string (optional, sensitive) |
+| `HF_TOKEN` | Hugging Face API token | - | string (optional, sensitive) |
 | **Docker Cache Directories** |
 | `CACHE_DIR` | Base cache directory | `~/.cache` | path |
-| `HUGGING_FACE_CACHE_DIR` | Hugging Face cache directory | `${CACHE_DIR}/huggingface` | path |
+| `HF_HOME` | Hugging Face cache directory | `${CACHE_DIR}/huggingface` | path |
 
 > **Note:** URLs are automatically set based on the `APP_MODE`. In production, these must be configured explicitly.
 
@@ -522,7 +522,7 @@ uv run src/text_mate_tools/analyse_rules.py
 **Issue**: Cannot download model from Hugging Face
 
 **Solutions**:
-- Verify `HUGGING_FACE_HUB_TOKEN` is set correctly
+- Verify `HF_TOKEN` is set correctly
 - Ensure token has read access to the model repository
 - Create token at https://huggingface.co/settings/tokens
 
