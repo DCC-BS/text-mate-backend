@@ -13,14 +13,14 @@ services:
                 reservations:
                     devices:
                         - driver: nvidia
-                          device_ids: ["0", "1"]
+                          device_ids: ["1"]
                           capabilities: [gpu]
         ipc: host
         volumes:
             - ${HF_HOME:-${HOME}/cache/huggingface}:/root/.cache/huggingface
         command: >
+            RedHatAI/gemma-4-31B-it-NVFP4
             --port 8000
-            --model RedHatAI/gemma-4-31B-it-NVFP4
             --served-model-name Gemma/Gemma-4-31B
             --max-model-len auto
             --max-num-batched-tokens 4096
@@ -29,9 +29,10 @@ services:
             --tool-call-parser gemma4
             --chat-template examples/tool_chat_template_gemma4.jinja
             --async-scheduling
-            --tensor-parallel-size 2
+            --tensor-parallel-size 1
             --max-num-seqs 1
             --reasoning-parser gemma4
+            --cpu-offload-gb 20
             --enforce-eager
             --limit-mm-per-prompt '{"image": 0, "video": 0}'
             --disable_chunked_mm_input

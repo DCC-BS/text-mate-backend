@@ -70,12 +70,16 @@ class TestMediumPromptsComposition:
         assert "Management Summary" in REPORT_PROMPT
         assert "Sprache des Ausgangstextes" in REPORT_PROMPT
 
-    def test_condense_prompt_includes_house_style(self) -> None:
-        assert "# HAUSSTIL KANTON BASEL-STADT" in CONDENSE_PROMPT
+    def test_condense_prompt_inlines_its_own_rules_without_house_style(self) -> None:
+        # Condense carries its own subset of the writing rules instead of the shared house style.
+        assert "# HAUSSTIL KANTON BASEL-STADT" not in CONDENSE_PROMPT
         assert "verdichten" in CONDENSE_PROMPT
         assert "roten Faden" in CONDENSE_PROMPT
         assert "Füllstoff" in CONDENSE_PROMPT
         assert "Sprache des Ausgangstextes" in CONDENSE_PROMPT
+        assert "französische Anführungszeichen" in CONDENSE_PROMPT
+        assert "Fr. 327.65" in CONDENSE_PROMPT
+        assert "Anglizismen" in CONDENSE_PROMPT
 
     def test_house_style_and_templates_include_language_retention(self) -> None:
         assert "Sprache des Ausgangstextes" in BASEL_STADT_HOUSE_STYLE
