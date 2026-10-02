@@ -289,6 +289,7 @@ class DocumentConversionService:
             "ocr_lang": languages,
             "table_mode": "accurate",
             "pdf_backend": "docling_parse",
+            "md_compact_tables": True,
         }
 
         task_id = await self.submit_async_task(files, options)
