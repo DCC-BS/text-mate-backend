@@ -56,10 +56,11 @@ class StubAdvisorService:
         return [
             RuleDocumentDescription(
                 id="bundeskanzlei",
-                name="Bundeskanzlei",
+                title="Bundeskanzlei",
+                author="Bundeskanzlei",
+                edition="1.0",
                 files=["doc.pdf"],
                 description="Leitfaden",
-                version="1.0",
                 access=["all"],
             )
         ]

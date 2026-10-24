@@ -149,7 +149,9 @@ async def test_convert_poll_failure(service_config: Configuration):
 
     assert exc_info.value.error_response["errorId"] == DOCUMENT_CONVERSION_ERROR
     assert exc_info.value.error_response["status"] == 500
-    assert "Corrupted PDF" in exc_info.value.error_response["debugMessage"]
+    debug_message = exc_info.value.error_response["debugMessage"]
+    assert debug_message is not None
+    assert "Corrupted PDF" in debug_message
     await service.close()
 
 
@@ -234,7 +236,9 @@ async def test_submit_async_task_missing_task_id(service_config: Configuration):
 
     assert exc_info.value.error_response["errorId"] == DOCUMENT_CONVERSION_ERROR
     assert exc_info.value.error_response["status"] == 500
-    assert "missing task_id" in exc_info.value.error_response["debugMessage"]
+    debug_message = exc_info.value.error_response["debugMessage"]
+    assert debug_message is not None
+    assert "missing task_id" in debug_message
     await service.close()
 
 
@@ -251,7 +255,9 @@ async def test_request_http_error(service_config: Configuration):
 
     assert exc_info.value.error_response["errorId"] == DOCUMENT_CONVERSION_ERROR
     assert exc_info.value.error_response["status"] == 500
-    assert "status 500" in exc_info.value.error_response["debugMessage"]
+    debug_message = exc_info.value.error_response["debugMessage"]
+    assert debug_message is not None
+    assert "status 500" in debug_message
     await service.close()
 
 
@@ -268,7 +274,9 @@ async def test_request_connection_error(service_config: Configuration):
 
     assert exc_info.value.error_response["errorId"] == DOCUMENT_CONVERSION_ERROR
     assert exc_info.value.error_response["status"] == 500
-    assert "Docling connection error" in exc_info.value.error_response["debugMessage"]
+    debug_message = exc_info.value.error_response["debugMessage"]
+    assert debug_message is not None
+    assert "Docling connection error" in debug_message
     await service.close()
 
 
@@ -369,7 +377,9 @@ async def test_convert_poll_request_timeout(service_config: Configuration):
 
     assert exc_info.value.error_response["errorId"] == DOCUMENT_CONVERSION_TIMEOUT
     assert exc_info.value.error_response["status"] == 504
-    assert "Docling conversion timed out after" in exc_info.value.error_response["debugMessage"]
+    debug_message = exc_info.value.error_response["debugMessage"]
+    assert debug_message is not None
+    assert "Docling conversion timed out after" in debug_message
     await service.close()
 
 

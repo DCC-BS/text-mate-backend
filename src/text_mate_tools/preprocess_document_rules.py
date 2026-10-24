@@ -31,14 +31,15 @@ Output:
 
 import argparse
 import asyncio
+import json
 import sys
 import time
 import traceback
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 import httpx
 from dcc_backend_common.llm_agent import BaseAgent
-from llama_index.core.schema import Document
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models import Model
 from tqdm import tqdm
@@ -51,6 +52,19 @@ from text_mate_tools.rule_utils import (
     deduplicate_rules,
     print_quality_report,
 )
+
+
+@dataclass
+class Document:
+    """One page of converted PDF text (llama_index is not a dependency of this project)."""
+
+    text: str
+    metadata: dict[str, str] = field(default_factory=dict)
+
+    def json(self) -> str:
+        """Serialized size proxy used for batching (mirrors llama_index's Document.json())."""
+        return json.dumps(asdict(self), ensure_ascii=False)
+
 
 prompt = """Du bist ein Experte für Redaktionsrichtlinien. Extrahiere alle Regeln aus dem \
 nachstehenden Dokument und gib sie als strukturierte Daten zurück.
