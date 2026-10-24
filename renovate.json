@@ -29,6 +29,30 @@
       "matchUpdateTypes": [
         "major"
       ]
+    },
+    {
+      "description": "Updates that need a human (DCC dependency routine hold_majors; 0.x minors count as major) get their own PR",
+      "groupName": "held dependencies",
+      "groupSlug": "held",
+      "matchPackageNames": [
+        "vllm/vllm-openai"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ]
+    },
+    {
+      "description": "Python runtime bumps need wheels for every compiled dependency (spaCy stack has no cp315 wheels yet as of 2026-10-24), so they get their own PR",
+      "groupName": "held dependencies",
+      "groupSlug": "held",
+      "matchPackageNames": [
+        "python"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor"
+      ]
     }
   ],
   "prConcurrentLimit": 2
