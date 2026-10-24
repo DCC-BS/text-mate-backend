@@ -14,6 +14,7 @@ from typing import Any, final
 from unittest.mock import AsyncMock, patch
 
 import pytest
+from dcc_backend_common.usage_tracking import UsageTrackingService
 from fastapi import FastAPI
 from fastapi_azure_auth.user import User
 from httpx import ASGITransport, AsyncClient
@@ -43,12 +44,21 @@ for _key, _value in TEST_ENV.items():
 
 
 @final
-class StubUsageTracking:
+class StubUsageTracking(UsageTrackingService):
     def __init__(self) -> None:
-        self.events: list[tuple[str, str | None, dict[str, Any]]] = []
+        super().__init__(hmac_secret="test-secret")
+        self.events: list[tuple[str | None, str | None, dict[str, Any]]] = []
 
-    def log_event(self, action: str, user_id: str | None, **fields: Any) -> None:
-        self.events.append((action, user_id, fields))
+    def log_event(
+        self,
+        action: str | None = None,
+        user_id: str | None = None,
+        *,
+        module: str | None = None,
+        func: str | None = None,
+        **kwargs: str | int | float | bool | None,
+    ) -> None:
+        self.events.append((action, user_id, dict(kwargs)))
 
 
 def no_auth() -> User | None:

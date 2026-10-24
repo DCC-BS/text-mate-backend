@@ -7,7 +7,13 @@ builds agents) — the methods under test use no instance state.
 
 import pytest
 
-from text_mate_backend.models.rule_models import DetectionViolation, ResolvedDetection, Rule, ViolationRange
+from text_mate_backend.models.rule_models import (
+    DetectionViolation,
+    ResolvedDetection,
+    Rule,
+    ViolationRange,
+    ViolationResult,
+)
 from text_mate_backend.services.advisor import AdvisorService
 from text_mate_backend.utils.text_offsets import to_utf16_offset
 
@@ -33,14 +39,18 @@ class TestFindSource:
     def test_exact_match_returns_first_occurrence(self) -> None:
         svc = make_service()
         text = "Die Uhrzeit 9:30 ist falsch. Auch 9:30 ist falsch."
-        pos, length = svc._find_source("9:30", text)
+        result = svc._find_source("9:30", text)
+        assert result is not None
+        pos, length = result
         assert text[pos : pos + length] == "9:30"
         assert pos == text.find("9:30")
 
     def test_case_insensitive_match(self) -> None:
         svc = make_service()
         text = "Das Wort Beispiel steht hier."
-        pos, length = svc._find_source("BEISPIEL", text)
+        result = svc._find_source("BEISPIEL", text)
+        assert result is not None
+        pos, length = result
         assert text[pos : pos + length].lower() == "beispiel"
 
     def test_not_found_returns_none(self) -> None:
@@ -59,7 +69,9 @@ class TestFindSource:
         second = text.find("9:30", first + 1)
 
         # With the first occurrence consumed, the second is returned.
-        pos, length = svc._find_source("9:30", text, consumed=[(first, first + 4)])
+        result = svc._find_source("9:30", text, consumed=[(first, first + 4)])
+        assert result is not None
+        pos, length = result
         assert pos == second
         assert length == 4
         assert text[pos : pos + length] == "9:30"
@@ -71,7 +83,11 @@ class TestFindSource:
         second = text.find("a", first + 1)
         third = text.find("a", second + 1)
 
-        pos, _ = svc._find_source("a", text, consumed=[(first, first + 1), (second, second + 1)])
+        result = svc._find_source("a", text, consumed=[(first, first + 1), (second, second + 1)])
+
+        assert result is not None
+
+        pos, _ = result
         assert pos == third
 
     def test_consumed_all_returns_last_matchable(self) -> None:
@@ -79,7 +95,9 @@ class TestFindSource:
         text = "nur einmal kommt das wort vor"
         only = text.find("wort")
         # Every occurrence consumed — must not loop forever and returns a position.
-        pos, _ = svc._find_source("wort", text, consumed=[(only, only + 4)])
+        result = svc._find_source("wort", text, consumed=[(only, only + 4)])
+        assert result is not None
+        pos, _ = result
         assert pos == only
 
 
@@ -315,7 +333,7 @@ class TestBuildViolationResultUtf16:
 
 class TestCheckTextStream:
     @pytest.mark.anyio
-    async def test_initial_frame_emitted_immediately(self) -> None:
+    async def test_initial_frame_emitted_immediately(self, monkeypatch: pytest.MonkeyPatch) -> None:
         svc = make_service()
         sample_rules = [
             Rule(
@@ -328,12 +346,14 @@ class TestCheckTextStream:
             )
             for i in range(12)
         ]
-        svc.filter_rules = lambda docs: sample_rules
+        monkeypatch.setattr(svc, "filter_rules", lambda docs: sample_rules)
 
-        async def fake_process_batch(text, batch, rule_lookup):
+        async def fake_process_batch(
+            text: str, rule_batch: list[Rule], rule_lookup: dict[str, Rule]
+        ) -> list[ViolationResult]:
             return []
 
-        svc._process_batch = fake_process_batch
+        monkeypatch.setattr(svc, "_process_batch", fake_process_batch)
 
         frames = []
         async for frame in svc._check_text_stream("test text", {"bundeskanzlei"}):
@@ -350,9 +370,9 @@ class TestCheckTextStream:
         assert frames[-1].total == 12
 
     @pytest.mark.anyio
-    async def test_empty_rules_yields_zero_total(self) -> None:
+    async def test_empty_rules_yields_zero_total(self, monkeypatch: pytest.MonkeyPatch) -> None:
         svc = make_service()
-        svc.filter_rules = lambda docs: []
+        monkeypatch.setattr(svc, "filter_rules", lambda docs: [])
 
         frames = []
         async for frame in svc._check_text_stream("test text", {"unknown"}):

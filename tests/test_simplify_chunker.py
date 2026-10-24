@@ -1,5 +1,9 @@
 """Unit tests for the simplify chunker (pure functions, no LLM, no I/O)."""
 
+import dataclasses
+
+import pytest
+
 from text_mate_backend.utils.simplify_chunker import (
     DEFAULT_MIN_UNIT_WORDS,
     DEFAULT_MIN_WORDS,
@@ -267,9 +271,5 @@ class TestTextUnit:
             unscorable=False,
         )
         assert unit.rewritable is True
-        try:
-            unit.text = "geändert"  # type: ignore[misc]
-        except Exception as exp:
-            assert isinstance(exp, (AttributeError, TypeError))
-        else:  # pragma: no cover - would mean the dataclass stopped being frozen
-            raise AssertionError("TextUnit must be frozen")
+        with pytest.raises(dataclasses.FrozenInstanceError):
+            unit.__setattr__("text", "geändert")

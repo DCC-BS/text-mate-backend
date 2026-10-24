@@ -227,10 +227,15 @@ QUICK_ACTION_RETIRED = (
 def build_simplify_service(*, max_attempts: int, server_default_temperature: bool = False) -> SimplifyService:
     """Build the real service against the environment's LLM configuration."""
     config = Configuration.from_env()
-    temperatures: dict[str, float | None] = (
-        {"temperature_first": None, "temperature_retry": None} if server_default_temperature else {}
-    )
-    return SimplifyService(config, TextAnalysisService(), max_attempts=max_attempts, **temperatures)
+    if server_default_temperature:
+        return SimplifyService(
+            config,
+            TextAnalysisService(),
+            max_attempts=max_attempts,
+            temperature_first=None,
+            temperature_retry=None,
+        )
+    return SimplifyService(config, TextAnalysisService(), max_attempts=max_attempts)
 
 
 def build_simplifier(name: str, *, server_default_temperature: bool = False) -> Simplifier | None:
