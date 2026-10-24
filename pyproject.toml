@@ -14,14 +14,14 @@ dependencies = [
     "dcc-backend-common[fastapi]>=0.1.21",
     "fast-langdetect>=1.0.1",
     "pyphen>=0.17.2",
-    "zix @ git+https://github.com/machinelearningZH/zix_understandability-index@5ffee0a209339f39923d3f10a047e08412d209e9",
+    "zix @ git+https://github.com/machinelearningZH/zix_understandability-index@0ad008dc6fd56c59913a34414bc228328869560f",
     # Pin scikit-learn to match the version zix's bundled pickles were built with.
-    # The pickles in zix/data/*.pkl carry the version string 1.9.0; an earlier <1.9 pin
-    # excluded exactly the version it was meant to match, so every load raised
-    # sklearn's InconsistentVersionWarning ("may lead to invalid results").
-    # `zix` itself is pinned to commit 5ffee0a209339f39923d3f10a047e08412d209e9 --
+    # The pickles in zix/data/*.pkl carry the version string 1.9.1 (zix 0.2.4); a
+    # mismatched version makes every load raise sklearn's InconsistentVersionWarning
+    # ("may lead to invalid results").
+    # `zix` itself is pinned to commit 0ad008dc6fd56c59913a34414bc228328869560f (0.2.4) --
     # re-check this when bumping zix.
-    "scikit-learn>=1.9,<2",
+    "scikit-learn>=1.9.1,<2",
 ]
 
 [dependency-groups]
