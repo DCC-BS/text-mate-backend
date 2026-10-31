@@ -530,7 +530,7 @@ wheels = [
 
 [[package]]
 name = "dcc-backend-common"
-version = "0.1.21"
+version = "0.1.23"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "datasets" },
@@ -539,9 +539,9 @@ dependencies = [
     { name = "python-dotenv" },
     { name = "structlog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/de/f6/a973115ceadd0ca3f1e2a5f5f69328923e89f7bc5bfbb032324156bbaecc/dcc_backend_common-0.1.21.tar.gz", hash = "sha256:3ec2b8a6cf74f288ec4ed092d26131b56dc3de981051f658912b88328225cf20", size = 254974, upload-time = "2026-08-15T09:37:41.947Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/19/75/3e95ccb1c9c698efc0a97f3f9d7ac49bd4b234ace27215b440cdf4dd2bfb/dcc_backend_common-0.1.23.tar.gz", hash = "sha256:4f771c6d63028d991b3d807e75c0c2220ef3e6c736bd869c086cad363f7a669f", size = 257533, upload-time = "2026-08-21T15:19:33.537Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3f/f0/e04d2bcd1e18013fd76d490294825717159a984d58e333a6e7d3322cc235/dcc_backend_common-0.1.21-py3-none-any.whl", hash = "sha256:deb4b2b3691cf9ad536cf558a2ee9cbd13fa96c609c3dc73ba2fdbb8ee8c6393", size = 38569, upload-time = "2026-08-15T09:37:40.663Z" },
+    { url = "https://files.pythonhosted.org/packages/41/b6/87d491fe5c485b1c82b5efec08f56a634ae80068635fd34218c37ecf6ace/dcc_backend_common-0.1.23-py3-none-any.whl", hash = "sha256:b458593c21709e226085be5cc9498e6a2e07f1fae15524b3dc9e1a3ef36f95ac", size = 39785, upload-time = "2026-08-21T15:19:32.475Z" },
 ]
 
 [package.optional-dependencies]
@@ -2887,7 +2887,7 @@ wheels = [
 
 [[package]]
 name = "text-mate-backend"
-version = "1.8.1"
+version = "1.8.2"
 source = { editable = "." }
 dependencies = [
     { name = "dcc-backend-common", extra = ["fastapi"] },
@@ -2921,7 +2921,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "dcc-backend-common", extras = ["fastapi"], specifier = ">=0.1.21" },
+    { name = "dcc-backend-common", extras = ["fastapi"], specifier = ">=0.1.23" },
     { name = "dependency-injector", specifier = ">=4.48.3" },
     { name = "fast-langdetect", specifier = ">=1.0.1" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.128.2" },
