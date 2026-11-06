@@ -334,6 +334,52 @@ async def test_fetch_task_result_none_document(service_config: Configuration):
 
 
 @pytest.mark.anyio
+async def test_fetch_task_result_document_timeout(service_config: Configuration):
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "document": {"html_content": "<p>first pages only</p>"},
+                "status": "partial_success",
+                "errors": [
+                    {
+                        "component_type": "pipeline",
+                        "module_name": "StandardPdfPipeline",
+                        "error_message": "document timeout exceeded",
+                        "category": "timeout",
+                        "page_no": 66,
+                    }
+                ],
+            },
+        )
+
+    service = DocumentConversionService(service_config, transport=httpx.MockTransport(handler))
+    with pytest.raises(ApiErrorException) as exc_info:
+        await service.fetch_task_result("task-timeout")
+    assert exc_info.value.error_response["errorId"] == DOCUMENT_CONVERSION_TIMEOUT
+    assert exc_info.value.error_response["status"] == 504
+    await service.close()
+
+
+@pytest.mark.anyio
+async def test_fetch_task_result_partial_success_without_timeout(service_config: Configuration):
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "document": {"html_content": "<p>most pages</p>"},
+                "status": "partial_success",
+                "errors": [{"component_type": "model", "error_message": "page 3 failed", "category": "unknown"}],
+            },
+        )
+
+    service = DocumentConversionService(service_config, transport=httpx.MockTransport(handler))
+    result = await service.fetch_task_result("task-partial")
+    assert result.html == "<p>most pages</p>"
+    await service.close()
+
+
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     ("docling_url", "path", "expected_url"),
     [

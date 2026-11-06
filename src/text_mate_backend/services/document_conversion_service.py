@@ -261,6 +261,16 @@ class DocumentConversionService:
         logger.debug("Fetching docling task result", task_id=task_id)
         response = await self._request("GET", f"/result/{task_id}")
         json_response = response.json()
+        # A conversion cut off by document_timeout is a partial_success missing its last pages
+        if any(error.get("category") == "timeout" for error in json_response.get("errors") or []):
+            logger.error("Docling conversion hit its document timeout", task_id=task_id)
+            raise ApiErrorException(
+                {
+                    "errorId": DOCUMENT_CONVERSION_TIMEOUT,
+                    "status": status.HTTP_504_GATEWAY_TIMEOUT,
+                    "debugMessage": "Docling stopped the conversion at its document timeout",
+                }
+            )
         html = (json_response.get("document") or {}).get("html_content", "")
         return ConversionResult(html=html)
 
