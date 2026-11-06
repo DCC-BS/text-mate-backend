@@ -19,7 +19,7 @@ class Configuration(LlmConfig):
     )
     docling_conversion_timeout_seconds: float = Field(
         description="Maximum seconds to wait for Docling conversion task to complete",
-        default=300.0,
+        default=480.0,
     )
     docling_http_timeout_seconds: float = Field(
         description="Per-request HTTP timeout in seconds for Docling API calls",
@@ -70,7 +70,7 @@ class Configuration(LlmConfig):
             docling_url=get_env_or_throw("DOCLING_URL"),
             docling_api_key=get_env_or_throw("DOCLING_API_KEY"),
             docling_poll_interval_seconds=float(os.getenv("DOCLING_POLL_INTERVAL_SECONDS", "1.0")),
-            docling_conversion_timeout_seconds=float(os.getenv("DOCLING_CONVERSION_TIMEOUT_SECONDS", "300.0")),
+            docling_conversion_timeout_seconds=float(os.getenv("DOCLING_CONVERSION_TIMEOUT_SECONDS", "480.0")),
             docling_http_timeout_seconds=float(os.getenv("DOCLING_HTTP_TIMEOUT_SECONDS", "30.0")),
             llm_health_check_url=get_env_or_throw("LLM_HEALTH_CHECK_URL"),
             azure_client_id="" if disable_auth else get_env_or_throw("AZURE_CLIENT_ID"),
