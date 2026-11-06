@@ -290,6 +290,10 @@ class DocumentConversionService:
             "table_mode": "accurate",
             "pdf_backend": "docling_parse",
             "md_compact_tables": True,
+            # Docling stops the conversion on the worker after this many seconds. Docling starts
+            # counting only when the worker picks the task up, after we started polling, so we give
+            # up first and the worker stops soon after instead of converting for nobody.
+            "document_timeout": self.config.docling_conversion_timeout_seconds,
         }
 
         task_id = await self.submit_async_task(files, options)

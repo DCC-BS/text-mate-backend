@@ -37,7 +37,7 @@ def test_configuration_docling_defaults():
         hmac_secret="test-hmac-secret",
     )
     assert config.docling_poll_interval_seconds == 1.0
-    assert config.docling_conversion_timeout_seconds == 300.0
+    assert config.docling_conversion_timeout_seconds == 480.0
     assert config.docling_http_timeout_seconds == 30.0
 
 
@@ -120,6 +120,29 @@ async def test_convert_success_async_polling(service_config: Configuration):
     res = await service.convert(upload)
     assert res.html == "<p>Converted Text</p>"
     assert poll_count == 2
+    await service.close()
+
+
+@pytest.mark.anyio
+async def test_convert_sends_document_timeout(service_config: Configuration):
+    submitted_body = b""
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal submitted_body
+        if request.method == "POST" and request.url.path == "/v1/convert/file/async":
+            submitted_body = request.read()
+            return httpx.Response(200, json={"task_id": "task-123", "task_status": "pending", "task_type": "convert"})
+        elif request.method == "GET" and request.url.path == "/v1/status/poll/task-123":
+            return httpx.Response(200, json={"task_id": "task-123", "task_status": "success", "task_type": "convert"})
+        elif request.method == "GET" and request.url.path == "/v1/result/task-123":
+            return httpx.Response(200, json={"document": {"html_content": "<p>ok</p>"}})
+        return httpx.Response(404)
+
+    service = DocumentConversionService(service_config, transport=httpx.MockTransport(handler))
+    upload = UploadFile(file=io.BytesIO(b"%PDF-1.4 dummy content"), filename="sample.pdf")
+
+    await service.convert(upload)
+    assert b'name="document_timeout"\r\n\r\n0.05\r\n' in submitted_body
     await service.close()
 
 
