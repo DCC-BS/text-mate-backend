@@ -273,7 +273,7 @@ class AdvisorService:
             except asyncio.CancelledError:
                 raise
             except Exception as e:
-                logger.error(f"Batch failed: {e}")
+                logger.error("Batch failed", error=str(e), error_type=type(e).__name__, batch_size=batch_size)
                 result = []
             return batch_size, result
 
@@ -423,7 +423,7 @@ class AdvisorService:
         if found is None:
             logger.warning(
                 "Could not locate source in text",
-                snippet=source[:80],
+                snippet_chars=len(source),
                 rule_name=violation.rule_name,
             )
             return None

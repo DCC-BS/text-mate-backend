@@ -34,7 +34,7 @@ class FixService:
             async for chunk in self.agent.run_stream_text(user_prompt=text, deps=request):
                 yield chunk
         except Exception as e:
-            logger.error(f"Error fixing text (stream): {e}")
+            logger.error("Error fixing text (stream)", error=str(e), error_type=type(e).__name__)
             raise ApiErrorException(
                 {
                     "status": 500,
