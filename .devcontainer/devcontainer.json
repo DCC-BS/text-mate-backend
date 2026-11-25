@@ -23,7 +23,11 @@
     "initializeCommand": "mkdir -p \"$HOME/.cache/devcontainer-agent-state\" && if [ -f \"$HOME/.config/devcontainer/host-sync.sh\" ]; then bash \"$HOME/.config/devcontainer/host-sync.sh\"; else find \"$HOME/.cache/devcontainer-agent-state\" -mindepth 1 -delete; fi",
     "mounts": [
         "source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind",
-        "source=${localEnv:HOME}/.cache/devcontainer-agent-state,target=/mnt/agent-state,type=bind,readonly"
+        "source=${localEnv:HOME}/.cache/devcontainer-agent-state,target=/mnt/agent-state,type=bind,readonly",
+        // Host podman socket (systemctl --user enable --now podman.socket):
+        // `docker` and `docker compose` inside run SIBLING containers on the
+        // host (vllm, docling-serve). No daemon inside the container.
+        "source=${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock,target=/var/run/docker.sock,type=bind"
     ],
     "remoteEnv": {
         "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
