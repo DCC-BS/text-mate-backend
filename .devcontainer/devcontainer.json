@@ -1,0 +1,56 @@
+{
+    // Dev container for this repo: shared DCC-BS image (mise, zsh, agent sync
+    // baked in). Template + adoption steps:
+    // https://github.com/DCC-BS/dcc-docker-images/tree/main/devcontainer
+    "name": "text-mate-backend",
+    "image": "ghcr.io/dcc-bs/dcc-docker-images/devcontainer:24.04",
+    // Run as root: DevPod's workspace agent and `mise bootstrap packages apply`
+    // (apt) need it. Create workspaces from the git URL so the checkout lives
+    // in a DevPod-managed volume — with a local-folder workspace on rootless
+    // Podman, container writes map to your subuid and pollute the host tree.
+    "remoteUser": "root",
+    "containerUser": "root",
+    "updateRemoteUserUID": false,
+    // SELinux-enforcing hosts (Fedora/RHEL): bind-mounted host files keep their
+    // user_home_t label, which container_t is denied regardless of uid. Opt the
+    // container out of SELinux confinement.
+    "runArgs": ["--security-opt", "label=disable"],
+    // Stages personal coding-agent state on the HOST (opt-in per user) and
+    // mounts it read-only. The staging script lives in YOUR home, not the
+    // repo — create ~/.config/devcontainer/host-sync.sh to opt in (omp users:
+    // copy the example from dcc-docker-images devcontainer/README.md).
+    // Without it: the staging dir is cleared and nothing personal is shared.
+    "initializeCommand": "mkdir -p \"$HOME/.cache/devcontainer-agent-state\" && if [ -f \"$HOME/.config/devcontainer/host-sync.sh\" ]; then bash \"$HOME/.config/devcontainer/host-sync.sh\"; else find \"$HOME/.cache/devcontainer-agent-state\" -mindepth 1 -delete; fi",
+    "mounts": [
+        "source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind",
+        "source=${localEnv:HOME}/.cache/devcontainer-agent-state,target=/mnt/agent-state,type=bind,readonly"
+    ],
+    "remoteEnv": {
+        "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
+        // pass-cli reads the Proton Pass key material from the filesystem
+        "PROTON_PASS_KEY_PROVIDER": "fs"
+    },
+    // REPO-SPECIFIC — app 8000, vllm 8001, docling-serve 5001 (docker-compose.yml)
+    "forwardPorts": [8000, 8001, 5001],
+    // Create-time bootstrap from the shared image: mise trust + install
+    // (uv, rust, varlock, pass-cli, usage) + `mise bootstrap packages apply`
+    // (no-op here: mise.toml has no [bootstrap.packages]) + GitHub host key
+    // + agent sync — driven by this repo's mise.toml in the workspace root.
+    "postCreateCommand": "bash /usr/local/bin/setup-workspace",
+    // Re-applies staged agent state on every start (DevPod's dotfiles step runs
+    // after postCreate and re-links dot_omp/config.yml over the staged copy).
+    // The script is baked into the shared image; /etc/zsh/zshenv re-runs it
+    // on every shell start.
+    "postStartCommand": "bash /usr/local/bin/sync-agent",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "github.copilot",
+                "github.copilot-chat",
+                "ms-python.python",
+                "ms-python.debugpy",
+                "charliermarsh.ruff"
+            ]
+        }
+    }
+}
