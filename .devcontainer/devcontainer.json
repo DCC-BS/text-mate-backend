@@ -49,7 +49,13 @@
     // (uv, rust, varlock, pass-cli, usage) + `mise bootstrap packages apply`
     // (no-op here: mise.toml has no [bootstrap.packages]) + GitHub host key
     // + agent sync — driven by this repo's mise.toml in the workspace root.
-    "postCreateCommand": "bash /usr/local/bin/setup-workspace",
+    // The sed drops SSH_AUTH_SOCK from DevPod's env snapshot
+    // (/etc/envfile.json): DevPod writes the create-tunnel socket there and
+    // its agent restores that value for the dotfiles clone in a later
+    // session, where the socket is already dead — the clone then fails with
+    // a silent "Permission denied (publickey)" (exit 128, breaking `devpod
+    // up`). Without the key the agent inherits the live forwarded socket.
+    "postCreateCommand": "bash /usr/local/bin/setup-workspace && sed -E -i 's/,?\"SSH_AUTH_SOCK\":\"[^\"]*\"//' /etc/envfile.json",
     // Re-applies staged agent state on every start (DevPod's dotfiles step runs
     // after postCreate and re-links dot_omp/config.yml over the staged copy).
     // The script is baked into the shared image; /etc/zsh/zshenv re-runs it
