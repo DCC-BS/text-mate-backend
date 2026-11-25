@@ -30,7 +30,7 @@
         // bind mounts work without a docker group.
         // Rootful Docker host: swap source to /var/run/docker.sock
         // Podman host: swap source to ${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock
-        "source=${localEnv:XDG_RUNTIME_DIR}/docker/docker.sock,target=/var/run/docker.sock,type=bind"
+        "source=${localEnv:XDG_RUNTIME_DIR}/docker.sock,target=/var/run/docker.sock,type=bind"
     ],
     "remoteEnv": {
         "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
