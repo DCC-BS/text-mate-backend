@@ -59,7 +59,7 @@ Many specialized AI-powered text transformations:
 - **Python**: 3.13 or higher
 - **mise**: [Installation guide](https://mise.jdx.dev/getting-started.html) — recommended. It automatically installs and pins the project tools (`uv`, `varlock`, `pass-cli`, `usage`) as declared in [`mise.toml`](mise.toml). With mise you do **not** need to install these tools manually.
 - **uv package manager**: [Installation guide](https://github.com/astral-sh/uv) — only needed if you are not using mise
-- **Docker & Docker Compose**: For containerized deployment
+- **Docker & Docker Compose**: For containerized deployment. GPU access needs the NVIDIA Container Toolkit on the host (`nvidia-container-toolkit`, wired in via `nvidia-ctk runtime configure --runtime=docker`). Podman-only hosts are supported via the CDI variant noted in `docker-compose.yml`
 - **NVIDIA GPU** with CUDA support:
   - 2 GPUs recommended (for vLLM tensor parallelism)
   - GPU memory: ~20GB+ per GPU for Gemma-4-31B model
@@ -157,7 +157,19 @@ The application consists of three main services:
 | **Docling** | 5001 | Document conversion service (CPU) |
 
 ### GPU Allocation
-- GPUs 0 & 1 (`device_ids: ["0", "1"]`): vLLM service for LLM inference (tensor parallel size 2)
+- GPU 1 (`VLLM_GPU_ID`, default `1`): vLLM service for LLM inference.
+  Default targets Docker + NVIDIA Container Toolkit on the host (wire in once
+  with `sudo nvidia-ctk runtime configure --runtime=docker`; Docker ≥ 28.2
+  routes the reservation through CDI internally). On a **Podman** host the
+  GPU reservation is silently dropped by podman's Docker-compat API — switch
+  the service to the CDI form documented in `docker-compose.yml`
+  (`devices: ["nvidia.com/gpu=…"]`; Docker side of that syntax needs
+  Engine ≥ 28.2 — default-on — or 25.0–28.1 with `features.cdi: true`,
+  Compose ≥ 2.30).
+  Running the stack directly on the host works unchanged (`mise docker-up`
+  or `docker compose up -d`). The devcontainer mounts the host Docker socket
+  by default; Podman users swap the mount source per the note in
+  `.devcontainer/devcontainer.json`.
 
 ## Development
 

@@ -7,14 +7,24 @@ services:
             - ${LLM_API_PORT:-8001}:8000
         environment:
             - HF_TOKEN=${HF_TOKEN:-}
-        runtime: nvidia
+        # GPU reservation — Docker-native form. Needs the NVIDIA Container
+        # Toolkit on the host, wired in once via
+        #   sudo nvidia-ctk runtime configure --runtime=docker
+        # Docker >= 28.2 routes this reservation through CDI internally;
+        # older engines use the toolkit's classic hook. No `runtime:` field
+        # needed (it is what silently broke podman before).
         deploy:
             resources:
                 reservations:
                     devices:
                         - driver: nvidia
-                          device_ids: ["1"]
+                          # GPU index on the HOST (nvidia-smi numbering);
+                          # override with VLLM_GPU_ID on single-GPU hosts.
+                          device_ids: ["${VLLM_GPU_ID:-1}"]
                           capabilities: [gpu]
+        # Podman host instead of Docker? Podman's Docker-compat API silently
+        # drops the reservation above — use podman's CDI device syntax there:
+        #   devices: ["nvidia.com/gpu=${VLLM_GPU_ID:-1}"]
         ipc: host
         volumes:
             - "${HF_CACHE_DIR:-${HOME}/cache/huggingface}:/root/.cache/huggingface"

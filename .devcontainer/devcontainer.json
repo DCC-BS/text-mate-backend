@@ -24,10 +24,16 @@
     "mounts": [
         "source=${localEnv:HOME}/.gitconfig,target=/root/.gitconfig,type=bind",
         "source=${localEnv:HOME}/.cache/devcontainer-agent-state,target=/mnt/agent-state,type=bind,readonly",
-        // Host podman socket (systemctl --user enable --now podman.socket):
-        // `docker` and `docker compose` inside run SIBLING containers on the
-        // host (vllm, docling-serve). No daemon inside the container.
-        "source=${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock,target=/var/run/docker.sock,type=bind"
+        // Sibling containers: `docker` and `docker compose` inside talk to
+        // the HOST daemon through its socket (vllm, docling-serve). No
+        // daemon inside the container. Default: the native Docker socket
+        // (Docker Engine installed on the host).
+        // Podman host instead? Swap the source for the rootless podman
+        // socket (systemctl --user enable --now podman.socket):
+        //   "source=${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock,target=/var/run/docker.sock,type=bind"
+        // Note: podman drops GPU `deploy.resources` reservations — see the
+        // podman variant noted in docker-compose.yml.
+        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
     ],
     "remoteEnv": {
         "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
