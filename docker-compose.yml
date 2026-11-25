@@ -7,24 +7,24 @@ services:
             - ${LLM_API_PORT:-8001}:8000
         environment:
             - HF_TOKEN=${HF_TOKEN:-}
-        # GPU reservation — Docker-native form. Needs the NVIDIA Container
-        # Toolkit on the host, wired in once via
-        #   sudo nvidia-ctk runtime configure --runtime=docker
-        # Docker >= 28.2 routes this reservation through CDI internally;
-        # older engines use the toolkit's classic hook. No `runtime:` field
-        # needed (it is what silently broke podman before).
-        deploy:
-            resources:
-                reservations:
-                    devices:
-                        - driver: nvidia
-                          # GPU index on the HOST (nvidia-smi numbering);
-                          # override with VLLM_GPU_ID on single-GPU hosts.
-                          device_ids: ["${VLLM_GPU_ID:-1}"]
-                          capabilities: [gpu]
-        # Podman host instead of Docker? Podman's Docker-compat API silently
-        # drops the reservation above — use podman's CDI device syntax there:
-        #   devices: ["nvidia.com/gpu=${VLLM_GPU_ID:-1}"]
+        # GPU via CDI device name — verified working on:
+        # - rootless Docker (daemon reads /etc/cdi specs; no group membership
+        #   needed, container root maps to your user)
+        # - rootful Docker >= 28.2 (CDI default-on; 25.0-28.1 need
+        #   `features.cdi: true` in daemon.json) with docker compose >= 2.30
+        # - Podman (same syntax, natively)
+        # Legacy rootful Docker with the toolkit hook instead of CDI:
+        #   deploy:
+        #     resources:
+        #       reservations:
+        #         devices:
+        #           - driver: nvidia
+        #             device_ids: ["${VLLM_GPU_ID:-1}"]
+        #             capabilities: [gpu]
+        devices:
+            # GPU index on the HOST (nvidia-smi numbering); override with
+            # VLLM_GPU_ID on single-GPU hosts.
+            - "nvidia.com/gpu=${VLLM_GPU_ID:-1}"
         ipc: host
         volumes:
             - "${HF_CACHE_DIR:-${HOME}/cache/huggingface}:/root/.cache/huggingface"
