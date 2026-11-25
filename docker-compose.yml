@@ -17,7 +17,7 @@ services:
                           capabilities: [gpu]
         ipc: host
         volumes:
-            - ${HF_HOME:-${HOME}/cache/huggingface}:/root/.cache/huggingface
+            - "${HF_CACHE_DIR:-${HOME}/cache/huggingface}:/root/.cache/huggingface"
         command: >
             RedHatAI/gemma-4-31B-it-NVFP4
             --port 8000
@@ -47,4 +47,8 @@ services:
             - DOCLING_CONFIG_FILE=/app/docling_config.json
             - DOCLING_SERVE_ENABLE_UI=true
         volumes:
-            - "${HOME:-/root}/.cache/docling:/models"
+            # Cache dir must be a HOST-side path (resolvable where the daemon
+            # runs). Inside dev containers HF_CACHE_DIR/DOCLING_CACHE_DIR are
+            # set via remoteEnv to ${localEnv:HOME}/... so all workspaces and
+            # host-native runs share one cache.
+            - "${DOCLING_CACHE_DIR:-${HOME}/.cache/docling}:/models"

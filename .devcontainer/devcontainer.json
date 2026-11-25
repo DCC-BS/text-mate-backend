@@ -32,7 +32,13 @@
     "remoteEnv": {
         "SSH_AUTH_SOCK": "${localEnv:SSH_AUTH_SOCK}",
         // pass-cli reads the Proton Pass key material from the filesystem
-        "PROTON_PASS_KEY_PROVIDER": "fs"
+        "PROTON_PASS_KEY_PROVIDER": "fs",
+        // docker-compose bind sources must be HOST-side paths (the daemon is
+        // the host podman socket; ${HOME} in the container is /root, which the
+        // rootless daemon may not write). localEnv resolves on the host, so
+        // every workspace and host-native run share the same cache dir.
+        "HF_CACHE_DIR": "${localEnv:HOME}/cache/huggingface",
+        "DOCLING_CACHE_DIR": "${localEnv:HOME}/.cache/docling"
     },
     // REPO-SPECIFIC — app 8000, vllm 8001, docling-serve 5001 (docker-compose.yml)
     "forwardPorts": [8000, 8001, 5001],
