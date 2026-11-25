@@ -40,8 +40,11 @@
         "HF_CACHE_DIR": "${localEnv:HOME}/cache/huggingface",
         "DOCLING_CACHE_DIR": "${localEnv:HOME}/.cache/docling"
     },
-    // REPO-SPECIFIC — app 8000, vllm 8001, docling-serve 5001 (docker-compose.yml)
-    "forwardPorts": [8000, 8001, 5001],
+    // App port only. Do NOT list the compose sidecar ports (8001 vllm,
+    // 5001 docling): sibling containers publish those on the host themselves,
+    // and a DevPod forward binding the same host port blocks their start
+    // ("rootlessport ... address already in use").
+    "forwardPorts": [8000],
     // Create-time bootstrap from the shared image: mise trust + install
     // (uv, rust, varlock, pass-cli, usage) + `mise bootstrap packages apply`
     // (no-op here: mise.toml has no [bootstrap.packages]) + GitHub host key
