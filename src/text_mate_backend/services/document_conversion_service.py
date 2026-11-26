@@ -165,9 +165,15 @@ def _gif_dimensions(data: bytes) -> tuple[int, int] | None:
 def _bmp_dimensions(data: bytes) -> tuple[int, int] | None:
     if len(data) < 26 or data[:2] != b"BM":
         return None
-    # DIB header: width at 18..22, height at 22..26 (signed; negative height = top-down).
-    width = int.from_bytes(data[18:22], "little", signed=True)
-    height = abs(int.from_bytes(data[22:26], "little", signed=True))
+    dib_size = int.from_bytes(data[14:18], "little")
+    if dib_size == 12:
+        # BITMAPCOREHEADER: width/height are 16-bit unsigned at 18..20 / 20..22.
+        width = int.from_bytes(data[18:20], "little")
+        height = int.from_bytes(data[20:22], "little")
+    else:
+        # INFO/V2+ headers: width/height are 32-bit signed; negative height = top-down.
+        width = int.from_bytes(data[18:22], "little", signed=True)
+        height = abs(int.from_bytes(data[22:26], "little", signed=True))
     if width <= 0 or height <= 0:
         return None
     return width, height

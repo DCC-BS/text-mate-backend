@@ -576,6 +576,19 @@ def _bmp(width: int, height: int) -> bytes:
     return file_header + dib_header + pixel_data
 
 
+def _bmp_core(width: int, height: int) -> bytes:
+    """Build a minimal BMP with a 12-byte BITMAPCOREHEADER (16-bit width/height)."""
+    file_header = b"BM" + (26).to_bytes(4, "little") + b"\x00\x00\x00\x00" + (26).to_bytes(4, "little")
+    core_header = (
+        (12).to_bytes(4, "little")
+        + width.to_bytes(2, "little")
+        + height.to_bytes(2, "little")
+        + (1).to_bytes(2, "little")  # bcPlanes
+        + (24).to_bytes(2, "little")  # bcBitCount
+    )
+    return file_header + core_header
+
+
 def _png_header(width: int, height: int) -> bytes:
     """Build a PNG signature + IHDR header (no pixel data) claiming the given size."""
     ihdr_payload = b"IHDR" + width.to_bytes(4, "big") + height.to_bytes(4, "big") + b"\x08\x06\x00\x00\x00"
@@ -723,6 +736,8 @@ async def test_convert_image_at_pixel_limit_accepted(service_config: Configurati
         (GIF_1X1, "image/gif", (1, 1)),
         (WEBP_1X1, "image/webp", (1, 1)),
         (_bmp(3, 5), "image/bmp", (3, 5)),
+        (_bmp_core(3, 5), "image/bmp", (3, 5)),
+        (_bmp_core(6000, 6000), "image/bmp", (6000, 6000)),
         (_jpeg_header(7, 9, fill=b"\xff" * 4), "image/jpeg", (7, 9)),
         (b"\xff\xd8\xff\xff", "image/jpeg", None),  # only fill bytes after SOI
         (b"", "image/png", None),
@@ -743,6 +758,24 @@ async def test_convert_oversized_jpeg_with_fill_bytes_rejected(service_config: C
     # Header-only JPEG with 0xFF fill bytes before the SOF marker claiming 6000x6000
     # = 36 MP > 25 MP limit; well below the 10 MB byte limit.
     upload = UploadFile(file=io.BytesIO(_jpeg_header(6000, 6000, fill=b"\xff" * 4)), filename="padded.jpg")
+
+    with pytest.raises(ApiErrorException) as exc_info:
+        await service.convert(upload)
+
+    assert exc_info.value.error_response["errorId"] == IMAGE_TOO_LARGE
+    assert exc_info.value.error_response["status"] == 413
+    await service.close()
+
+
+@pytest.mark.anyio
+async def test_convert_oversized_bmp_core_header_rejected(service_config: Configuration):
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise AssertionError("No HTTP request must be made for oversized images")
+
+    service = DocumentConversionService(service_config, transport=httpx.MockTransport(handler))
+    # BITMAPCOREHEADER (16-bit fields) claiming 6000x6000 = 36 MP > 25 MP limit;
+    # well below the 10 MB byte limit.
+    upload = UploadFile(file=io.BytesIO(_bmp_core(6000, 6000)), filename="old.bmp")
 
     with pytest.raises(ApiErrorException) as exc_info:
         await service.convert(upload)
