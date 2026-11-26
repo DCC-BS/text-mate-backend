@@ -14,7 +14,9 @@ from text_mate_backend.models.conversion_result import ConversionResult
 from text_mate_backend.models.error_codes import (
     DOCUMENT_CONVERSION_ERROR,
     DOCUMENT_CONVERSION_TIMEOUT,
+    IMAGE_TOO_LARGE,
     INVALID_MIME_TYPE,
+    UNSUPPORTED_IMAGE_FORMAT,
 )
 from text_mate_backend.models.error_response import ApiErrorException
 from text_mate_backend.utils.configuration import Configuration
@@ -42,6 +44,8 @@ def get_mimetype(path_source: Path) -> str:
         ".bmp": "image/bmp",
         ".gif": "image/gif",
         ".webp": "image/webp",
+        ".heic": "image/heic",
+        ".heif": "image/heif",
         ".txt": "text/plain",
     }
 
@@ -62,6 +66,21 @@ def validate_mimetype(mimetype: str, logger_context: Mapping[str, Any]) -> None:
                 "errorId": INVALID_MIME_TYPE,
                 "status": status.HTTP_400_BAD_REQUEST,
                 "debugMessage": "MIME type is empty",
+            }
+        )
+
+    # Explicit rejection with a dedicated errorId: docling cannot decode HEIC/HEIF
+    # (iOS shares photos as HEIC by default), so callers get an actionable error
+    # instead of a conversion failure.
+    if mimetype in ("image/heic", "image/heif"):
+        logger.error("Unsupported image format", **logger_context)
+        raise ApiErrorException(
+            {
+                "errorId": UNSUPPORTED_IMAGE_FORMAT,
+                "status": status.HTTP_400_BAD_REQUEST,
+                "debugMessage": (
+                    f"Unsupported image format: {mimetype}. Convert the image to JPEG, PNG or WebP and try again."
+                ),
             }
         )
 
@@ -90,6 +109,156 @@ def validate_mimetype(mimetype: str, logger_context: Mapping[str, Any]) -> None:
                 "debugMessage": f"Invalid MIME type: {mimetype}",
             }
         )
+
+
+# Image MIME types accepted for conversion. JPEG, PNG, TIFF, BMP, GIF and WebP are
+# ingested natively by docling; HEIC/HEIF are rejected above.
+IMAGE_MIME_TYPES: frozenset[str] = frozenset(
+    {"image/png", "image/jpeg", "image/tiff", "image/bmp", "image/gif", "image/webp"}
+)
+
+
+def _png_dimensions(data: bytes) -> tuple[int, int] | None:
+    if len(data) < 24 or not data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return None
+    # IHDR is always the first chunk: width at 16..20, height at 20..24 (big-endian).
+    return int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
+
+
+def _jpeg_dimensions(data: bytes) -> tuple[int, int] | None:
+    if len(data) < 4 or data[:2] != b"\xff\xd8":
+        return None
+    i = 2
+    while i + 4 <= len(data):
+        if data[i] != 0xFF:
+            return None
+        # Skip consecutive 0xFF fill bytes before the marker byte (allowed padding).
+        j = i + 1
+        while j < len(data) and data[j] == 0xFF:
+            j += 1
+        if j >= len(data):
+            return None
+        i = j - 1  # normalize: data[i] is the last fill byte, data[i + 1] the marker
+        marker = data[i + 1]
+        if marker in (0x01, 0xD8) or 0xD0 <= marker <= 0xD7:
+            # Standalone markers without a length field.
+            i += 2
+            continue
+        if i + 9 > len(data):
+            return None
+        if 0xC0 <= marker <= 0xCF and marker not in (0xC4, 0xC8, 0xCC):
+            # SOF segment: precision at i+4, height at i+5..7, width at i+7..9 (big-endian).
+            height = int.from_bytes(data[i + 5 : i + 7], "big")
+            width = int.from_bytes(data[i + 7 : i + 9], "big")
+            return width, height
+        i += 2 + int.from_bytes(data[i + 2 : i + 4], "big")
+    return None
+
+
+def _gif_dimensions(data: bytes) -> tuple[int, int] | None:
+    if len(data) < 10 or data[:6] not in (b"GIF87a", b"GIF89a"):
+        return None
+    # Logical screen descriptor: width at 6..8, height at 8..10 (little-endian).
+    return int.from_bytes(data[6:8], "little"), int.from_bytes(data[8:10], "little")
+
+
+def _bmp_dimensions(data: bytes) -> tuple[int, int] | None:
+    if len(data) < 26 or data[:2] != b"BM":
+        return None
+    dib_size = int.from_bytes(data[14:18], "little")
+    if dib_size == 12:
+        # BITMAPCOREHEADER: width/height are 16-bit unsigned at 18..20 / 20..22.
+        width = int.from_bytes(data[18:20], "little")
+        height = int.from_bytes(data[20:22], "little")
+    else:
+        # INFO/V2+ headers: width/height are 32-bit signed; negative height = top-down.
+        width = int.from_bytes(data[18:22], "little", signed=True)
+        height = abs(int.from_bytes(data[22:26], "little", signed=True))
+    if width <= 0 or height <= 0:
+        return None
+    return width, height
+
+
+def _webp_dimensions(data: bytes) -> tuple[int, int] | None:
+    if len(data) < 30 or data[:4] != b"RIFF" or data[8:12] != b"WEBP":
+        return None
+    chunk = data[12:16]
+    if chunk == b"VP8 ":  # lossy
+        if data[23:26] != b"\x9d\x01\x2a":
+            return None
+        # Frame header: width at 26..28, height at 28..30 (14-bit little-endian).
+        return int.from_bytes(data[26:28], "little") & 0x3FFF, int.from_bytes(data[28:30], "little") & 0x3FFF
+    if chunk == b"VP8L":  # lossless
+        if data[20] != 0x2F:
+            return None
+        # 14-bit width-1 followed by 14-bit height-1, packed into 32 bits.
+        bits = int.from_bytes(data[21:25], "little")
+        return (bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1
+    if chunk == b"VP8X":  # extended file
+        # Canvas size: width-1 at 24..27, height-1 at 27..30 (24-bit little-endian).
+        return int.from_bytes(data[24:27], "little") + 1, int.from_bytes(data[27:30], "little") + 1
+    return None
+
+
+def _tiff_dimensions(data: bytes) -> tuple[int, int] | None:
+    if len(data) < 8 or data[:2] not in (b"II", b"MM"):
+        return None
+    byteorder = "little" if data[:2] == b"II" else "big"
+    if int.from_bytes(data[2:4], byteorder) != 42:
+        return None
+    ifd_offset = int.from_bytes(data[4:8], byteorder)
+    if len(data) < ifd_offset + 2:
+        return None
+    entry_count = int.from_bytes(data[ifd_offset : ifd_offset + 2], byteorder)
+    width: int | None = None
+    height: int | None = None
+    for n in range(entry_count):
+        start = ifd_offset + 2 + 12 * n
+        entry = data[start : start + 12]
+        if len(entry) < 12:
+            return None
+        tag = int.from_bytes(entry[0:2], byteorder)
+        field_type = int.from_bytes(entry[2:4], byteorder)
+        if field_type == 3:  # SHORT: value is left-justified in the first 2 bytes of the value field
+            raw = entry[8:10]
+        elif field_type == 4:  # LONG: value fills all 4 bytes
+            raw = entry[8:12]
+        else:
+            continue
+        value = int.from_bytes(raw, byteorder)
+        if tag == 256:
+            width = value
+        elif tag == 257:
+            height = value
+    if width is None or height is None or width <= 0 or height <= 0:
+        return None
+    return width, height
+
+
+_DIMENSION_PARSERS: Mapping[str, Any] = {
+    "image/png": _png_dimensions,
+    "image/jpeg": _jpeg_dimensions,
+    "image/gif": _gif_dimensions,
+    "image/bmp": _bmp_dimensions,
+    "image/webp": _webp_dimensions,
+    "image/tiff": _tiff_dimensions,
+}
+
+
+def image_dimensions(content: bytes, content_type: str) -> tuple[int, int] | None:
+    """Read image width/height from the file header without decoding the image.
+
+    Returns None when the header cannot be parsed (e.g. truncated or corrupt data);
+    conversion then proceeds and docling surfaces its own conversion error.
+    """
+    parser = _DIMENSION_PARSERS.get(content_type)
+    if parser is None:
+        return None
+    try:
+        return parser(content)
+    except (IndexError, ValueError):
+        logger.warning("Could not parse image dimensions", content_type=content_type)
+        return None
 
 
 @final
@@ -141,7 +310,50 @@ class DocumentConversionService:
 
         validate_mimetype(content_type, logger_context={"content_type": content_type})
 
+        if content_type in IMAGE_MIME_TYPES:
+            self._validate_image_size(content, content_type)
+
         return content, resolved_filename, content_type
+
+    def _validate_image_size(self, content: bytes, content_type: str) -> None:
+        """Reject images over the configured byte and pixel limits with a 413."""
+        if len(content) > self.config.image_max_bytes:
+            logger.error(
+                "Image exceeds maximum file size",
+                content_type=content_type,
+                size=len(content),
+                max_bytes=self.config.image_max_bytes,
+            )
+            raise ApiErrorException(
+                {
+                    "errorId": IMAGE_TOO_LARGE,
+                    "status": status.HTTP_413_CONTENT_TOO_LARGE,
+                    "debugMessage": f"Image exceeds maximum size of {self.config.image_max_bytes} bytes",
+                }
+            )
+
+        dimensions = image_dimensions(content, content_type)
+        if dimensions is not None:
+            width, height = dimensions
+            pixels = width * height
+            if pixels > self.config.image_max_pixels:
+                logger.error(
+                    "Image exceeds maximum pixel count",
+                    content_type=content_type,
+                    width=width,
+                    height=height,
+                    pixels=pixels,
+                    max_pixels=self.config.image_max_pixels,
+                )
+                raise ApiErrorException(
+                    {
+                        "errorId": IMAGE_TOO_LARGE,
+                        "status": status.HTTP_413_CONTENT_TOO_LARGE,
+                        "debugMessage": (
+                            f"Image of {width}x{height} pixels exceeds maximum of {self.config.image_max_pixels} pixels"
+                        ),
+                    }
+                )
 
     async def _request(self, method: str, path: str, **kwargs: Any) -> httpx.Response:
         url = f"{self.config.docling_url.rstrip('/')}/{path.lstrip('/')}"
