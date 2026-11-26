@@ -1,25 +1,51 @@
 [
-    {
-        "title": "Bundeskanzlei",
-        "description": "Vereinte Schreib- und Sprachregeln der Bundeskanzlei: Schreibweisungen, Rechtschreibung, Anglizismen, Geschlechtergerechte Sprache",
-        "author": "Bundeskanzlei BK",
-        "edition": "Verschiedene Auflagen",
-        "id": "bundeskanzlei",
-        "files": [
-            "schreibweisungen.pdf",
-            "rechtschreibleitfaden-2017.pdf",
-            "empfehlungen-anglizismen-maerz-2020.pdf",
-            "leitfaden_geschlechtergerechte_sprache_3aufl.pdf"
-        ],
-        "access": ["all"]
-    },
-    {
-        "title": "Bundeskanzlei Behördenbriefe",
-        "description": "Merkblatt zur verständlichen und bürgernahen Gestaltung von Behördenbriefen",
-        "author": "Bundeskanzlei BK",
-        "edition": "2025",
-        "id": "merkblatt_behoerdenbriefe",
-        "files": ["merkblatt_behoerdenbriefe.pdf"],
-        "access": ["all"]
-    }
+  {
+    "access": [
+      "all"
+    ],
+    "author": "Bundeskanzlei BK",
+    "description": "Vereinte Schreib- und Sprachregeln der Bundeskanzlei: Schreibweisungen, Rechtschreibung, Anglizismen, Geschlechtergerechte Sprache",
+    "edition": "Verschiedene Auflagen",
+    "files": [
+      {
+        "description": "Verbindliche Schreibweisungen der Bundeskanzlei f\u00fcr die deutsche Sprache in der Bundesverwaltung",
+        "name": "schreibweisungen.pdf",
+        "title": "Schreibweisungen"
+      },
+      {
+        "description": "Leitfaden zur deutschen Rechtschreibung der Bundeskanzlei, Ausgabe 2017",
+        "name": "rechtschreibleitfaden-2017.pdf",
+        "title": "Rechtschreibleitfaden 2017"
+      },
+      {
+        "description": "Empfehlungen der Bundeskanzlei zur Vermeidung von Anglizismen im amtlichen Deutsch, Stand M\u00e4rz 2020",
+        "name": "empfehlungen-anglizismen-maerz-2020.pdf",
+        "title": "Empfehlungen zur Vermeidung von Anglizismen"
+      },
+      {
+        "description": "Leitfaden der Bundeskanzlei zu geschlechtergerechter Sprache, 3. Auflage",
+        "name": "leitfaden_geschlechtergerechte_sprache_3aufl.pdf",
+        "title": "Leitfaden geschlechtergerechte Sprache"
+      }
+    ],
+    "id": "bundeskanzlei",
+    "title": "Bundeskanzlei"
+  },
+  {
+    "access": [
+      "all"
+    ],
+    "author": "Bundeskanzlei BK",
+    "description": "Merkblatt zur verst\u00e4ndlichen und b\u00fcrgernahen Gestaltung von Beh\u00f6rdenbriefen",
+    "edition": "2025",
+    "files": [
+      {
+        "description": "Merkblatt zur verst\u00e4ndlichen und b\u00fcrgernahen Gestaltung von Beh\u00f6rdenbriefen",
+        "name": "merkblatt_behoerdenbriefe.pdf",
+        "title": "Merkblatt Beh\u00f6rdenbriefe"
+      }
+    ],
+    "id": "merkblatt_behoerdenbriefe",
+    "title": "Bundeskanzlei Beh\u00f6rdenbriefe"
+  }
 ]
