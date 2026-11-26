@@ -595,6 +595,27 @@ def _png_header(width: int, height: int) -> bytes:
     return b"\x89PNG\r\n\x1a\n" + len(ihdr_payload).to_bytes(4, "big") + ihdr_payload
 
 
+def _tiff_header(width: int, height: int, big_endian: bool) -> bytes:
+    """Build a header-only TIFF with inline SHORT width/height IFD entries."""
+    end = "big" if big_endian else "little"
+
+    def u16(v: int) -> bytes:
+        return v.to_bytes(2, end)
+
+    def u32(v: int) -> bytes:
+        return v.to_bytes(4, end)
+
+    def entry(tag: int, typ: int, count: int, value: bytes) -> bytes:
+        return u16(tag) + u16(typ) + u32(count) + value
+
+    ifd = u16(2)  # entry count
+    ifd += entry(256, 3, 1, u16(width) + b"\x00\x00")  # ImageWidth, SHORT, left-justified
+    ifd += entry(257, 3, 1, u16(height) + b"\x00\x00")  # ImageHeight, SHORT, left-justified
+    ifd += u32(0)  # next IFD offset
+    magic = b"MM" if big_endian else b"II"
+    return magic + u16(42) + u32(8) + ifd  # IFD follows the 8-byte header
+
+
 def _jpeg_header(width: int, height: int, fill: bytes = b"") -> bytes:
     """Build an SOF0 JPEG header (no pixel data) claiming the given size.
 
@@ -738,6 +759,8 @@ async def test_convert_image_at_pixel_limit_accepted(service_config: Configurati
         (_bmp(3, 5), "image/bmp", (3, 5)),
         (_bmp_core(3, 5), "image/bmp", (3, 5)),
         (_bmp_core(6000, 6000), "image/bmp", (6000, 6000)),
+        (_tiff_header(7, 9, big_endian=False), "image/tiff", (7, 9)),
+        (_tiff_header(7, 9, big_endian=True), "image/tiff", (7, 9)),
         (_jpeg_header(7, 9, fill=b"\xff" * 4), "image/jpeg", (7, 9)),
         (b"\xff\xd8\xff\xff", "image/jpeg", None),  # only fill bytes after SOI
         (b"", "image/png", None),
@@ -776,6 +799,25 @@ async def test_convert_oversized_bmp_core_header_rejected(service_config: Config
     # BITMAPCOREHEADER (16-bit fields) claiming 6000x6000 = 36 MP > 25 MP limit;
     # well below the 10 MB byte limit.
     upload = UploadFile(file=io.BytesIO(_bmp_core(6000, 6000)), filename="old.bmp")
+
+    with pytest.raises(ApiErrorException) as exc_info:
+        await service.convert(upload)
+
+    assert exc_info.value.error_response["errorId"] == IMAGE_TOO_LARGE
+    assert exc_info.value.error_response["status"] == 413
+    await service.close()
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("big_endian", [False, True], ids=["little", "big"])
+async def test_convert_oversized_tiff_rejected_both_byte_orders(service_config: Configuration, big_endian: bool):
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise AssertionError("No HTTP request must be made for oversized images")
+
+    service = DocumentConversionService(service_config, transport=httpx.MockTransport(handler))
+    # Header-only TIFF with inline SHORT dims claiming 6000x6000 = 36 MP > 25 MP
+    # limit; well below the 10 MB byte limit.
+    upload = UploadFile(file=io.BytesIO(_tiff_header(6000, 6000, big_endian=big_endian)), filename="scan.tiff")
 
     with pytest.raises(ApiErrorException) as exc_info:
         await service.convert(upload)

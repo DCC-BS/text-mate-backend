@@ -219,9 +219,9 @@ def _tiff_dimensions(data: bytes) -> tuple[int, int] | None:
             return None
         tag = int.from_bytes(entry[0:2], byteorder)
         field_type = int.from_bytes(entry[2:4], byteorder)
-        if field_type == 3:  # SHORT: value inline in the first (little) / last (big) 2 bytes
-            raw = entry[8:10] if byteorder == "little" else entry[10:12]
-        elif field_type == 4:  # LONG: value inline in 4 bytes
+        if field_type == 3:  # SHORT: value is left-justified in the first 2 bytes of the value field
+            raw = entry[8:10]
+        elif field_type == 4:  # LONG: value fills all 4 bytes
             raw = entry[8:12]
         else:
             continue
