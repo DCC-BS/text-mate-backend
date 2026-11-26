@@ -1,6 +1,7 @@
 import asyncio
 import json
 import re
+from collections import Counter
 from collections.abc import Iterator
 from difflib import SequenceMatcher
 from pathlib import Path
@@ -46,6 +47,7 @@ class AdvisorService:
         self.config = config
         self.rule_container = self._merge_rules_files(Path("assets/docs/rules"))
         self.doc_descriptions = self._merge_meta_files(Path("assets/docs/meta"))
+        self._enrich_descriptions()
         self.detection_agent = ViolationDetectionAgent(config)
         self.proposal_agent = ProposalAgent(config)
 
@@ -155,6 +157,24 @@ class AdvisorService:
         logger.debug("Total document descriptions loaded", description_count=len(all_descriptions))
         return all_descriptions
 
+    def _enrich_descriptions(self) -> None:
+        """
+        Fill in runtime information the meta files do not carry: the size of each
+        bundled PDF and the number of rules each collection contributes.
+        """
+        docs_dir = Path("assets/docs")
+        rules_per_collection = Counter(rule.collection for rule in self.rule_container.rules)
+
+        for desc in self.doc_descriptions:
+            desc.rule_count = rules_per_collection.get(desc.id, 0)
+            for file_info in desc.files:
+                file_path = docs_dir / file_info.name
+                if file_path.is_file():
+                    file_info.size = file_path.stat().st_size
+                else:
+                    logger.warning("Bundled document file not found", file=file_info.name, doc_id=desc.id)
+                    file_info.size = 0
+
     def get_docs(self, user: User | None) -> list[RuleDocumentDescription]:
         """
         Returns the documentation file names available for the advisor service.
@@ -209,7 +229,7 @@ class AdvisorService:
             ) from e
 
     def can_access_document(self, document_name: str, user: User | None):
-        doc_descriptions = [x for x in self.doc_descriptions if document_name in x.files]
+        doc_descriptions = [x for x in self.doc_descriptions if any(f.name == document_name for f in x.files)]
 
         for desc in doc_descriptions:
             if self._has_access(user, desc):

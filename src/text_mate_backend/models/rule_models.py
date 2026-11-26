@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class Rule(BaseModel):
@@ -96,11 +96,27 @@ class RulesValidationContainer(BaseModel):
     total: int = Field(default=0, description="Total number of rules to check")
 
 
+class DocumentFileInfo(BaseModel):
+    name: str = Field(description="PDF filename, downloadable via GET /advisor/doc/{name}")
+    title: str = Field(default="", description="Human-readable display name of the document")
+    description: str = Field(default="", description="Short description of the document content")
+    size: int = Field(default=0, description="File size in bytes; 0 if the file is not bundled")
+
+
 class RuleDocumentDescription(BaseModel):
     title: str = Field(description="Title of the document")
     description: str = Field(description="Description of the document")
     author: str = Field(description="Author of the document")
     edition: str = Field(description="Edition of the document")
     id: str = Field(description="Collection identifier matching Rule.collection")
-    files: list[str] = Field(description="Downloadable PDF filenames for this collection")
+    files: list[DocumentFileInfo] = Field(description="Downloadable PDF files for this collection")
+    rule_count: int = Field(default=0, description="Number of bundled rules in this collection")
     access: list[str] = Field(description="Access permissions for the document, e.g., 'all' for public access")
+
+    @field_validator("files", mode="before")
+    @classmethod
+    def _coerce_file_names(cls, value: object) -> object:
+        """Accept bare filename strings (meta JSON format) as name-only entries."""
+        if isinstance(value, list):
+            return [DocumentFileInfo(name=f, size=0) if isinstance(f, str) else f for f in value]
+        return value
