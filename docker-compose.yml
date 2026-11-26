@@ -26,6 +26,9 @@ services:
             # VLLM_GPU_ID on single-GPU hosts.
             - "nvidia.com/gpu=${VLLM_GPU_ID:-1}"
         ipc: host
+        networks:
+            default:
+                aliases: [vllm]
         volumes:
             - "${HF_CACHE_DIR:-${HOME}/cache/huggingface}:/root/.cache/huggingface"
         command: >
@@ -62,3 +65,14 @@ services:
             # set via remoteEnv to ${localEnv:HOME}/... so all workspaces and
             # host-native runs share one cache.
             - "${DOCLING_CACHE_DIR:-${HOME}/.cache/docling}:/models"
+        networks:
+            default:
+                aliases: [docling]
+
+# Shared with the devcontainer workspaces: their postStartCommand joins this
+# network so containers reach the services by alias (http://vllm:8000,
+# http://docling:5001) — see the $REMOTE_CONTAINERS branches in .env.schema.
+# Compose creates it if missing, so host-native runs keep working.
+networks:
+    default:
+        name: textmate-dev
