@@ -132,6 +132,13 @@ def _jpeg_dimensions(data: bytes) -> tuple[int, int] | None:
     while i + 4 <= len(data):
         if data[i] != 0xFF:
             return None
+        # Skip consecutive 0xFF fill bytes before the marker byte (allowed padding).
+        j = i + 1
+        while j < len(data) and data[j] == 0xFF:
+            j += 1
+        if j >= len(data):
+            return None
+        i = j - 1  # normalize: data[i] is the last fill byte, data[i + 1] the marker
         marker = data[i + 1]
         if marker in (0x01, 0xD8) or 0xD0 <= marker <= 0xD7:
             # Standalone markers without a length field.

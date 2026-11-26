@@ -582,6 +582,22 @@ def _png_header(width: int, height: int) -> bytes:
     return b"\x89PNG\r\n\x1a\n" + len(ihdr_payload).to_bytes(4, "big") + ihdr_payload
 
 
+def _jpeg_header(width: int, height: int, fill: bytes = b"") -> bytes:
+    """Build an SOF0 JPEG header (no pixel data) claiming the given size.
+
+    `fill` inserts 0xFF padding bytes before the SOF marker, as allowed by JPEG.
+    """
+    sof = (
+        b"\xff\xc0"
+        + (11).to_bytes(2, "big")
+        + b"\x08"
+        + height.to_bytes(2, "big")
+        + width.to_bytes(2, "big")
+        + b"\x01\x01\x11\x00\x03"
+    )
+    return b"\xff\xd8" + fill + sof
+
+
 @pytest.mark.anyio
 @pytest.mark.parametrize(
     "filename,content,image_bytes",
@@ -707,6 +723,8 @@ async def test_convert_image_at_pixel_limit_accepted(service_config: Configurati
         (GIF_1X1, "image/gif", (1, 1)),
         (WEBP_1X1, "image/webp", (1, 1)),
         (_bmp(3, 5), "image/bmp", (3, 5)),
+        (_jpeg_header(7, 9, fill=b"\xff" * 4), "image/jpeg", (7, 9)),
+        (b"\xff\xd8\xff\xff", "image/jpeg", None),  # only fill bytes after SOI
         (b"", "image/png", None),
         (b"\x89PNG\r\n\x1a\nshort", "image/png", None),
         (b"not an image", "image/jpeg", None),
@@ -714,3 +732,21 @@ async def test_convert_image_at_pixel_limit_accepted(service_config: Configurati
 )
 def test_image_dimensions(content: bytes, content_type: str, expected: tuple[int, int] | None):
     assert image_dimensions(content, content_type) == expected
+
+
+@pytest.mark.anyio
+async def test_convert_oversized_jpeg_with_fill_bytes_rejected(service_config: Configuration):
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise AssertionError("No HTTP request must be made for oversized images")
+
+    service = DocumentConversionService(service_config, transport=httpx.MockTransport(handler))
+    # Header-only JPEG with 0xFF fill bytes before the SOF marker claiming 6000x6000
+    # = 36 MP > 25 MP limit; well below the 10 MB byte limit.
+    upload = UploadFile(file=io.BytesIO(_jpeg_header(6000, 6000, fill=b"\xff" * 4)), filename="padded.jpg")
+
+    with pytest.raises(ApiErrorException) as exc_info:
+        await service.convert(upload)
+
+    assert exc_info.value.error_response["errorId"] == IMAGE_TOO_LARGE
+    assert exc_info.value.error_response["status"] == 413
+    await service.close()
