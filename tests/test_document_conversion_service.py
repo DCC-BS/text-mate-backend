@@ -1,4 +1,5 @@
 import asyncio
+import base64
 import io
 import os
 from unittest.mock import patch
@@ -10,10 +11,12 @@ from starlette.datastructures import UploadFile
 from text_mate_backend.models.error_codes import (
     DOCUMENT_CONVERSION_ERROR,
     DOCUMENT_CONVERSION_TIMEOUT,
+    IMAGE_TOO_LARGE,
     INVALID_MIME_TYPE,
+    UNSUPPORTED_IMAGE_FORMAT,
 )
 from text_mate_backend.models.error_response import ApiErrorException
-from text_mate_backend.services.document_conversion_service import DocumentConversionService
+from text_mate_backend.services.document_conversion_service import DocumentConversionService, image_dimensions
 from text_mate_backend.utils.configuration import Configuration
 
 
@@ -21,6 +24,8 @@ def test_error_codes_defined():
     assert DOCUMENT_CONVERSION_ERROR == "document_conversion_error"
     assert DOCUMENT_CONVERSION_TIMEOUT == "document_conversion_timeout"
     assert INVALID_MIME_TYPE == "invalid_mime_type"
+    assert UNSUPPORTED_IMAGE_FORMAT == "unsupported_image_format"
+    assert IMAGE_TOO_LARGE == "image_too_large"
 
 
 def test_configuration_docling_defaults():
@@ -537,3 +542,175 @@ async def test_convert_cancellation_during_polling(service_config: Configuration
         await task
 
     await service.close()
+
+
+# ── Image upload support ────────────────────────────────────────────────────
+
+# Minimal real 1x1 images of each accepted raster format.
+PNG_1X1 = base64.b64decode(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=="
+)
+JPEG_1X1 = base64.b64decode(
+    "/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRof"
+    "Hh0aHBwcJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPDs0NDX/wAALCAABAAEBAREA/8QAFAAB"
+    "AAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q=="
+)
+GIF_1X1 = base64.b64decode("R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==")
+WEBP_1X1 = base64.b64decode("UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==")
+
+
+def _bmp(width: int, height: int) -> bytes:
+    """Build a minimal 24-bit uncompressed BMP."""
+    pixel_data = b"\x00" * (width * height * 3)
+    file_header = (
+        b"BM" + (54 + len(pixel_data)).to_bytes(4, "little") + b"\x00\x00\x00\x00" + (54).to_bytes(4, "little")
+    )
+    dib_header = (
+        (40).to_bytes(4, "little")
+        + width.to_bytes(4, "little")
+        + height.to_bytes(4, "little")
+        + (1).to_bytes(2, "little")
+        + (24).to_bytes(2, "little")
+        + b"\x00" * 16
+    )
+    return file_header + dib_header + pixel_data
+
+
+def _png_header(width: int, height: int) -> bytes:
+    """Build a PNG signature + IHDR header (no pixel data) claiming the given size."""
+    ihdr_payload = b"IHDR" + width.to_bytes(4, "big") + height.to_bytes(4, "big") + b"\x08\x06\x00\x00\x00"
+    return b"\x89PNG\r\n\x1a\n" + len(ihdr_payload).to_bytes(4, "big") + ihdr_payload
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize(
+    "filename,content,image_bytes",
+    [
+        ("sample.png", "image/png", PNG_1X1),
+        ("sample.jpg", "image/jpeg", JPEG_1X1),
+        ("sample.gif", "image/gif", GIF_1X1),
+        ("sample.webp", "image/webp", WEBP_1X1),
+        ("sample.bmp", "image/bmp", _bmp(2, 2)),
+    ],
+)
+async def test_convert_image_happy_path_returns_html(
+    service_config: Configuration, filename: str, content: str, image_bytes: bytes
+):
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST" and request.url.path == "/v1/convert/file/async":
+            return httpx.Response(200, json={"task_id": "task-img", "task_status": "pending"})
+        elif request.method == "GET" and request.url.path == "/v1/status/poll/task-img":
+            return httpx.Response(200, json={"task_id": "task-img", "task_status": "success"})
+        elif request.method == "GET" and request.url.path == "/v1/result/task-img":
+            return httpx.Response(200, json={"document": {"html_content": "<h1>Scanned text</h1>"}})
+        return httpx.Response(404)
+
+    transport = httpx.MockTransport(handler)
+    service = DocumentConversionService(service_config, transport=transport)
+    upload = UploadFile(file=io.BytesIO(image_bytes), filename=filename)
+
+    result = await service.convert(upload)
+
+    assert result.html == "<h1>Scanned text</h1>"
+    assert result.model_dump() == {"html": "<h1>Scanned text</h1>"}
+    await service.close()
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("filename,mimetype", [("photo.heic", "image/heic"), ("photo.heif", "image/heif")])
+async def test_convert_heic_heif_rejected_with_dedicated_error(
+    service_config: Configuration, filename: str, mimetype: str
+):
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise AssertionError("No HTTP request must be made for unsupported formats")
+
+    service = DocumentConversionService(service_config, transport=httpx.MockTransport(handler))
+
+    # Via filename-derived mimetype ...
+    upload = UploadFile(file=io.BytesIO(b"xx"), filename=filename)
+    with pytest.raises(ApiErrorException) as exc_info:
+        await service.convert(upload)
+    assert exc_info.value.error_response["errorId"] == UNSUPPORTED_IMAGE_FORMAT
+    assert exc_info.value.error_response["status"] == 400
+
+    # ... and via explicitly provided content type.
+    with pytest.raises(ApiErrorException) as exc_info:
+        await service.convert(io.BytesIO(b"xx"), filename="photo", content_type=mimetype)
+    assert exc_info.value.error_response["errorId"] == UNSUPPORTED_IMAGE_FORMAT
+    assert exc_info.value.error_response["status"] == 400
+    await service.close()
+
+
+@pytest.mark.anyio
+async def test_convert_image_too_large_bytes_rejected(service_config: Configuration):
+    limited_config = service_config.model_copy(update={"image_max_bytes": 10})
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise AssertionError("No HTTP request must be made for oversized images")
+
+    service = DocumentConversionService(limited_config, transport=httpx.MockTransport(handler))
+    upload = UploadFile(file=io.BytesIO(PNG_1X1), filename="sample.png")  # 70 bytes > 10
+
+    with pytest.raises(ApiErrorException) as exc_info:
+        await service.convert(upload)
+
+    assert exc_info.value.error_response["errorId"] == IMAGE_TOO_LARGE
+    assert exc_info.value.error_response["status"] == 413
+    await service.close()
+
+
+@pytest.mark.anyio
+async def test_convert_image_too_many_pixels_rejected(service_config: Configuration):
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise AssertionError("No HTTP request must be made for oversized images")
+
+    service = DocumentConversionService(service_config, transport=httpx.MockTransport(handler))
+    # Header-only PNG claiming 6000x6000 = 36 MP > 25 MP limit.
+    upload = UploadFile(file=io.BytesIO(_png_header(6000, 6000)), filename="huge.png")
+
+    with pytest.raises(ApiErrorException) as exc_info:
+        await service.convert(upload)
+
+    assert exc_info.value.error_response["errorId"] == IMAGE_TOO_LARGE
+    assert exc_info.value.error_response["status"] == 413
+    debug_message = exc_info.value.error_response["debugMessage"]
+    assert debug_message is not None
+    assert "6000x6000" in debug_message
+    await service.close()
+
+
+@pytest.mark.anyio
+async def test_convert_image_at_pixel_limit_accepted(service_config: Configuration):
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST" and request.url.path == "/v1/convert/file/async":
+            return httpx.Response(200, json={"task_id": "task-limit", "task_status": "pending"})
+        elif request.method == "GET" and request.url.path == "/v1/status/poll/task-limit":
+            return httpx.Response(200, json={"task_id": "task-limit", "task_status": "success"})
+        elif request.method == "GET" and request.url.path == "/v1/result/task-limit":
+            return httpx.Response(200, json={"document": {"html_content": "<p>ok</p>"}})
+        return httpx.Response(404)
+
+    service = DocumentConversionService(service_config, transport=httpx.MockTransport(handler))
+    # 5000x5000 = exactly 25_000_000 pixels, at but not over the limit.
+    upload = UploadFile(file=io.BytesIO(_png_header(5000, 5000)), filename="border.png")
+
+    result = await service.convert(upload)
+    assert result.html == "<p>ok</p>"
+    await service.close()
+
+
+@pytest.mark.parametrize(
+    "content,content_type,expected",
+    [
+        (PNG_1X1, "image/png", (1, 1)),
+        (JPEG_1X1, "image/jpeg", (1, 1)),
+        (GIF_1X1, "image/gif", (1, 1)),
+        (WEBP_1X1, "image/webp", (1, 1)),
+        (_bmp(3, 5), "image/bmp", (3, 5)),
+        (b"", "image/png", None),
+        (b"\x89PNG\r\n\x1a\nshort", "image/png", None),
+        (b"not an image", "image/jpeg", None),
+    ],
+)
+def test_image_dimensions(content: bytes, content_type: str, expected: tuple[int, int] | None):
+    assert image_dimensions(content, content_type) == expected

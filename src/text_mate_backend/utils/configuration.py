@@ -26,6 +26,15 @@ class Configuration(LlmConfig):
         default=30.0,
     )
 
+    image_max_bytes: int = Field(
+        description="Maximum size in bytes for uploaded images",
+        default=10 * 1024 * 1024,
+    )
+    image_max_pixels: int = Field(
+        description="Maximum pixel count (width times height) for uploaded images",
+        default=25_000_000,
+    )
+
     llm_health_check_url: str = Field(
         description="The URL for LLM health check API", default="http://localhost:8001/health"
     )
@@ -72,6 +81,8 @@ class Configuration(LlmConfig):
             docling_poll_interval_seconds=float(os.getenv("DOCLING_POLL_INTERVAL_SECONDS", "1.0")),
             docling_conversion_timeout_seconds=float(os.getenv("DOCLING_CONVERSION_TIMEOUT_SECONDS", "480.0")),
             docling_http_timeout_seconds=float(os.getenv("DOCLING_HTTP_TIMEOUT_SECONDS", "30.0")),
+            image_max_bytes=int(os.getenv("IMAGE_MAX_BYTES", str(10 * 1024 * 1024))),
+            image_max_pixels=int(os.getenv("IMAGE_MAX_PIXELS", str(25_000_000))),
             llm_health_check_url=get_env_or_throw("LLM_HEALTH_CHECK_URL"),
             azure_client_id="" if disable_auth else get_env_or_throw("AZURE_CLIENT_ID"),
             azure_tenant_id="" if disable_auth else get_env_or_throw("AZURE_TENANT_ID"),
@@ -95,6 +106,8 @@ class Configuration(LlmConfig):
             docling_poll_interval_seconds={self.docling_poll_interval_seconds},
             docling_conversion_timeout_seconds={self.docling_conversion_timeout_seconds},
             docling_http_timeout_seconds={self.docling_http_timeout_seconds},
+            image_max_bytes={self.image_max_bytes},
+            image_max_pixels={self.image_max_pixels},
             llm_health_check_url={self.llm_health_check_url},
             azure_client_id={log_secret(self.azure_client_id)},
             azure_tenant_id={log_secret(self.azure_tenant_id)},
